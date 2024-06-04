@@ -1,0 +1,110 @@
+%========================= Classe du Document ==========================
+\documentclass[a4paper,fleqn,12pt,openright]{report}
+%============================= Packages ================================
+\usepackage[margin=2.5cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[hidelinks]{hyperref} % Cick on citations
+\usepackage[utf8]{inputenc}
+\usepackage[skip=10pt, indent=40pt]{parskip}  % Paragraph spacing
+\usepackage{setspace} % Line spacing
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption} % Subcaptions for multiple figures 
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage{multicol}
+\usepackage{tikz}
+\usepackage{xcolor}
+\usepackage{xspace} % For \onedot command
+\usepackage[acronym, toc]{glossaries}
+\usepackage{breakcites} % Citations over multiple lines
+
+%\setlength{\parindent}{0pt}  % Paragraph indentation 
+
+%Import the natbib package and sets a bibliography  and citation styles
+\bibliographystyle{apalike}
+
+%=============================== Commands ===================================
+
+\newcommand{\comseb}[1]{{\color{red}SEB: \textit{#1}}}
+\newcommand{\comroman}[1]{{\color{purple}ROMAN: \textit{#1}}}
+\newcommand{\commanu}[1]{{\color{green}MANU: \textit{#1}}}
+\newcommand{\commanue}[1]{{\color{cyan}MANUE: \textit{#1}}}
+\newcommand{\comloic}[1]{{\color{orange}LOIC: \textit{#1}}}
+
+\newcommand{\M}{{\mathcal{M}}}
+\newcommand{\X}{{\mathcal{X}}}
+\newcommand{\low}{{\underline{P}}}
+\newcommand{\tdt}{{\times\dots\times}}
+
+\newtheorem{theorem}{Theorem}[section]
+\theoremstyle{definition}
+\newtheorem{example}{Example}[section]
+\newtheorem{proposition}{Proposition}[section]
+
+% From CVPR cvpr.sty
+\makeatletter
+\DeclareRobustCommand\onedot{\futurelet\@let@token\@onedot}
+\def\@onedot{\ifx\@let@token.\else.\null\fi\xspace}
+
+\def\eg{\emph{e.g}\onedot} \def\Eg{\emph{E.g}\onedot}
+\def\ie{\emph{i.e}\onedot} \def\Ie{\emph{I.e}\onedot}
+\def\cf{\emph{cf}\onedot} \def\Cf{\emph{Cf}\onedot}
+\def\etc{\emph{etc}\onedot} \def\vs{\emph{vs}\onedot}
+\def\wrt{w.r.t\onedot} \def\dof{d.o.f\onedot}
+\def\iid{i.i.d\onedot} \def\wolog{w.l.o.g\onedot}
+\def\etal{\emph{et al}\onedot}
+\makeatother
+%========================= Glossary ====================================
+
+\input{Misc/acronyms_glossary}
+
+\pdfstringdefDisableCommands{%
+  \def\glspl#1{<#1>}} % To silence hyperref Warning Token not allowed in a PDF string (Unicode)
+%=======================================================================
+%=======================================================================
+
+\begin{document}
+
+\definecolor{color}{HTML}{F5F5F5}
+%======================= Page de Garde =================================
+\thispagestyle{empty}
+\include{Misc/title_page}
+
+%==================== Glossaire, TOC etc ===============================
+\tableofcontents
+\thispagestyle{empty}
+\pagebreak
+\glsaddall
+\pagenumbering{Alph}  % Switch Numerotation of pages to uppercase letters
+\setcounter{page}{0}  % Resetting the page number
+\printglossary[type=\acronymtype,nonumberlist]
+\printglossary[nonumberlist]
+\pagebreak
+
+%========================== Les choses sérieuses commencent ===========
+
+\pagenumbering{arabic}  % Switch numerotation of pages to Arabic
+%\doublespacing
+\onehalfspace
+
+\input{Chapters/0_intro}
+
+\input{Chapters/1_intro_to_stereo}
+
+\input{Chapters/2_mathematical_representation_of_uncertainty}
+
+\input{Chapters/3_propragating_the_uncertainty_to_stereo_images}
+
+\input{Chapters/4_epistemic_uncertainty_in_stereo_matching}
+
+\input{Chapters/5_results}
+
+\input{Chapters/Conclusion}
+
+\singlespace
+\bibliography{thesis}
+
+\end{document}
