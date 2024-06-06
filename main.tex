@@ -1,23 +1,29 @@
 %========================= Classe du Document ==========================
 \documentclass[a4paper,fleqn,12pt,openright]{report}
 %============================= Packages ================================
-\usepackage[margin=2.5cm]{geometry}
 \usepackage[T1]{fontenc}
 \usepackage[hidelinks]{hyperref} % Cick on citations
 \usepackage[utf8]{inputenc}
 \usepackage[skip=10pt, indent=40pt]{parskip}  % Paragraph spacing
 \usepackage{setspace} % Line spacing
-\usepackage{graphicx}
 \usepackage{caption}
 \usepackage{subcaption} % Subcaptions for multiple figures 
+\usepackage{multicol}
+
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{amsfonts}
 \usepackage{amsthm}
-\usepackage{multicol}
+
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
 \usepackage{tikz}
+
 \usepackage{xcolor}
 \usepackage{xspace} % For \onedot command
+
 \usepackage[acronym, toc]{glossaries}
 \usepackage{breakcites} % Citations over multiple lines
 
@@ -34,15 +40,21 @@
 \newcommand{\commanue}[1]{{\color{cyan}MANUE: \textit{#1}}}
 \newcommand{\comloic}[1]{{\color{orange}LOIC: \textit{#1}}}
 
-\newcommand{\M}{{\mathcal{M}}}
+\newcommand{\M}{{\mathfrak{M}}}
 \newcommand{\X}{{\mathcal{X}}}
 \newcommand{\low}{{\underline{P}}}
 \newcommand{\tdt}{{\times\dots\times}}
+\newcommand{\opi}{{[\![}}
+\newcommand{\cli}{{]\!]}}
+
+
 
 \newtheorem{theorem}{Theorem}[section]
 \theoremstyle{definition}
 \newtheorem{example}{Example}[section]
 \newtheorem{proposition}{Proposition}[section]
+\newtheorem{definition}{Definition}[section]
+\newtheorem{remark}{Remark}[section]
 
 % From CVPR cvpr.sty
 \makeatletter
@@ -53,6 +65,7 @@
 \def\ie{\emph{i.e}\onedot} \def\Ie{\emph{I.e}\onedot}
 \def\cf{\emph{cf}\onedot} \def\Cf{\emph{Cf}\onedot}
 \def\etc{\emph{etc}\onedot} \def\vs{\emph{vs}\onedot}
+\def\st{\emph{s.t}\onedot}
 \def\wrt{w.r.t\onedot} \def\dof{d.o.f\onedot}
 \def\iid{i.i.d\onedot} \def\wolog{w.l.o.g\onedot}
 \def\etal{\emph{et al}\onedot}
