@@ -1,9 +1,6 @@
 \comseb{Sur le plan (pas évident de mettre un commentaire sur le plan: marrant que tu sautes des probas aux probas imprécises pour revenir aux possibilités. J'aurais peut-être fait une section générique (probas, ensembles, ensembles aléatoires, ensembles de probas?), puis un focus sur possibilités? J'aurais sans doute aussi séparé ce qui est modélisation (3.2/3.3 dans le 2) de ce qui est plus calculatoire (2.5 dans 3)? Commencer par une intro, finir par une conclusion/perspective}
 
-\chapter{Introduction to stereophotogrammetry}
-
-
-
+\chapter{Introduction to Stereophotogrammetry}
 \comroman{TODO: Prendre le lecteur par la main, lui expliquer ce qu'il va lire et pourquoi dans cet ordre là \etc. Biblio sur la photogrammetry, l'utilité des DSM, la description des pipelines de photogrammetry, uncertainty dans les DSM.}
 
 \section{Digital Surface Models}
@@ -106,14 +103,20 @@ In this thesis, we focused on quantifying the uncertainty alongside the creation
 \section{Classical stereo pipeline}\label{sec:classical_stero_pipeline}
 \subsection{Resampling in epipolar geometry}
 SIFT computation, sparse matching, rectification grid
+
 \subsection{Stereo matching}
 Optical demonstration for disparity to height
 Taxonomy. Cost functions. SGM. Deep learning methods
+
+Different cost functions have been proposed to better identify the correct match (\cite{hannah_computer_1994}), some being robust to small variations of intensities (\cite{zabih_non-parametric_1994}), or determined using advanced method such as deep learning approaches (\cite{zbontar_stereo_2016, laga_survey_2022}).
+
 \subsection{Triangulation}
 RPC models. Line of sight intersection
 Filtering of point clouds
+
 \subsection{Rasterization}
 Gaussian rasterization. Holes filling.  
+
 \subsection{From LiDAR to disparity GT}
 Explaination on how to obtain GT disparity maps from georeferenced LiDAR, \cite{cournet_ground_2020}. Line of sight and default geoid. 
 

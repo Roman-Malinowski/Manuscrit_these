@@ -1,4 +1,4 @@
-\chapter{Mathematical representation of Uncertainty}
+\chapter{Mathematical Representations of Uncertainty}
 
 \section{Notations}
 We introduce here a few notations that will be used in the rest of this chapter. \comroman{A ajouter au fur et à mesure}
@@ -7,6 +7,8 @@ We introduce here a few notations that will be used in the rest of this chapter.
     \item We will often present theorems or results with $n$ different variables, spaces, or Cartesian products of $n$ elements. Notations therefore quickly become quite heavy. We try our best to make them clear and readable, which is why we often use the contraction ``$\dots$'' to imply that we are enumerating all variables. For instance, if we apply a function $f$ to four variables $x_1, x_2, x_3, x_4$, we will write $f(x_1, \dots, x_4)$.
     \item When working with $n$ variables, the index $i$ will usually be used to refer to the $i$-th variable (or one of its attribute), and will be appended as a subscript when possible, otherwise as a superscript. For instance, if $x\in\mathbb{R}^n$, then $x_i$ will refer to the $i$-th component of $x$. If $m_\times\in\mathbb{R}^n$, then $m_\times^i$ will refer to $i$-th component of $m_\times$.
     \item $\opi\cdot,\cdot\cli$ refers to an interval of integers. For instance $\opi1,~4\cli=\{1,~2,~3,~4\}$. 
+    \item CDF will refer to Cumulative Distribution Function, \ie if $X$ is random variable in $\mathbb{R}$ and $P$ its associated probability, then the CDF of $X$ is $F(x)=P(X\leqslant x)$.
+    \item The power set of a set $\X$ is noted $2^\X$. It correspond to the set of all sets included in $\X$. In the discrete case, if the cardinal of $\X$ is $n$, then the cardinal of the power set is $2^n$, thus the notation.
 \end{itemize}
 
 
@@ -31,7 +33,7 @@ In the following sections, we will work with multiple random variables. Let $n\i
     &\forall (v_1,\dots,v_n)\in[0,1]^n \text{ \st }~\forall i\in\in\opi 1,n\cli ,~v_i\geqslant u_i\nonumber\\
     &\sum_{(w_1, \dots, w_n)\in\Pi_{i=1}^n\{u_i, v_i\}}(-1)^{|\{i~|~w_i=u_i\}|}C(w_1, \dots, w_n)\geqslant 0\label{eq:cop_hvolume}
 \end{align}
-where $\Pi_{i=1}^n$ is the Cartesian product of $n$ elements, meaning that $(w_1, \dots, w_n)\in\Pi_{i=1}^n\{u_i, v_i\}$ is a tuple of $n$ elements, where each element is either $u_i$ or $v_i$. The first term in equation \ref{eq:cop_hvolume} is also called H-volume or hyper-volume. It is used to compute joint probability mass assignments in the precise case (and also in the imprecise case, see section \ref{sec:joint_mass}). In the rest of this thesis, we will use the following notation to refer to the $H$-volume:
+where $\Pi_{i=1}^n$ is the Cartesian product of $n$ elements, meaning that $(w_1, \dots, w_n)\in\Pi_{i=1}^n\{u_i, v_i\}$ is a tuple of $n$ elements, where each element is either $u_i$ or $v_i$. Additionally, $|\{i~|~w_i=u_i\}|$ refers to the cardinal of the set $\{i~|~w_i=u_i\}$. The first term in equation \ref{eq:cop_hvolume} is also called H-volume or hyper-volume. It is used to compute joint probability mass assignments in the precise case (and also in the imprecise case, see section \ref{sec:joint_mass}). In the rest of this thesis, we will use the following notation to refer to the $H$-volume:
 \begin{eqnarray}\label{eq:hvolume}
     &&\forall i\in\opi 1,n\cli ,~\forall~0\leqslant u_i \leqslant v_i \leqslant 1,\nonumber\\
     &&H^{v_1,\dots v_n}_{u_1,\dots,u_n}=\sum_{(w_1, \dots, w_n)\in\Pi_{i=1}^n\{u_i, v_i\}}(-1)^{|\{i~|~w_i=u_i\}|}C(w_1, \dots, w_n)
@@ -58,9 +60,10 @@ The upper bound is a copula, usually called the Minimum copula $C_M$, modelling 
     \forall (u_1,\dots,u_n)\in[0,1]^n,~\exists C \text{ \st }~C(u_1,\dots,u_n) = \max(0, 1-n+\sum_{i=1}^n u_i)
 \end{eqnarray*}
 
-Independence between variables is modeled by the product copula $C_\Pi(u_1, \dots, u_n)=u_1\dots u_n$, which will be used later in subsection \ref{subsection:product_copula}. Graphical representations of the product copula and of the lower and upper Fréchet–Hoeffding bounds are represented in figure \ref{fig:copulas}. Some examples of families of copulas that can be generated using a single parameter $\theta$ in the case $n=2$ are presented in table \ref{tab:familiy_of_copula}.
-
-Another important family of copulas is the family of Gaussian copulas. Each Gaussian copula is generated with a correlation matrix $R$:\\$C_R=\Phi_R(\Phi^{-1}(u_1), \dots, \Phi^{-1}(u_n))$, where $\Phi_R$ is the joint multivariate distribution function of a Gaussian variable with correlation matrix $R$, and $\Phi^{-1}$ is the inverse distribution function of a univariate Gaussian variable. 
+Independence between variables is modeled by the product copula $C_\Pi(u_1, \dots, u_n)=u_1\dots u_n$, which will be used later in subsection \ref{subsection:product_copula}. Graphical representations of the product copula and of the lower and upper Fréchet–Hoeffding bounds are represented in figure \ref{fig:copulas}. Some examples of families of copulas that can be generated using a single parameter $\theta$ in the case $n=2$ are presented in table \ref{tab:familiy_of_copula}. Another important family of copulas is the family of Gaussian copulas. Each Gaussian copula is generated with a correlation matrix $R\in[-1,1]^{(n,n)}$:
+\begin{align}
+    C_R=\Phi_R(\Phi^{-1}(u_1), \dots, \Phi^{-1}(u_n)) \label{eq:gaussian_copula}
+\end{align} where $\Phi_R$ is the joint multivariate cumulative distribution function of a Gaussian variable with correlation matrix $R$, and $\Phi^{-1}$ is the inverse cumulative distribution function of a univariate Gaussian variable. 
 
 \begin{figure}
     \centering
@@ -174,7 +177,7 @@ Another important family of copulas is the family of Gaussian copulas. Each Gaus
     In other words, the copula is convex when fixing all but one of its variables. A copula $C$ is called directionally concave (D-concave) if the inequalities are reversed.
 \end{definition}
 
-D-convexity/D-concavity is quite common in known family of copulas. As there is no explicit formula for the family of Gaussian copulas, it is difficult to prove its D-convexity or D-convexity. However, numerical approximations in the case $n=2$ seem to indicate that a Gaussian copula would be D-convex if its marginals are positively correlated, and D-concave if they are negatively correlated. Figure \ref{fig:gaussian_copula_simu} present those observations. The following proofs provide additional insight on the properties of famous families of copulas presented in table \ref{tab:familiy_of_copula}, in the case $n=2$.
+D-convexity/D-concavity is quite common in known family of copulas. The following proofs provide additional insight on the properties of famous families of copulas presented in table \ref{tab:familiy_of_copula}, in the case $n=2$.
 \begin{proof}
     As the copulas presented are symmetric regarding their variables, D-convexity/D-concavity is only detailed for $u_1$.
 
@@ -210,37 +213,33 @@ D-convexity/D-concavity is quite common in known family of copulas. As there is 
     \end{description}
 \end{proof}
 
+As there is no explicit formula for the family of multivariate Gaussian copulas, it is difficult to prove its D-concavity or D-convexity. However, numerical approximations in the case $n=2$ seem to indicate that a Gaussian copula would be D-convex if its marginals are positively correlated, and D-concave if they are negatively correlated. Figure \ref{fig:gaussian_copula_simu} present those observations, with solid lines representing positive correlation, and dashed lines representing negative correlations. In the case $n>2$, the copula can be neither D-convex nor D-concave depending on the value of the correlation matrix. An example of this effect is provided in figure \ref{fig:gaussian_copula_simu_n3}.
 \begin{figure}
     \centering
-    \begin{subfigure}{0.3\linewidth}
+    \begin{subfigure}{0.4\linewidth}
         \centering
         \includegraphics[width=\linewidth]{Images/Guassian_copula/gaussian_copula_0.png}
     \end{subfigure}\hfill
-    \begin{subfigure}{0.3\linewidth}
+    \begin{subfigure}{0.4\linewidth}
         \centering
         \includegraphics[width=\linewidth]{Images/Guassian_copula/gaussian_copula_1.png}
     \end{subfigure}\hfill
-    \begin{subfigure}{0.3\linewidth}
+    \begin{subfigure}{0.4\linewidth}
         \centering
         \includegraphics[width=\linewidth]{Images/Guassian_copula/gaussian_copula_2.png}
     \end{subfigure}
-    \begin{subfigure}{0.3\linewidth}
-        \centering
-        \includegraphics[width=\linewidth]{Images/Guassian_copula/gaussian_copula_3.png}
-    \end{subfigure}\hfill
-    \begin{subfigure}{0.3\linewidth}
-        \centering
-        \includegraphics[width=\linewidth]{Images/Guassian_copula/gaussian_copula_4.png}
-    \end{subfigure}\hfill
-    \begin{subfigure}{0.3\linewidth}
-        \centering
-        \includegraphics[width=\linewidth]{Images/Guassian_copula/gaussian_copula_5.png}
-    \end{subfigure}
-    \caption{Gaussian copula in the direction $u_1$ for a given $u_2$ and different correlations $r$ between $u_1$ and $u_2$.}
+    \caption{Gaussian 2-copulas in the direction $u_1$ for different $u_2$. Each figure present different plots for correlations $r$ between $u_1$ and $u_2$ ranging in $[-1,1]$. Solid lines represent negative correlation, while dashed lines represent positive correlations.}
     \label{fig:gaussian_copula_simu}
 \end{figure}
 
-The rest of this section will present some remarks and usefull properties for D-convex and D-concave copulas.
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\linewidth]{Images/Guassian_copula/gaussian_copula_n3.png}
+    \caption{Directional cut of a Gaussian 3-copula with in the direction $u_1$, with $R=\begin{bmatrix} 1 & -0.4 & 0.7\\ -0.4 & 1 & 0.3\\ 0.7 & 0.3 & 1 \end{bmatrix}$, $u_2=0.4$ and $u_3=0.6$. The copula is neither D-convex nor D-concave}
+    \label{fig:gaussian_copula_simu_n3}
+\end{figure}
+
+The rest of this section will present some remarks and useful properties for D-convex and D-concave copulas.
 
 \begin{remark}
     All D-convex copulas $C$ are dominated by the product copula. 
@@ -304,7 +303,23 @@ The rest of this section will present some remarks and usefull properties for D-
 \end{proof} 
 
 \section{Sampling from a Copula}
+As a copula represent the CDF of a multivariate random variable, it is possible to sample from it. This section details a method for sampling from copulas in general, and a special method for sampling from copulas in the family of Gaussian copulas. Given a copula $C$, and two CDF $F_X$ and $F_Y$, a method to generate a pair of observations $(x, y)$ from a joint CDF $C(F_X, F_Y)$ is the following:
 
+\begin{itemize}
+    \item Sample two independent samples $u_1, u_2$ from a uniform distribution on [0,1]
+    \item Set $v=\partial C^{-1}(u_2)$ where $\partial C^{-1}$ is the quasi-inverse of the partial derivative of $C$ regarding its first variable (which exists almost everywhere and is invertible).
+    \item $(u_1, v)$ each follow a uniform distribution on $[0,1]$, and their associated copula is $C$ 
+    \item The desired pair is $(x_1,x_2) = (F^{-1}_X(u_1), F^{-1}_Y(v))$, with $F_X^{-1}$, $F_Y^{-1}$ being the quasi-inverses of the marginals CDFs.
+\end{itemize}
+
+Details of this method in the $n$-dimensional case can be found in \cite{cherubini_copula_2004}. However, drawing samples from a Gaussian $n$-copula with a correlation matrix $R$ are simpler to obtain:
+\begin{itemize}
+    \item Compute the Cholesky decomposition $A$ of the correlation matrix $R$
+    \item Draw $n$ independent random samples $u=(u_1, \dots, u_n)'$ from $\mathcal{N}(0,1)$, where $\mathcal{N}$ is the normal distribution.
+    \item Set $v=Au$
+    \item Set $w_k=\Phi(v_k)$ where $\Phi$ is the univariate normal cumulated distribution function
+    \item The desired draw is $(x_1,\dots, x_n)=(F^{-1}_1(w_1), \dots, F^{-1}_n(w_n))$ with $F_i^{-1}$, being the quasi-inverse of the $i$-th marginal CDF.
+\end{itemize}
 
 \section{Methods for Joining credal sets with copulas}
 When working with multiple sources of uncertain information, one must take into account the dependency between the different sources in order to correctly determine the joint model. Section \ref{sec:copulas} introduced copulas, a type of dependency model that we will be using for joining the uncertainty model on images intensities. We consider here $n\in\mathbb{N}^*$ uncertain variables $(X_i)_{1\leqslant i\leqslant n}$ taking values respectively in an totally ordered finite space $\X_i$. Index $i$ will usually refer to the $i$-th random variable (or random set). We note $\M_i$ the credal set representing the uncertainty of $X_i$, and $C$ a $n$-copula. Focal sets of a belief function will be noted $a^i_k$, where $k$ refers to the $k$-th focal set if they are numbered. We also note $\bigsqcup$ the union of disjoint elements.
@@ -320,7 +335,7 @@ A first way of creating a joint credal set is to sample a precise marginal for e
 This set is not strictly a credal set as it is not guaranteed to be convex \cite{schmelzer_random_2023}. We thus define the joint credal set as the convex hull $\M_{robust}$ of $\mathcal{S}$:
 
 \begin{eqnarray}\label{eq:robust_set}
-    \M_{robust}(C,\M_i) = \{&&F~|~\forall A \in \X,\nonumber\\
+    \M_{robust}(C,\M_i) = \{&&F~|~\forall A \subseteq \X,\nonumber\\
     &&\inf_{G\in\mathcal{S}(C,\M_i)}G(A)\leqslant F(A)\leqslant\sup_{G\in\mathcal{S}(C,\M_i)}G(A)~\}
 \end{eqnarray}
 
@@ -333,12 +348,12 @@ Let suppose, without loss of generality, that the marginal focal sets are number
 \begin{eqnarray}\label{eq:joint_mass}
     m_\times(a^1_{k_1}\tdt a^n_{k_n}) = H_{\sum_{k=0}^{k_1-1}m_1(a^1_k), \dots, \sum_{k=0}^{k_n-1}m_n(a^n_k)}^{\sum_{k=0}^{k_1}m_1(a^1_k), \dots, \sum_{k=0}^{k_n}m_n(a^n_k)}
 \end{eqnarray}
-with the convention that $\forall i, a^i_0=\emptyset$, which is not strictly a focal set but allows to deal with the case $k_i=1$ as $m_i(a^i_0)=0$. For sets that are not of the form $a^1_{k_1}\tdt a^n_{k_n}$, the mass $m_\times$ is null. By this definition, $m_\times$ is a correctly defined mass distribution function.
+with the convention that $\forall i,\, a^i_0=\emptyset$, which is not strictly a focal set but allows to deal with the case $k_i=1$ as $m_i(a^i_0)=0$. For sets that are not of the form $a^1_{k_1}\tdt a^n_{k_n}$, the mass $m_\times$ is null. By this definition, $m_\times$ is a correctly defined mass distribution function.
 \begin{proof}
     By definition it holds that $m_\times(\emptyset)=0$, and the properties of the H-volume impose that $m_\times\in[0,1]$.
     
     There are multiple way of proving that $\sum_{A\subseteq\X}m_\times(A)=1$. A direct proof can be done in the case $n=2$, but the notations become quite for any $n>2$. Instead let us use the interpretation of a copula as a multivariate CDF. 
-    Let $\forall i\in\opi 0, n\cli , F_i$ be a CDF over $[0, N_i]$, with ,$~F_i(j)=\sum_{k=0}^j m_i(a_k^i)$. By Sklar's theorem, $F=C(F_1,\dots, F_n)$ is a multivariate CDF over $[0, N_1]\tdt[0, N_n]$. Thus it holds that $F([0, N_1]\tdt[0, N_n])=1$ and:
+    Let $\forall i\in\opi 0,\, n\cli,\, F_i$ be a CDF over $[0,\, N_i]$, with, $F_i(j)=\sum_{k=0}^j m_i(a_k^i)$. By Sklar's theorem, $F=C(F_1,\dots, F_n)$ is a multivariate CDF over $[0,\, N_1]\tdt[0,\, N_n]$. Thus it holds that $F([0,\, N_1]\tdt[0,\, N_n])=1$ and:
     \begin{eqnarray*}
         F([0, N_1]\tdt[0, N_n]) &=& F([0,\dots,0])+\\
         &&F\left(\bigsqcup_{k_1=0}^{N_1-1}\dots\bigsqcup_{k_n=0}^{N_n-1}\left(]k_1, k_1+1]\tdt]k_n, k_n+1]\right)\right)\\
@@ -363,7 +378,7 @@ Having defined a mass distribution function on the product space $\X$, we thus d
 With this way of defining the multivariate mass, the choice of arbitrary orders $\preceq_i$ can have a significant impact on the value of the multivariate mass function. The next example illustrate this statement.
 
 \begin{example}\label{ex:joint_mass}
-    Let us present an example in the case $n=2$. Let $m_1$ be a mass distribution function over the power set $\X_1$ with two focal sets $a_1, a_2$. Similarly, let $m_2$ be a mass distribution function over the power set $\X_2$ with two focal sets $a_1^2,~a_2^2$. Throughout this example we will assume that $a_1^2\preceq_2a_2^2$. We consider the minimum copula $C(u,v)=\min(u,v)$ and $m_1(a_1^1)=m_1(a_2^1)=m_2(a_1^2)=0.5$.
+    Let us present an example in the case $n=2$. Let $m_1$ be a mass distribution function over the power set $2^{\X_1}$ of $\X_1$ with two focal sets $a_1,\, a_2$. Similarly, let $m_2$ be a mass distribution function over the power set $\X_2$ with two focal sets $a_1^2,~a_2^2$. Throughout this example we will assume that $a_1^2\preceq_2a_2^2$. We consider the minimum copula $C(u,v)=\min(u,v)$ and $m_1(a_1^1)=m_1(a_2^1)=m_2(a_1^2)=0.5$.
     If there is no natural order on the focal sets of $m_1$, we have to chose an arbitrary one:
     \begin{itemize}
         \item[-] If "$a_1^1\preceq_1a_2^1$" is the arbitrary order (see figure \ref{fig:joint_distrib_arb}), then
@@ -403,7 +418,7 @@ The credal set $\M_{mass}$ is different from $\M_{robust}$ as its bounds do not 
 \subsection{Copulas applied to belief functions}
 Another way of joining credal sets with a copula is by directly applying the copula to their lower envelope $\low_i$ for every event:
 \begin{eqnarray}\label{eq:copula_on_lower_proba}
-    \M_{agg} = \{P~|~\forall A_i\in\X_i, P(A_1,\dots, A_n)\geqslant C(\low_1(A_1), \dots, \low_n(A_n)\}
+    \M_{agg} = \{P~|~\forall A_i\subseteq\X_i, P(A_1,\dots, A_n)\geqslant C(\low_1(A_1), \dots, \low_n(A_n)\}
 \end{eqnarray}
 
 The constraints on this set only occur on the product space $\X_1\tdt \X_n$, contrary to $\M_{mass}$. We note $\M_{agg}$ this credal set as it uses the copula as an aggregation operator only, without conserving the meaning associated to copulas by Sklar's theorem. In this regard, $\M_{agg}$ has less meaning than $\M_{robust}$ or $\M_{mass}$, but presents the advantage of being easier to compute than those joint credal sets. Figure \ref{fig:meaning_computation} sums up the performances of the different methods in terms of computation cost and meaningfulness.
@@ -476,9 +491,9 @@ Conversely, no lower probability $\low_C$ obtained using \ref{eq:copula_on_lower
     \end{eqnarray*}
     Let $\M_i$ be marginals credal sets such that $\low_i$ are \textit{precise} probabilities, and that:
     \begin{eqnarray*}
-        \forall i, \exists A_i\in\X_i, \low_i(A_i)=u_i
+        \forall i,~\exists A_i\in\X_i,~\low_i(A_i)=u_i
     \end{eqnarray*}
-    Suppose that $\M_{agg}(C, \M_i)$ avoids sure loss, \ie there is a probability $P$ such that $P\geqslant\low_C$. Let $S$ be a collection of disjoint cylindrical sets in $\X$ covering the complementary event $(A_1\tdt A_n)^C$ of $(A_1\tdt A_n)$. $S$ is defined so that $(A_1\tdt A_n)^C=\bigsqcup_{s\in S}s$.
+    Suppose that $\M_{agg}(C, \M_i)$ avoids sure loss, \ie there is a probability $P$ such that $P\geqslant\low_C$. Let $S$ be a collection of disjoint cylindrical sets of $\X$ covering the complementary event $(A_1\tdt A_n)^C$ of $(A_1\tdt A_n)$. $S$ is defined so that $(A_1\tdt A_n)^C=\bigsqcup_{s\in S}s$.
     Then,
     \begin{eqnarray*}
         P(\X) &=& P\left(\left(A_1\tdt A_n\right)\bigsqcup\left(A_1\tdt A_n\right)^C\right)\\
@@ -497,9 +512,9 @@ Conversely, no lower probability $\low_C$ obtained using \ref{eq:copula_on_lower
 \end{proof}
 
 \section{Inclusions between joint credal sets}
-\comroman{Copula directionnaly convex concave, small results from IJAR}
+\comroman{small results from IJAR}
 \subsection{Product copula}\label{subsection:product_copula}
-In this section, we will consider the case of the product copula $C_\Pi$, representing independence between variables. Using this copula in the robust approach defined by equation (\ref{eq:robust_set}) is referred as the strong product in \cite{kacprzyk_factorisation_2010}. Let us denote $\low_{robust}$ the infimum of $\M_{robust}(C_\Pi, \M_i)$ and $\mathcal{S}$ the set from which $\M_{robust}$ is computed (eq. \ref{eq:robust_ancestor}) .
+In this section, we will consider the case of the product copula $C_\Pi$, representing independence between variables. Using this copula in the robust approach defined by equation (\ref{eq:robust_set}) is referred as the strong product in \cite{kacprzyk_factorisation_2010}. Let us denote $\low_{robust}$ the infimum of $\M_{robust}(C_\Pi, \M_i)$ and $\mathcal{S}$ the set from which $\M_{robust}$ is computed (eq. \ref{eq:robust_ancestor}).
 For cylindrical sets $(A_1, \dots, A_n)$ of $\X$, it holds that:
 \begin{eqnarray*}
     \low_{robust}(A_1\tdt A_n) &=& \inf\{P(A_1\tdt A_n)~|~P\in\mathcal{S}\}\\
@@ -540,12 +555,12 @@ In the case of the product copula $C_\Pi$, the arbitrary orders on the marginal 
     which concludes the proof.
 \end{proof}
 
-The mass $m_\times$ corresponds to the notion of random set independence presented in \cite{couso_survey_2000}. Let $Bel_\times$ be the belief function associated to $m_\times$, and $\forall i\in[1,n], Bel_i$ the mass function associated to $m_i$. Then for cylindrical sets $(A_1, \dots, A_n)$ of $\X$, it holds that:
+The mass $m_\times$ corresponds to the notion of random set independence presented in \cite{couso_survey_2000}. Let $\mathrm{Bel}_\times$ be the belief function associated to $m_\times$, and $\forall i\in[1,n], \mathrm{Bel}_i$ the mass function associated to $m_i$. Then for cylindrical sets $(A_1, \dots, A_n)$ of $\X$, it holds that:
 \begin{eqnarray}
-    Bel_\times(A_1\tdt A_n) &=& \sum_{(a^1\tdt a^n)\subseteq (A_1, \dots, A_n)}m_\times(a^1\tdt a^n)\nonumber\\
+    \mathrm{Bel}_\times(A_1\tdt A_n) &=& \sum_{(a^1\tdt a^n)\subseteq (A_1, \dots, A_n)}m_\times(a^1\tdt a^n)\nonumber\\
     &=& \sum_{(a^1\tdt a^n)\subseteq (A_1, \dots, A_n)}m_1(a_1)\dots m_n(a^n)\nonumber\\
     &=& (\sum_{a^1\subseteq A_1}m_1(a^1))\dots(\sum_{a^n\subseteq A_n}m_n(a^n))\nonumber\\
-    &=& Bel_1(A_1)\dots Bel_n(A_n)
+    &=& \mathrm{Bel}_1(A_1)\dots \mathrm{Bel}_n(A_n)
 \end{eqnarray}
 
 This means that in the case of the product copula $C_\Pi$ with marginals being belief functions, $\M_{robust},~\M_{mass}$ and $\M_{agg}$ all coincide on cylindrical sets. Thus,
@@ -554,17 +569,17 @@ This means that in the case of the product copula $C_\Pi$ with marginals being b
 \end{eqnarray*}
 
 \subsection{Natural ordering of necessity functions}
-Necessity functions $Nec$, also called minitive belief functions, are a special type of belief function verify $Nec(A\cap B) =\min(Nec(A), Nec(B))$ for all events $A, B$ in their domain of definition. In the multivariate case, when a belief is only defined on cylindrical sets, then the minitive property becomes:
+Necessity functions $\mathrm{Nec}$, also called minitive belief functions, are a special type of belief function verify $\mathrm{Nec}(A\cap B) =\min(\mathrm{Nec}(A), \mathrm{Nec}(B))$ for all events $A, B$ in their domain of definition. In the multivariate case, when a belief is only defined on cylindrical sets, then the minitive property becomes:
 \begin{eqnarray}
-    &&\forall (A_1\tdt A_n)\in\X, (B_1\tdt B_n)\in\X,\nonumber\\
-    &&Nec(A_1\cap B_1,\dots, A_n\cap B_n) = \min_{(S_1,\dots,S_n)\in\Pi_i\{A_i,B_i\}}(Nec(S_1, \dots, S_n))
+    &&\forall (A_1\tdt A_n)\subseteq\X, (B_1\tdt B_n)\subseteq\X,\nonumber\\
+    &&\mathrm{Nec}(A_1\cap B_1,\dots, A_n\cap B_n) = \min_{(S_1,\dots,S_n)\in\Pi_i\{A_i,B_i\}}(\mathrm{Nec}(S_1, \dots, S_n))
 \end{eqnarray}
 In \cite{schmelzer_joint_2015}, the author showed that in order to describe the relation between a multivariate belief function and its marginals, in the bivariate case, it is necessary to use a family of sub-copulas (one copula for each tuple of increasing family of events).
 
 \begin{theorem}[Sklar's theorem for belief functions \cite{schmelzer_joint_2015}]\label{theorem:sklar_belief}
-    Let $Bel:\X_1\times\X_2\rightarrow[0,1]$ be a bivariate belief function and let $Bel_1$ and $Bel_2$ denote its marginals over $\X_1$ and $\X_2$ respectively. Furthermore, let $\mathcal{I}_1$ and $\mathcal{I}_2$ denote increasing families of subsets of $\X_1$ and $\X_2$. Then there exists a unique subcopula $C^{\mathcal{I}_1,\mathcal{I}_2}$ on  $Bel_1(\mathcal{I}_1)\times Bel_2(\mathcal{I}_2)$ such that:
+    Let $\mathrm{Bel}:2^{\X_1}\times2^{\X_2}\rightarrow[0,1]$ be a bivariate belief function and let $\mathrm{Bel}_1$ and $\mathrm{Bel}_2$ denote its marginals over $2^{\X_1}$ and $2^{\X_2}$ respectively. Furthermore, let $\mathcal{I}_1$ and $\mathcal{I}_2$ denote increasing families of subsets of $\X_1$ and $\X_2$. Then there exists a unique subcopula $C^{\mathcal{I}_1,\mathcal{I}_2}$ on  $\mathrm{Bel}_1(\mathcal{I}_1)\times \mathrm{Bel}_2(\mathcal{I}_2)$ such that:
     \begin{eqnarray}
-        Bel(L_1, L_2) = C^{\mathcal{I}_1,\mathcal{I}_2}(Bel_1(L_1), Bel_Y(L_2))
+        \mathrm{Bel}(L_1, L_2) = C^{\mathcal{I}_1,\mathcal{I}_2}(\mathrm{Bel}_1(L_1), \mathrm{Bel}_Y(L_2))
     \end{eqnarray}
     for all $L_1\in\mathcal{I}_1,L_2\in\mathcal{I}_2$.
 \end{theorem}
@@ -572,24 +587,24 @@ For the reverse to be true, it is necessary that $\X_1\in\mathcal{I}_1, \X_2\in\
 
 Necessity functions are completely determined by their focal sets which form an increasing family of events. Thus by applying Sklar's theorem for belief functions (theorem \ref{theorem:sklar_belief}), it holds that joining two necessity functions with a copula $C$ as in (\ref{eq:copula_on_lower_proba}) yields a bivariate belief function (which is not necessarily a necessity function):
 \begin{equation}
-    Bel = C(Nec_1, Nec_2)\label{eq:sklar_on_necessity}
+    \mathrm{Bel} = C(\mathrm{Nec}_1, \mathrm{Nec}_2)\label{eq:sklar_on_necessity}
 \end{equation}
-where $Nec_1$ and $Nec_2$ are the marginal necessity functions. The proof of those results where shown in \cite{schmelzer_joint_2015,schmelzer_sklars_2015}. In the following, we will consider that the focal sets $a^i$ of a necessity functions $Nec_i$ are already ranked using the natural ordering $\preceq_i$:
+where $\mathrm{Nec}_1$ and $\mathrm{Nec}_2$ are the marginal necessity functions. The proof of those results where shown in \cite{schmelzer_joint_2015,schmelzer_sklars_2015}. In the following, we will consider that the focal sets $a^i$ of a necessity functions $\mathrm{Nec}_i$ are already ranked using the natural ordering $\preceq_i$:
 \begin{eqnarray}
     \forall (k,j)\in[1, N_i]^2,~k\leqslant j ~\Leftrightarrow ~ a^i_k \preceq_i a^i_j ~\Leftrightarrow ~ a^i_k\subseteq a^i_j
 \end{eqnarray}
-Given two marginal necessity functions $Nec_1, Nec_2$ and a copula $C$, joining them using the copula $C$ as in (\ref{eq:sklar_on_necessity}) or using the bivariate mass function as in (\ref{eq:joint_mass}) with the natural inclusion ordering yields the same bivariate belief function $Bel$.
+Given two marginal necessity functions $\mathrm{Nec}_1, \mathrm{Nec}_2$ and a copula $C$, joining them using the copula $C$ as in (\ref{eq:sklar_on_necessity}) or using the bivariate mass function as in (\ref{eq:joint_mass}) with the natural inclusion ordering yields the same bivariate belief function $\mathrm{Bel}$.
 
 \begin{proof}
-    If we denote by $Bel_\times$ the belief function defined in (\ref{eq:joint_mass}) where the ordering is the inclusion ordering $\preceq_i$ for $i\in[1,2]$. For convenience and with respects to the notations of equation \ref{eq:hvolume}, we note: $u^i_k=\sum_{j=0}^{k}m_i(a_j^i)$ and consider that $a^i_0=\emptyset$.
-    For all focal elements $a_k^1$ of $Nec_1$ and $a^2_j$ of $Nec_2$, it holds that:
+    If we denote by $\mathrm{Bel}_\times$ the belief function defined in (\ref{eq:joint_mass}) where the ordering is the inclusion ordering $\preceq_i$ for $i\in[1,2]$. For convenience and with respects to the notations of equation \ref{eq:hvolume}, we note: $u^i_k=\sum_{j=0}^{k}m_i(a_j^i)$ and consider that $a^i_0=\emptyset$.
+    For all focal elements $a_k^1$ of $\mathrm{Nec}_1$ and $a^2_j$ of $\mathrm{Nec}_2$, it holds that:
     \begin{eqnarray*}
-        Bel_\times(a^1_k, a^2_j) &=& \sum_{a^1_p\subseteq a_k^1}\sum_{a^2_q\subseteq a_j^2}m_\times(a^1_p, a^2_q) = \sum_{p=1}^i\sum_{q=1}^j m_\times(a^1_p, a^2_q)\\
-        &=&\sum_{p=1}^k\sum_{q=1}^j (C(u^1_p, u^2_q) + C(u^1_{p-1}, u^2_{q-1}) \\
-        &&- C(u^1_{p-1}, u^2_{q}) - C(u^1_{p}, u^2_{q-1}))\\
+        \mathrm{Bel}_\times(a^1_k, a^2_j) &=& \sum_{a^1_p\subseteq a_k^1}\sum_{a^2_q\subseteq a_j^2}m_\times(a^1_p, a^2_q) = \sum_{p=1}^i\sum_{q=1}^j m_\times(a^1_p, a^2_q)\\
+        &=&\sum_{p=1}^k\sum_{q=1}^j (~C(u^1_p, u^2_q) + C(u^1_{p-1}, u^2_{q-1}) \\
+        &&- C(u^1_{p-1}, u^2_{q}) - C(u^1_{p}, u^2_{q-1})~)\\
         &=&\sum_{p=1}^k\sum_{q=1}^jC(u^1_p, u^2_q) + \sum_{p=0}^{k-1}\sum_{q=0}^{j-1}C(u^1_p, u^2_q) \\
         &&- \sum_{p=0}^{k-1}\sum_{q=1}^jC(u^1_p, u^2_q) - \sum_{p=1}^k\sum_{q=0}^{j-1}C(u^1_p, u^2_q)\\
-        &=& C(u^1_k, u^2_j) = C\left(Nec_1(a_k^1), Nec_2(a_j^2)\right)\\
+        &=& C(u^1_k, u^2_j) = C\left(\mathrm{Nec}_1(a_k^1), \mathrm{Nec}_2(a_j^2)\right)\\
     \end{eqnarray*}
     This is the case for necessity function but not in general as:
     \begin{eqnarray*}
@@ -597,9 +612,9 @@ Given two marginal necessity functions $Nec_1, Nec_2$ and a copula $C$, joining 
     \end{eqnarray*}
 \end{proof}
 
-The same result holds for $n$ marginals, not covered in \cite{schmelzer_sklars_2015}. For every cylindrical set $(A_1, \dots, A_n)\in\X$:
+The same result holds for $n$ marginals, not covered in \cite{schmelzer_sklars_2015}. For every cylindrical set $(A_1, \dots, A_n)\subseteq\X$:
 \begin{eqnarray}
-    Bel_\times(A_1\tdt A_n) = C\left(Nec_1(A_1), \dots, Nec_n(A_n)\right)
+    \mathrm{Bel}_\times(A_1\tdt A_n) = C\left(\mathrm{Nec}_1(A_1), \dots, \mathrm{Nec}_n(A_n)\right)
 \end{eqnarray}
 
 \begin{proof}
@@ -630,7 +645,7 @@ Without further assumptions, there is no inclusion relations between $\M_{robust
     \end{cases}
     \end{eqnarray*}
     
-    For $i\in\{1,2\}$, $\pi_i$ generates a necessity measure $Nec_i$, a possibility measure $\Pi_i$ and a credal set $\M_i$. Let $P_1$ and $P_2$ be two probabilities respectively included in $\M_1$ and $\M_2$,  whose values are indicated in Table \ref{tab:proba_distrib_1}. 
+    For $i\in\{1,2\}$, $\pi_i$ generates a necessity measure $\mathrm{Nec}_i$, a possibility measure $\Pi_i$ and a credal set $\M_i$. Let $P_1$ and $P_2$ be two probabilities respectively included in $\M_1$ and $\M_2$,  whose values are indicated in Table \ref{tab:proba_distrib_1}. 
     
     \begin{table}[!ht]
         \centering
@@ -638,7 +653,7 @@ Without further assumptions, there is no inclusion relations between $\M_{robust
             \hline
             $\X_1$ & $x^1_1$ & $x^1_2$\\
             \hline\hline
-            $Nec_1$ & 0 & 0.9\\
+            $\mathrm{Nec}_1$ & 0 & 0.9\\
             \hline
             $P_1$  & 0.1 & 0.9\\
             \hline
@@ -650,7 +665,7 @@ Without further assumptions, there is no inclusion relations between $\M_{robust
             \hline
             $\X_2$ & $x^2_1$ & $x^2_2$\\
             \hline\hline
-            $Nec_2$ & 0.9 & 0\\
+            $\mathrm{Nec}_2$ & 0.9 & 0\\
             \hline
             $P_2$  & 0.9 & 0.1\\
             \hline
@@ -661,9 +676,9 @@ Without further assumptions, there is no inclusion relations between $\M_{robust
         \label{tab:proba_distrib_1}
     \end{table}
     
-    We first consider here the Minimum copula $C_M(u,v)=\min(u,v)$. After joining $P_1$ and $P_2$ with $C_M$ to obtain a joint probability $P_\times$, let us compare its value with the value of the bivariate necessity function $C_M(Nec_1, Nec_2)$ on the same event $\{x_2\}\times\{y_1\}$.
+    We first consider here the Minimum copula $C_M(u,v)=\min(u,v)$. After joining $P_1$ and $P_2$ with $C_M$ to obtain a joint probability $P_\times$, let us compare its value with the value of the bivariate necessity function $C_M(\mathrm{Nec}_1, \mathrm{Nec}_2)$ on the same event $\{x_2\}\times\{y_1\}$.
     \begin{eqnarray*}
-        Bel_\times(\{x^1_2\}\times\{x^2_1\}) &=& C_M\left(Nec_1(\{x^1_2\}), Nec_2(\{x^2_1\})\right)\\
+        \mathrm{Bel}_\times(\{x^1_2\}\times\{x^2_1\}) &=& C_M\left(\mathrm{Nec}_1(\{x^1_2\}), \mathrm{Nec}_2(\{x^2_1\})\right)\\
         &=& \min(0.9,~0.9) = 0.9\\
         P_\times(\{x^1_2\}\times\{x^2_1\}) &=& C_M(P_1(\X_1), P_2(\{x^2_1\})) - C_M(P_1(\{x^1_1\}),P_2(x^2_1))\\
         &=& \min(1,~0.9) - \min(0.1,~0.9) = 0.8
@@ -673,7 +688,7 @@ Without further assumptions, there is no inclusion relations between $\M_{robust
     
     Let us now compare the lower bound of $\underline{P}$ of $\M_{robust}$ with that of $\M_{agg}$ but considering the \L ukasiewicz copula $C_L(u,v)=\max(u+v-1,0)$:
     \begin{eqnarray*}
-        Bel_\times(\{x^1_2\}\times\{x^2_1\}) &=& C_L(Nec_1(\{x^1_2\}), Nec_2(\{x^2_1\}))\\
+        \mathrm{Bel}_\times(\{x^1_2\}\times\{x^2_1\}) &=& C_L(\mathrm{Nec}_1(\{x^1_2\}), \mathrm{Nec}_2(\{x^2_1\}))\\
         &=& \max(0,~0.9 + 0.9 - 1) = 0.8\\
         \low(\{x^1_2\}\times\{x^2_1\}) &=& \inf_{P_1\in\M_1, P_2\in\M_2}\{C_L(P_1(\{\X_1\}),~P_2(\{x^2_1\})) - C_L(P_1(\{x^1_1\}),~P_2(\{x^2_1\}))\}\\
         &=& \inf_{P_1\in\M_1, P_2\in\M_2}\{\max(0,~P_1(\X_1) + P_2(\{x^2_1\}) - 1)\\
@@ -697,11 +712,11 @@ Consider the Clayton copula for $\theta=2$ and $n=2$:
 \begin{eqnarray*}
     \forall (u_1,u_2)\in\mathbb{R}^2\backslash(0,0), ~C(u_1,u_2)=\frac{u_1u_2}{\sqrt{{u_1}^2+{u_2}^2-{u_2}^2{u_2}^2}}
 \end{eqnarray*}
-and $C(0,0)=0$ by continuity (we simplified the expression of the copula given in table \ref{tab:familiy_of_copula}). Let us consider $\X_1=\{x^1_1,x^1_2,x^1_3\}$, $\X_2=\{x^2_1,x^2_2,x^2_3\}$ and two possibility distributions $\pi_1$, $\pi_2$ over $\X_1$ and $\X_2$ respectively:
+and $C(0,0)=0$ by continuity (we simplified the expression of the copula given in table \ref{tab:familiy_of_copula}). Let us consider $\X_1=\{x^1_1,\, x^1_2,\, x^1_3\}$, $\X_2=\{x^2_1,\, x^2_2,\, x^2_3\}$ and two possibility distributions $\pi_1$, $\pi_2$ over $\X_1$ and $\X_2$ respectively:
 \begin{eqnarray*}
     \pi_1(x^1_1)=\pi_2(x^2_1)=0.2 \qquad \pi_1(x^1_2)=\pi_2(x^2_2)=1 \qquad \pi_1(x^1_3)=\pi_2(x^2_3)=0.7 
 \end{eqnarray*}
-and the marginal credal sets $\M(\pi_1)$, $\M(\pi_2)$ they induce. We note the focal sets as $a^1_1=\{x^1_2\},~a^1_2=\{x^1_2, x^1_3\},~a^1_3=\{x^1_1,x^1_2,x^1_3\}$ and $a^2_1=\{x^2_2\},~a^2_2=\{x^2_2, x^2_3\},~a^2_3=\{x^2_1, x^2_2, x^2_3\}$. By joining $\M(\pi_1)$ and $\M(\pi_2)$ using $C$, we can obtain the lower probability $\low$ of $\M_{robust}$ using equation \ref{eq:robust_set}, and a total of 6 belief functions $Bel^{\preceq_1,\preceq_2}_\times$ using equation \ref{eq:joint_mass} depending on the orders $\preceq_1, \preceq_2$ used to join the marginal masses. For instance if $\preceq_1$ is such that $a^1_3\preceq_1 a^1_1 \preceq_1 a^1_2$ and $\preceq_2$ such that $a^2_1 \preceq_2 a^2_2 \preceq_2 a^2_3$, then the bivariate mass $m_\times$ would be defined as follows:
+and the marginal credal sets $\M(\pi_1)$, $\M(\pi_2)$ they induce. We note the focal sets as $a^1_1=\{x^1_2\},~a^1_2=\{x^1_2,\, x^1_3\},~a^1_3=\{x^1_1,\,x^1_2,\,x^1_3\}$ and $a^2_1=\{x^2_2\},~a^2_2=\{x^2_2,\, x^2_3\},~a^2_3=\{x^2_1,\, x^2_2,\, x^2_3\}$. By joining $\M(\pi_1)$ and $\M(\pi_2)$ using $C$, we can obtain the lower probability $\low$ of $\M_{robust}$ using equation \ref{eq:robust_set}, and a total of 6 belief functions $\mathrm{Bel}^{\preceq_1,\preceq_2}_\times$ using equation \ref{eq:joint_mass} depending on the orders $\preceq_1, \preceq_2$ used to join the marginal masses. For instance if $\preceq_1$ is such that $a^1_3\preceq_1 a^1_1 \preceq_1 a^1_2$ and $\preceq_2$ such that $a^2_1 \preceq_2 a^2_2 \preceq_2 a^2_3$, then the bivariate mass $m_\times$ would be defined as follows:
 \begin{eqnarray*}
     m_\times(a^1_3\times a^2_1) &=& C(m_1(a^1_3), m_2(a^2_1))\\
     m_\times(a^1_1\times a^2_1) &=& C(m_1(a^1_3)+m_1(a^1_1), m_2(a^2_1)) - C(m_1(a^1_3), m_2(a^2_1))\\
@@ -709,31 +724,36 @@ and the marginal credal sets $\M(\pi_1)$, $\M(\pi_2)$ they induce. We note the f
     &\dots&
 \end{eqnarray*}
 
-If we consider the two events $E_1=\{x^1_2\}\times\{x^2_2, x^2_3\}$ and $E_2=\{x^1_2,x^1_3\}\times\{x^2_2\}$, it is possible to show that $\low(E_1)=\low(E_2)\approx0.131$ (by symmetry of the problem) which is obtained for $P_1(x^1_1)=0, P_1(x^1_2)=0.3, P_1(x^1_3)=0.7, P_2(x^2_1)=0.2, P_2(x^2_2)=0.3, P_2(x^2_3)=0.5$ for $E_1$, and similarly with $P_1$ and $P_2$ reversed for $E_2$. Those values were estimated by running simulations, but their exact value can be computed by solving an optimization problem as $C$ is differentiable (although it is a bit tedious to compute). Then for all orders $\preceq_1,~\preceq_2$ on the focal sets of $\pi_1$ and $\pi_2$ it holds:
+If we consider the two events $E_1=\{x^1_2\}\times\{x^2_2,~x^2_3\}$ and $E_2=\{x^1_2,~x^1_3\}\times\{x^2_2\}$, it is possible to show that $\low(E_1)=\low(E_2)\approx0.131$ (by symmetry of the problem) which is obtained for:
+\begin{align*}
+    &P_1(x^1_1)=0, \qquad&P_1(x^1_2)=0.3, \qquad&P_1(x^1_3)=0.7,\\
+    &P_2(x^2_1)=0.2, \qquad&P_2(x^2_2)=0.3, \qquad&P_2(x^2_3)=0.5
+\end{align*}
+for $E_1$, and similarly with $P_1$ and $P_2$ reversed for $E_2$. Those values were estimated by running simulations, but their exact value can be computed by solving an optimization problem as $C$ is differentiable (although it is a bit tedious to compute). Then for all orders $\preceq_1,~\preceq_2$ on the focal sets of $\pi_1$ and $\pi_2$ it holds:
 
  \begin{align*}
     \begin{cases}
         \begin{split}
-            Bel_\times^{\preceq_1,\preceq_2}(E_1) \leqslant& \low(E_1)\\
-            Bel_\times^{\preceq_1,\preceq_2}(E_2) >& \low(E_2)
+            \mathrm{Bel}_\times^{\preceq_1,\preceq_2}(E_1) \leqslant& \low(E_1)\\
+            \mathrm{Bel}_\times^{\preceq_1,\preceq_2}(E_2) >& \low(E_2)
         \end{split}
     \end{cases}
     \qquad\text{ or }\qquad
     \begin{cases}
         \begin{split}
-            Bel_\times^{\preceq_1,\preceq_2}(E_1) >& \low(E_1)\\
-            Bel_\times^{\preceq_1,\preceq_2}(E_2) \leqslant& \low(E_2)
+            \mathrm{Bel}_\times^{\preceq_1,\preceq_2}(E_1) >& \low(E_1)\\
+            \mathrm{Bel}_\times^{\preceq_1,\preceq_2}(E_2) \leqslant& \low(E_2)
         \end{split}
     \end{cases}
 \end{align*}
 
-The table \ref{tab:beliefs_orders} shows a rounded value of $Bel^{\preceq_1,\preceq_2}_\times$ for all orders for events $E_1$, $E_2$.
+The table \ref{tab:beliefs_orders} shows a rounded value of $\mathrm{Bel}^{\preceq_1,\preceq_2}_\times$ for all orders for events $E_1$, $E_2$.
 
 \begin{table}[!ht]
 \centering
 \begin{tabular}{|c||c|c|c|}
 \hline
-$Bel^{\preceq_1,\preceq_2}_\times(\mathbf{E_1})$ & $a^2_3\preceq_2a^2_2\preceq_2a^2_1$ & $a^2_3\preceq_2a^2_1\preceq_2a^2_2$ & $a^2_2\preceq_2a^2_3\preceq_2a^2_1$ \\ \hline\hline
+$\mathrm{Bel}^{\preceq_1,\preceq_2}_\times(\mathbf{E_1})$ & $a^2_3\preceq_2a^2_2\preceq_2a^2_1$ & $a^2_3\preceq_2a^2_1\preceq_2a^2_2$ & $a^2_2\preceq_2a^2_3\preceq_2a^2_1$ \\ \hline\hline
 $a^1_3\preceq_1a^1_2\preceq_1a^1_1$ & 0.296 & 0.296 & 0.224 \\ \hline
 $a^1_3\preceq_1a^1_1\preceq_1a^1_2$ & 0.254 & 0.254 & 0.240 \\ \hline
 $a^1_2\preceq_1a^1_3\preceq_1a^1_1$ & 0.296 & 0.296 & 0.224 \\ \hline
@@ -746,7 +766,7 @@ $a^1_1\preceq_1a^1_2\preceq_1a^1_3$ & \textbf{0.131} & \textbf{0.131} & 0.279 \\
 
 \begin{tabular}{|c||c|c|c|}
 \hline
-$Bel^{\preceq_1,\preceq_2}_\times(\mathbf{E_1})$ & $a^2_1\preceq_2a^2_3\preceq_2a^2_2$ & $a^2_2\preceq_2a^2_1\preceq_2a^2_3$ & $a^2_1\preceq_2a^2_2\preceq_2a^2_3$ \\ \hline\hline
+$\mathrm{Bel}^{\preceq_1,\preceq_2}_\times(\mathbf{E_1})$ & $a^2_1\preceq_2a^2_3\preceq_2a^2_2$ & $a^2_2\preceq_2a^2_1\preceq_2a^2_3$ & $a^2_1\preceq_2a^2_2\preceq_2a^2_3$ \\ \hline\hline
 $a^1_3\preceq_1a^1_2\preceq_1a^1_1$ & 0.259 & 0.180 & 0.180 \\ \hline
 $a^1_3\preceq_1a^1_1\preceq_1a^1_2$ & 0.208 & 0.270 & 0.270 \\ \hline
 $a^1_2\preceq_1a^1_3\preceq_1a^1_1$ & 0.259 & 0.180 & 0.180 \\ \hline
@@ -759,7 +779,7 @@ $a^1_1\preceq_1a^1_2\preceq_1a^1_3$ & 0.251 & 0.293 & 0.293 \\ \hline
 
 \begin{tabular}{|c||c|c|c|}
 \hline
-$Bel^{\preceq_1,\preceq_2}_\times(\mathbf{E_2})$ & $a^2_3\preceq_2a^2_2\preceq_2a^2_1$ & $a^2_3\preceq_2a^2_1\preceq_2a^2_2$ & $a^2_2\preceq_2a^2_3\preceq_2a^2_1$ \\ \hline\hline
+$\mathrm{Bel}^{\preceq_1,\preceq_2}_\times(\mathbf{E_2})$ & $a^2_3\preceq_2a^2_2\preceq_2a^2_1$ & $a^2_3\preceq_2a^2_1\preceq_2a^2_2$ & $a^2_2\preceq_2a^2_3\preceq_2a^2_1$ \\ \hline\hline
 $a^1_3\preceq_2a^1_2\preceq_2a^1_1$ & 0.296 & 0.254 & 0.296 \\ \hline
 $a^1_3\preceq_1a^1_1\preceq_1a^1_2$ & 0.296 & 0.254 & 0.296 \\ \hline
 $a^1_2\preceq_1a^1_3\preceq_1a^1_1$ & 0.224 & 0.240 & 0.224 \\ \hline
@@ -772,7 +792,7 @@ $a^1_1\preceq_1a^1_2\preceq_1a^1_3$ & 0.180 & 0.270 & 0.180 \\ \hline
 
 \begin{tabular}{|c||c|c|c|}
 \hline
-$Bel^{\preceq_1,\preceq_2}_\times(\mathbf{E_2})$ & $a^2_1\preceq_2a^2_3\preceq_2a^2_2$ & $a^2_2\preceq_2a^2_1\preceq_2a^2_3$ & $a^2_1\preceq_2a^2_2\preceq_2a^2_3$ \\ \hline\hline
+$\mathrm{Bel}^{\preceq_1,\preceq_2}_\times(\mathbf{E_2})$ & $a^2_1\preceq_2a^2_3\preceq_2a^2_2$ & $a^2_2\preceq_2a^2_1\preceq_2a^2_3$ & $a^2_1\preceq_2a^2_2\preceq_2a^2_3$ \\ \hline\hline
 $a^1_3\preceq_2a^1_2\preceq_2a^1_1$ & \textbf{0.131} & 0.291 & \textbf{0.131} \\ \hline
 $a^1_3\preceq_1a^1_1\preceq_1a^1_2$ & \textbf{0.131} & 0.291 & \textbf{0.131} \\ \hline
 $a^1_2\preceq_1a^1_3\preceq_1a^1_1$ & 0.279 & 0.216 & 0.279 \\ \hline
@@ -781,11 +801,11 @@ $a^1_2\preceq_1a^1_1\preceq_1a^1_3$ & 0.293 & 0.218 & 0.293 \\ \hline
 $a^1_1\preceq_1a^1_2\preceq_1a^1_3$ & 0.293 & 0.218 & 0.293 \\ \hline
 \end{tabular}
 
-\caption{Value of $Bel^{\preceq_1,\preceq_2}_\times$ for $E_1$ and $E_2$. Values in bald font represent the minimal value of the different belief functions, where $Bel^{\preceq_1,\preceq_2}_\times(E)=\low(E)$.}
+\caption{Value of $\mathrm{Bel}^{\preceq_1,\preceq_2}_\times$ for $E_1$ and $E_2$ depending on the arbitrary orders $\preceq_1,~\preceq_2$. Values in bald font represent the minimal value attained by the different belief functions, where $\mathrm{Bel}^{\preceq_1,\preceq_2}_\times(E)=\low(E)$.}
 \label{tab:beliefs_orders}
 \end{table}
 
-Answering the question ``if an order allowing $\M_{robust}\subseteq\M_{mass}$ exists, is it possible to explicit it in advance?'' is not as trivial. Indeed the order will be dependent of the copula. We ran simulations where we created different possibility distributions (for $card(\X_1)=card(\X_2)\in\{3,4\}$), sampled the marginal credal sets and joined them with a copula $C$ to get $\inf\M_{robust}$ and compared its values with the one of $Bel^{\preceq_1,\preceq_2}$.
+Answering the question ``if an order allowing $\M_{robust}\subseteq\M_{mass}$ exists, is it possible to explicit it in advance?'' is not as trivial. Indeed the order will be dependent of the copula. We ran simulations where we created different possibility distributions (for $card(\X_1)=card(\X_2)\in\{3,4\}$), sampled the marginal credal sets and joined them with a copula $C$ to get $\inf\M_{robust}$ and compared its values with the one of $\mathrm{Bel}^{\preceq_1,\preceq_2}$.
 \begin{itemize}
 	\item When running the simulation with the lower Fréchet–Hoeffding copula $C(u,v)=\max(0,u+v-1)$, we observe that a specific couple of order always works: $\preceq_1:~a^1_3\preceq_1a^1_2\preceq_1a^1_1$ and $\preceq_2~a^2_3\preceq_2a^2_2\preceq_2a^2_1$, while other orders do not permit the inclusion $\M_{robust}\subseteq\M_{mass}$ all the time.
 \end{itemize}

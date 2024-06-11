@@ -14,6 +14,7 @@
 \usepackage{amssymb}
 \usepackage{amsfonts}
 \usepackage{amsthm}
+\usepackage{dsfont} % For characteristic function (\mathds{1}, similar to mathbb 1 but)
 
 \usepackage[margin=2.5cm]{geometry}
 \usepackage{graphicx}
@@ -23,6 +24,7 @@
 
 \usepackage{xcolor}
 \usepackage{xspace} % For \onedot command
+\usepackage{xr}  % For crossreferencing between chapters
 
 \usepackage[acronym, toc]{glossaries}
 \usepackage{breakcites} % Citations over multiple lines
@@ -69,7 +71,9 @@
 \def\wrt{w.r.t\onedot} \def\dof{d.o.f\onedot}
 \def\iid{i.i.d\onedot} \def\wolog{w.l.o.g\onedot}
 \def\etal{\emph{et al}\onedot}
+
 \makeatother
+
 %========================= Glossary ====================================
 
 \input{Misc/acronyms_glossary}
