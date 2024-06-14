@@ -29,11 +29,11 @@ Link with fuzzy sets. A simple and useful model, but with limited expressiveness
 In the following sections, we will work with multiple random variables. Let $n\in\mathbb{N}^*$ be the number of random variables considered. A copula is a multivariate distribution function $C:[0,1]^{n}\rightarrow [0,1]$ whose marginals follow uniform distributions on $[0,1]$. It can be interpreted as a joint cumulative distribution of $n$ random variables. For all $i\in\opi 1,n\cli $, we will refer to $u_i\in[0,1]$ as its $i$-th variable (or marginal). A copula verifies a number of properties:
 \begin{align}
     &\text{if }\exists j\in\opi 1,n\cli  \text{ \st }~u_j=0, \text{ then }C(u_1,\dots,u_j,\dots,u_n)=0\label{eq:zero_copula}\\
-    &\forall i\in\opi 1,n\cli ,~C(1,1,\dots,1,u_i,1,\dots,1)=u_i\\
+    &\forall i\in\opi 1,n\cli ,~C(1,1,\dots,1,u_i,1,\dots,1)=u_i\label{eq:copula_ones}\\
     &\forall (v_1,\dots,v_n)\in[0,1]^n \text{ \st }~\forall i\in\in\opi 1,n\cli ,~v_i\geqslant u_i\nonumber\\
     &\sum_{(w_1, \dots, w_n)\in\Pi_{i=1}^n\{u_i, v_i\}}(-1)^{|\{i~|~w_i=u_i\}|}C(w_1, \dots, w_n)\geqslant 0\label{eq:cop_hvolume}
 \end{align}
-where $\Pi_{i=1}^n$ is the Cartesian product of $n$ elements, meaning that $(w_1, \dots, w_n)\in\Pi_{i=1}^n\{u_i, v_i\}$ is a tuple of $n$ elements, where each element is either $u_i$ or $v_i$. Additionally, $|\{i~|~w_i=u_i\}|$ refers to the cardinal of the set $\{i~|~w_i=u_i\}$. The first term in equation \ref{eq:cop_hvolume} is also called H-volume or hyper-volume. It is used to compute joint probability mass assignments in the precise case (and also in the imprecise case, see section \ref{sec:joint_mass}). In the rest of this thesis, we will use the following notation to refer to the $H$-volume:
+where $\Pi_{i=1}^n$ is the Cartesian product of $n$ elements, meaning that $(w_1, \dots, w_n)\in\Pi_{i=1}^n\{u_i, v_i\}$ is a tuple of $n$ elements, where each element is either $u_i$ or $v_i$. Additionally, $|\{i~|~w_i=u_i\}|$ refers to the cardinal of the set $\{i~|~w_i=u_i\}$. The first term in equation \eqref{eq:cop_hvolume} is also called H-volume or hyper-volume. It is used to compute joint probability mass assignments in the precise case (and also in the imprecise case, see section \ref{sec:joint_mass}). In the rest of this thesis, we will use the following notation to refer to the $H$-volume:
 \begin{eqnarray}\label{eq:hvolume}
     &&\forall i\in\opi 1,n\cli ,~\forall~0\leqslant u_i \leqslant v_i \leqslant 1,\nonumber\\
     &&H^{v_1,\dots v_n}_{u_1,\dots,u_n}=\sum_{(w_1, \dots, w_n)\in\Pi_{i=1}^n\{u_i, v_i\}}(-1)^{|\{i~|~w_i=u_i\}|}C(w_1, \dots, w_n)
@@ -50,7 +50,7 @@ A central theorem regarding copulas is Sklar's theorem \cite{sklar_fonctions_195
     The reverse is also true: any copula applied to univariate cumulative distribution functions yields a multivariate cumulative distribution function whose marginals are the univariate CDFs.
 \end{theorem}
 
-It follows from (\ref{eq:cop_hvolume}) that a copula is a component-wise increasing mapping. All copulas are dominating and dominated by two bounds (called lower and upper Fréchet–Hoeffding)
+It follows from \eqref{eq:cop_hvolume} that a copula is a component-wise increasing mapping. All copulas are dominating and dominated by two bounds (called lower and upper Fréchet–Hoeffding)
 \begin{align}
     &\forall u_i \in [0,1]^n,\nonumber\\
     &\max(0, 1-n+\sum_{i=1}^n u_i) \leqslant C(u_1,\dots,u_n) \leqslant \min(u_1, \dots, u_n)
@@ -274,7 +274,7 @@ The rest of this section will present some remarks and useful properties for D-c
 \end{proposition}
 
 \begin{proof}
-    Let $(u_1,\dots,u_n)\in[0,1]^n$, $(v_1,\dots,v_n)\in[0,1]^n$ \st $\forall i\in\opi1,n\cli$, $u_i+v_i\leqslant 1$. Let $i\in\opi1,n\cli$. Applying the definition of convexity (\ref{eq:convex_copula}) with $v_i=0$ yields:
+    Let $(u_1,\dots,u_n)\in[0,1]^n$, $(v_1,\dots,v_n)\in[0,1]^n$ \st $\forall i\in\opi1,n\cli$, $u_i+v_i\leqslant 1$. Let $i\in\opi1,n\cli$. Applying the definition of convexity \eqref{eq:convex_copula} with $v_i=0$ yields:
     \begin{eqnarray*}
         \forall t\in[0,1],~C(u_1,\dots,tu_i,\dots, u_n) \leqslant tC(u_1,\dots, u_n)
     \end{eqnarray*}
@@ -289,9 +289,9 @@ The rest of this section will present some remarks and useful properties for D-c
         C(u_1,\dots,u_i,\dots,u_n) + C(u_1,\dots,v_i,\dots,u_n) &\leqslant& C(u_1, \dots, w_i, \dots, u_n)\\
         &\leqslant& C(u_1, \dots, u_i+v_i, \dots, u_n)
     \end{eqnarray*}
-    which proves equation \ref{eq:convex_sum}.
+    which proves equation \eqref{eq:convex_sum}.
 
-    Let $w_i=u_i-v_i\in [0,1]$, clearly $w_i+v_i\leqslant1$. Using equation \ref{eq:convex_sum}, it holds that:
+    Let $w_i=u_i-v_i\in [0,1]$, clearly $w_i+v_i\leqslant1$. Using equation \eqref{eq:convex_sum}, it holds that:
     \begin{align*}
         &C(u_1,\dots,w_i,\dots,u_n) + C(u_1,\dots,v_i,\dots,u_n) &\leqslant~&C(u_1, \dots, w_i+v_i, \dots, u_n)\\
         \Leftrightarrow~ &C(u_1,\dots,w_i,\dots,u_n) &\leqslant~&C(u_1, \dots, w_i+v_i, \dots, u_n)\\
@@ -299,8 +299,20 @@ The rest of this section will present some remarks and useful properties for D-c
         \Leftrightarrow~ &C(u_1,\dots,u_i-v_i,\dots,u_n) &\leqslant~&C(u_1, \dots, u_i, \dots, u_n)\\
         &&&-C(u_1,\dots,v_i,\dots,u_n)
     \end{align*}
-    which proves equation \ref{eq:convex_diff}.
+    which proves equation \eqref{eq:convex_diff}.
 \end{proof} 
+
+\begin{proposition}
+    If $C$ is a D-convex copula, then it verifies for all $(u_1,\dots,u_n)\in[0,1]^n$, $(v_1,\dots,v_n)\in[0,1]^n$ \st $\forall i\in\opi1,n\cli$, $u_i-v_i\geqslant 0$:
+    \begin{eqnarray}
+        C(u_1-v_1,\dots,u_i-v_i,\dots,u_n-v_n)\leqslant& &H^{u_1,\dots,u_i,\dots,u_n}_{v_1,\dots,v_i,\dots,v_n}\label{eq:convex_diff_hvol}
+    \end{eqnarray}
+    where $H$ is the H-volume of $C$. The inequality is reversed for D-concave copulas.
+\end{proposition}
+
+\begin{proof}
+    The result is straightforward by induction using equation \eqref{eq:convex_diff}.
+\end{proof}
 
 \section{Sampling from a Copula}
 As a copula represent the CDF of a multivariate random variable, it is possible to sample from it. This section details a method for sampling from copulas in general, and a special method for sampling from copulas in the family of Gaussian copulas. Given a copula $C$, and two CDF $F_X$ and $F_Y$, a method to generate a pair of observations $(x, y)$ from a joint CDF $C(F_X, F_Y)$ is the following:
@@ -445,7 +457,7 @@ The constraints on this set only occur on the product space $\X_1\tdt \X_n$, con
     \label{fig:meaning_computation}
 \end{figure}
 
-In general, applying the copula directly to the lower probabilities as in (\ref{eq:copula_on_lower_proba}) does not produce a coherent lower probability that avoid sure loss. For instance, let us consider $\X_1 = \X_2 = \{1, 2\}$, two lower previsions $\low_1$ and $\low_2$ such that $\low_1(\{1\}) = \low_1(\{2\}) = \low_2(\{1\}) = \low_2(\{2\}) = 0.5$. Joining those two lower probabilities using the minimum copula $C(u,v)=\min(u,v)$ gives a mapping $\low$ which is neither coherent nor avoid sure loss (Table \ref{tab:non_coherent_lower}).
+In general, applying the copula directly to the lower probabilities as in \eqref{eq:copula_on_lower_proba} does not produce a coherent lower probability that avoid sure loss. For instance, let us consider $\X_1 = \X_2 = \{1, 2\}$, two lower previsions $\low_1$ and $\low_2$ such that $\low_1(\{1\}) = \low_1(\{2\}) = \low_2(\{1\}) = \low_2(\{2\}) = 0.5$. Joining those two lower probabilities using the minimum copula $C(u,v)=\min(u,v)$ gives a mapping $\low$ which is neither coherent nor avoid sure loss (Table \ref{tab:non_coherent_lower}).
 
 \begin{table}[!ht]
     \centering
@@ -460,7 +472,7 @@ In general, applying the copula directly to the lower probabilities as in (\ref{
         \label{tab:non_coherent_lower}
 \end{table}
 
-In the special case of the product copula $C_\Pi$, the joint lower probability $\low_{C_\Pi}$ induced by (\ref{eq:copula_on_lower_proba}) avoids sure loss if its marginals also avoid sure loss. It follows that for all copulas $C$ dominated by the product copula (\ie $C_\Pi\geqslant C$), and for every $\M_i$ avoiding sure loss, $\M_{agg}(C, \M_i)$ is a non empty credal set.
+In the special case of the product copula $C_\Pi$, the joint lower probability $\low_{C_\Pi}$ induced by \eqref{eq:copula_on_lower_proba} avoids sure loss if its marginals also avoid sure loss. It follows that for all copulas $C$ dominated by the product copula (\ie $C_\Pi\geqslant C$), and for every $\M_i$ avoiding sure loss, $\M_{agg}(C, \M_i)$ is a non empty credal set.
 \begin{proof}
     For $i\in\{1,\dots,n\}$, let $\low_i$ be a lower probability avoiding sure lost, \ie whose credal set $\M_i$ contains at least one probability distribution $P_i$. Let us define a multivariate probability $P$ on every $(A_1\tdt A_n)\subseteq\X$ as:
     \begin{eqnarray*}
@@ -482,7 +494,7 @@ Let $C$ be a copula dominated by $C_\Pi$ (\ie $C_\Pi\geqslant C$), and $\low_C$ 
 which implies that $\M_{agg}(C_\Pi, \M_i)\subseteq \M_{agg}(C, \M_i)$.
 \end{proof}
 
-Conversely, no lower probability $\low_C$ obtained using \ref{eq:copula_on_lower_proba} with a copula $C$ strictly superior to the product copula by is guaranteed to avoid sure loss, it depends on the marginal credal sets $\low_i$.
+Conversely, no lower probability $\low_C$ obtained using \eqref{eq:copula_on_lower_proba} with a copula $C$ strictly superior to the product copula by is guaranteed to avoid sure loss, it depends on the marginal credal sets $\low_i$.
 
 \begin{proof}
     Let $C$ be a copula strictly superior to the product. Then there exists $(u_1,\dots,u_n)\in[0,1]^2$ such that:
@@ -514,7 +526,7 @@ Conversely, no lower probability $\low_C$ obtained using \ref{eq:copula_on_lower
 \section{Inclusions between joint credal sets}
 \comroman{small results from IJAR}
 \subsection{Product copula}\label{subsection:product_copula}
-In this section, we will consider the case of the product copula $C_\Pi$, representing independence between variables. Using this copula in the robust approach defined by equation (\ref{eq:robust_set}) is referred as the strong product in \cite{kacprzyk_factorisation_2010}. Let us denote $\low_{robust}$ the infimum of $\M_{robust}(C_\Pi, \M_i)$ and $\mathcal{S}$ the set from which $\M_{robust}$ is computed (eq. \ref{eq:robust_ancestor}).
+In this section, we will consider the case of the product copula $C_\Pi$, representing independence between variables. Using this copula in the robust approach defined by equation \eqref{eq:robust_set} is referred as the strong product in \cite{kacprzyk_factorisation_2010}. Let us denote $\low_{robust}$ the infimum of $\M_{robust}(C_\Pi, \M_i)$ and $\mathcal{S}$ the set from which $\M_{robust}$ is computed (eq. \eqref{eq:robust_ancestor}).
 For cylindrical sets $(A_1, \dots, A_n)$ of $\X$, it holds that:
 \begin{eqnarray*}
     \low_{robust}(A_1\tdt A_n) &=& \inf\{P(A_1\tdt A_n)~|~P\in\mathcal{S}\}\\
@@ -530,16 +542,16 @@ We can split the infimum of a product as a product of infima because we consider
 
 \comseb{Non, on ne peut pas dire ça. Enfin, on peut le dire étant donné ta déf de $\M_{robust}$, mais cette dernière ne revient pas à prendre le CH d'une application point à point de la copule: elle revient à prendre la CH une fois qu'on a projeté l'application point à point sur le sous-domaine des événements. Voir le Chat pour plus d'infos ;). Mais il faut effectivement revoir la déf de $\M_{robust}$.}
 
-\comroman{Je vois. Donc il faudrait définir $\M_{robust}$ uniquement comme dans l'équation \ref{eq:robust_ancestor}, et laisser tomber la contrainte de convexité si j'ai bien compris. Je t'en reparlerai lundi}
+\comroman{Je vois. Donc il faudrait définir $\M_{robust}$ uniquement comme dans l'équation \eqref{eq:robust_ancestor}, et laisser tomber la contrainte de convexité si j'ai bien compris. Je t'en reparlerai lundi}
 
-In the case of the product copula $C_\Pi$, the arbitrary orders on the marginal focal sets have no impact on the value of the joint mass $m_\times$ defined in \ref{eq:joint_mass}. If $a^1_{k_1},\dots,a^n_{k_n}$ is a focal set of $m_1,\dots,m_n$, then $m_\times$ is given by:
+In the case of the product copula $C_\Pi$, the arbitrary orders on the marginal focal sets have no impact on the value of the joint mass $m_\times$ defined in \eqref{eq:joint_mass}. If $a^1_{k_1},\dots,a^n_{k_n}$ is a focal set of $m_1,\dots,m_n$, then $m_\times$ is given by:
 \begin{eqnarray}\label{eq:joint_mass_product}
     m_\times(a^1_{k_1}\tdt a^n_{k_n}) = m_1(a^1_{k_1})\dots m_n(a^n_{k_n})
 \end{eqnarray}
 
 \begin{proof}
-    Equation \ref{eq:joint_mass_product} shows that the order on marginal focal sets does not matter in the case of the product copula. We thus show that equation \ref{eq:joint_mass_product} holds.
-    For simplicity and coherence with the notations of equation \ref{eq:hvolume}, we will note for all $i\in[0,n]$, $u^i=\sum_{k=0}^{k_i-1}m_i(a_k^i)$, $v^i_k=\sum_{k=0}^{k_i}m_i(a_k^i)$. $\Pi_{i=1}^n\{u_i, v_i\}$ will refer to the Cartesian product $\{u_1, v_1\}\times\{u_2, v_2\}\tdt\{u_n, v_n\}$ and we will note $C_\Pi$ and $H$ as the product copula and its H-volume regardless of their number of marginals. Those notations established, it holds that:
+    Equation \eqref{eq:joint_mass_product} shows that the order on marginal focal sets does not matter in the case of the product copula. We thus show that equation \eqref{eq:joint_mass_product} holds.
+    For simplicity and coherence with the notations of equation \eqref{eq:hvolume}, we will note for all $i\in[0,n]$, $u^i=\sum_{k=0}^{k_i-1}m_i(a_k^i)$, $v^i_k=\sum_{k=0}^{k_i}m_i(a_k^i)$. $\Pi_{i=1}^n\{u_i, v_i\}$ will refer to the Cartesian product $\{u_1, v_1\}\times\{u_2, v_2\}\tdt\{u_n, v_n\}$ and we will note $C_\Pi$ and $H$ as the product copula and its H-volume regardless of their number of marginals. Those notations established, it holds that:
     \begin{eqnarray*}
         m_\times(a^1_{k_1}\tdt a^{n}_{k_{n}}) &=& H_{u_1, \dots, u_{n}}^{v_1, \dots, v_{n}}\\
         &=&\sum_{\substack{(w_1, \dots, w_{n})\in\\\Pi_{i=1}^{n}\{u_i, v_i\}}}(-1)^{|\{k~|~w_k=u_k\}|}C_\Pi(w_1, \dots, w_{n})\\
@@ -568,7 +580,7 @@ This means that in the case of the product copula $C_\Pi$ with marginals being b
     \M_{mass}\subseteq\M_{agg}
 \end{eqnarray*}
 
-\subsection{Natural ordering of necessity functions}
+\subsection{Natural ordering of necessity functions}\label{subsec:necessity_functions}
 Necessity functions $\mathrm{Nec}$, also called minitive belief functions, are a special type of belief function verify $\mathrm{Nec}(A\cap B) =\min(\mathrm{Nec}(A), \mathrm{Nec}(B))$ for all events $A, B$ in their domain of definition. In the multivariate case, when a belief is only defined on cylindrical sets, then the minitive property becomes:
 \begin{eqnarray}
     &&\forall (A_1\tdt A_n)\subseteq\X, (B_1\tdt B_n)\subseteq\X,\nonumber\\
@@ -579,13 +591,13 @@ In \cite{schmelzer_joint_2015}, the author showed that in order to describe the 
 \begin{theorem}[Sklar's theorem for belief functions \cite{schmelzer_joint_2015}]\label{theorem:sklar_belief}
     Let $\mathrm{Bel}:2^{\X_1}\times2^{\X_2}\rightarrow[0,1]$ be a bivariate belief function and let $\mathrm{Bel}_1$ and $\mathrm{Bel}_2$ denote its marginals over $2^{\X_1}$ and $2^{\X_2}$ respectively. Furthermore, let $\mathcal{I}_1$ and $\mathcal{I}_2$ denote increasing families of subsets of $\X_1$ and $\X_2$. Then there exists a unique subcopula $C^{\mathcal{I}_1,\mathcal{I}_2}$ on  $\mathrm{Bel}_1(\mathcal{I}_1)\times \mathrm{Bel}_2(\mathcal{I}_2)$ such that:
     \begin{eqnarray}
-        \mathrm{Bel}(L_1, L_2) = C^{\mathcal{I}_1,\mathcal{I}_2}(\mathrm{Bel}_1(L_1), \mathrm{Bel}_Y(L_2))
+        \mathrm{Bel}(L_1, L_2) = C^{\mathcal{I}_1,\mathcal{I}_2}(\mathrm{Bel}_1(L_1), \mathrm{Bel}_2(L_2))
     \end{eqnarray}
     for all $L_1\in\mathcal{I}_1,L_2\in\mathcal{I}_2$.
 \end{theorem}
 For the reverse to be true, it is necessary that $\X_1\in\mathcal{I}_1, \X_2\in\mathcal{I}_2$. Example 1 of \cite{schmelzer_joint_2015} illustrate the need of a copula for each increasing family of events.
 
-Necessity functions are completely determined by their focal sets which form an increasing family of events. Thus by applying Sklar's theorem for belief functions (theorem \ref{theorem:sklar_belief}), it holds that joining two necessity functions with a copula $C$ as in (\ref{eq:copula_on_lower_proba}) yields a bivariate belief function (which is not necessarily a necessity function):
+Necessity functions are completely determined by their focal sets which form an increasing family of events. Thus by applying Sklar's theorem for belief functions (theorem \ref{theorem:sklar_belief}), it holds that joining two necessity functions with a copula $C$ as in \eqref{eq:copula_on_lower_proba} yields a bivariate belief function (which is not necessarily a necessity function):
 \begin{equation}
     \mathrm{Bel} = C(\mathrm{Nec}_1, \mathrm{Nec}_2)\label{eq:sklar_on_necessity}
 \end{equation}
@@ -593,34 +605,90 @@ where $\mathrm{Nec}_1$ and $\mathrm{Nec}_2$ are the marginal necessity functions
 \begin{eqnarray}
     \forall (k,j)\in[1, N_i]^2,~k\leqslant j ~\Leftrightarrow ~ a^i_k \preceq_i a^i_j ~\Leftrightarrow ~ a^i_k\subseteq a^i_j
 \end{eqnarray}
-Given two marginal necessity functions $\mathrm{Nec}_1, \mathrm{Nec}_2$ and a copula $C$, joining them using the copula $C$ as in (\ref{eq:sklar_on_necessity}) or using the bivariate mass function as in (\ref{eq:joint_mass}) with the natural inclusion ordering yields the same bivariate belief function $\mathrm{Bel}$.
+
+\begin{proposition}\label{prop:sklar_necessity}
+    Given two marginal necessity functions $\mathrm{Nec}_1, \mathrm{Nec}_2$ and a copula $C$, joining them using the copula $C$ as in \eqref{eq:sklar_on_necessity} or using the bivariate mass function as in \eqref{eq:joint_mass} with the natural inclusion ordering yields the same bivariate belief function $\mathrm{Bel}$.
+\end{proposition}
 
 \begin{proof}
-    If we denote by $\mathrm{Bel}_\times$ the belief function defined in (\ref{eq:joint_mass}) where the ordering is the inclusion ordering $\preceq_i$ for $i\in[1,2]$. For convenience and with respects to the notations of equation \ref{eq:hvolume}, we note: $u^i_k=\sum_{j=0}^{k}m_i(a_j^i)$ and consider that $a^i_0=\emptyset$.
+    If we denote by $\mathrm{Bel}_\times$ the belief function defined in \eqref{eq:joint_mass} where the ordering is the inclusion ordering $\preceq_i$ for $i\in[1,2]$. For convenience and with respects to the notations of equation \eqref{eq:hvolume}, we note: $u^i_k=\sum_{j=0}^{k}m_i(a_j^i)$ and consider that $a^i_0=\emptyset$.
     For all focal elements $a_k^1$ of $\mathrm{Nec}_1$ and $a^2_j$ of $\mathrm{Nec}_2$, it holds that:
     \begin{eqnarray*}
-        \mathrm{Bel}_\times(a^1_k, a^2_j) &=& \sum_{a^1_p\subseteq a_k^1}\sum_{a^2_q\subseteq a_j^2}m_\times(a^1_p, a^2_q) = \sum_{p=1}^i\sum_{q=1}^j m_\times(a^1_p, a^2_q)\\
+        \mathrm{Bel}_\times(a^1_k, a^2_j) &=& \sum_{a^1_p\subseteq a_k^1}\sum_{a^2_q\subseteq a_j^2}m_\times(a^1_p, a^2_q) = \sum_{p=1}^k\sum_{q=1}^j m_\times(a^1_p, a^2_q)\\
         &=&\sum_{p=1}^k\sum_{q=1}^j (~C(u^1_p, u^2_q) + C(u^1_{p-1}, u^2_{q-1}) \\
         &&- C(u^1_{p-1}, u^2_{q}) - C(u^1_{p}, u^2_{q-1})~)\\
         &=&\sum_{p=1}^k\sum_{q=1}^jC(u^1_p, u^2_q) + \sum_{p=0}^{k-1}\sum_{q=0}^{j-1}C(u^1_p, u^2_q) \\
         &&- \sum_{p=0}^{k-1}\sum_{q=1}^jC(u^1_p, u^2_q) - \sum_{p=1}^k\sum_{q=0}^{j-1}C(u^1_p, u^2_q)\\
         &=& C(u^1_k, u^2_j) = C\left(\mathrm{Nec}_1(a_k^1), \mathrm{Nec}_2(a_j^2)\right)\\
     \end{eqnarray*}
-    This is the case for necessity function but not in general as:
-    \begin{eqnarray*}
-        \sum_{a^1_p\subseteq a_k^1}\sum_{a^2_q\subseteq a_j^2}m_\times(a^1_p, a^2_q) \neq \sum_{p=1}^i\sum_{q=1}^j m_\times(a^1_p, a^2_q)
-    \end{eqnarray*}
+    This is the case for necessity function but not in general where:
+    \begin{align*}
+        \sum_{a^1_p\subseteq a_k^1}\sum_{a^2_q\subseteq a_j^2}m_\times(a^1_p, a^2_q) \neq \sum_{p=1}^k\sum_{q=1}^j m_\times(a^1_p, a^2_q)
+    \end{align*}
 \end{proof}
 
-The same result holds for $n$ marginals, not covered in \cite{schmelzer_sklars_2015}. For every cylindrical set $(A_1, \dots, A_n)\subseteq\X$:
+\begin{proposition}
+    Let $m_\times$ be a joint mass obtained using \eqref{eq:joint_mass}. If $m_\times$ verifies
+    \begin{align*}
+        \sum_{a^1_p\subseteq a_k^1}\sum_{a^2_q\subseteq a_j^2}m_\times(a^1_p, a^2_q) = \sum_{p=1}^k\sum_{q=1}^j m_\times(a^1_p, a^2_q)
+    \end{align*}
+    for all marginal focal sets $a^1_k,a^2_j$ then its marginals masses correspond to necessity functions. The reverse implication is immediate if we use the natural inclusion order.
+\end{proposition}
+\begin{proof}
+    Let $m_\times$ be a joint mass obtained using \eqref{eq:joint_mass}, with marginal focal sets $(a^1_k)_{1\leqslant k\leqslant N_1}$, $(a^2_j)_{1\leqslant j\leqslant N_2}$ and marginal masses $m_1,m_2$. 
+    Let $\mathrm{Bel}_\times$ be its associated belief function verifying
+    \begin{align*}
+        \sum_{a^1_p\subseteq a^1_k}\sum_{a^2_q\subseteq a_j^2}m_\times(a^1_p, a^2_q) = \sum_{p=1}^k\sum_{q=1}^j m_\times(a^1_p, a^2_q)
+    \end{align*}
+    for all marginal focal sets $a^1_k,a^2_j$. It is easy to check that
+    \begin{align*}
+        \sum_{a^2_q\subseteq \X_2}m_\times(a^1_p, a^2_q)=m_1(a^1_p)=\sum_{q=1}^{N_2}m_\times(a^1_p, a^2_q)    
+    \end{align*}
+    (as we sum the H-volume over a complete partition of $[0,1]$). Thus it holds that:
+    \begin{align*}
+        \sum_{p=1}^k m_1(a^1_p) = \mathrm{Bel}_\times(a^1_k,\X_2)=\sum_{a^1_p\subseteq a_k^1}m_1(a^1_p)
+    \end{align*}
+    This result is not sufficient to prove the inclusion of focal sets (there could be a set $a^1_p\subseteq a^1_k,~p>k$ with the same mass value than another set $a^1_{p'}\not\subseteq a^1_k,~p' < k$). Let us show by induction that for all $(k, p)\in\opi1,N_1\cli^2$, $a_1\subset\dots\subset a_k$ and $a_p\not\subseteq a_k$ if $p>k$.
+    For the case $k=1$, it holds that:
+    \begin{align*}
+        \sum_{p=1}^1m_1(a^1_p) &= \sum_{a_p\subseteq a_1}m_1(a^1_p)\\
+        \Leftrightarrow m_1(a^1_1) &= m_1(a^1_1) + \sum_{a^1_p\subset a^1_1}m_1(a^1_p)\\
+        \Leftrightarrow 0 &=\sum_{a_p\subset a_1}m_1(a^1_p)
+    \end{align*}
+    which means that no focal set is a strict subset of $a_1$.
+    Suppose that there is $k\in\opi1,N_1\cli$ such that: $a_1\subset\dots\subset a_k$ and $\forall p>k,~a_p\not\subseteq a_k$. In particular, $a_{k+1}\not\subseteq a_k$. It holds that:
+    \begin{align*}
+        \sum_{p=1}^{k+1}m_1(a^1_p) &= \sum_{a^1_p\subseteq a^1_{k+1}}m_1(a^1_p)\\
+        \Leftrightarrow m_1(a^1_{k+1}) + \sum_{p=1}^{k} m_1(a^1_p) &= \sum_{a^1_p\subseteq a^1_{k+1}}m_1(a^1_p)\\
+        \Leftrightarrow m_1(a^1_{k+1}) + \sum_{a^1_p\subseteq a^1_k} m_1(a^1_p) &= \sum_{a^1_p\subseteq a^1_{k+1}}m_1(a^1_p)\\
+        \implies m_1(a^1_{k+1}) &= \sum_{\substack{a^1_p\subseteq a^1_{k+1} \\ a^1_p\not\subseteq a^1_k}} m_1(a^1_p)\\
+        \implies m_1(a^1_{k+1}) &= m_1(a^1_{k+1}) + \sum_{\substack{a^1_p\subset a^1_{k+1} \\ a^1_p\not\subseteq a^1_k}} m_1(a^1_p)\\
+        \Leftrightarrow 0 &= \sum_{\substack{a^1_p\subset a^1_{k+1} \\ a^1_p\not\subseteq a^1_k}} m_1(a^1_p)
+    \end{align*}
+    Which means that either there is no focal set that is a strict subset of $a^1_{k+1}$, or that they are all included in $a^1_{k}$. The first case is discarded as:
+    \begin{align*}
+        \sum_{a^1_p\subseteq a^1_{k+1}}m_1(a^1_p) &= \sum_{p=1}^{k+1}m_1(a^1_p)\\
+        \Leftrightarrow \sum_{a^1_p\subset a^1_{k+1}}m_1(a^1_p) &= \sum_{p=1}^{k}m_1(a^1_p)>0
+    \end{align*}
+    thus $a_1\subset\dots\subset a_{k+1}$.
+    Finally, it also holds that:
+    \begin{align*}
+        \sum_{a^1_p\subseteq a^1_{k+1}}m_1(a^1_p) &= \sum_{p=1}^{k+1}m_1(a^1_p)\\
+        \implies \sum_{\substack{a^1_p\subseteq a^1_{k+1} \\ p>k+1}} m_1(a^1_p) + \sum_{\substack{a^1_p\subseteq a^1_{k+1} \\ p\leqslant k+1}} m_1(a^1_p) &= \sum_{p=1}^{k+1}m_1(a^1_p)\\
+        \Leftrightarrow \sum_{\substack{a^1_p\subseteq a^1_{k+1} \\ p>k+1}} m_1(a^1_p) &= 0\\
+    \end{align*}
+    meaning that for all $p>k+1$, $a^1_p\not\subseteq a^1_{k+1}$ which ends the proof by induction. Because all focal sets form a nested family of sets, $\mathrm{Bel}_1$ is a necessity function. The proof for $\mathrm{Bel}$ is identical. 
+\end{proof}
+
+Proposition \ref{prop:sklar_necessity} holds for $n$ marginals, not covered in \cite{schmelzer_sklars_2015}. For every cylindrical set $(A_1, \dots, A_n)\subseteq\X$:
 \begin{eqnarray}
     \mathrm{Bel}_\times(A_1\tdt A_n) = C\left(\mathrm{Nec}_1(A_1), \dots, \mathrm{Nec}_n(A_n)\right)
 \end{eqnarray}
 
 \begin{proof}
-    The proof is similar to the one of equation \ref{eq:joint_mass}, but this time computing the mass of $(a_{k_1}^1\tdt a_{k_n}^n)$ using $F([0,k_1]\tdt[0,k_n])$ and noticing that \begin{eqnarray*}
+    The proof is similar to the one of equation \eqref{eq:joint_mass}, but this time computing the mass of $(a_{k_1}^1\tdt a_{k_n}^n)$ using $F([0,k_1]\tdt[0,k_n])$ and noticing that \begin{eqnarray*}
         \sum_{(a^1_{p_1}\tdt a^n_{p_n})\subseteq(a^1_{k_1}\tdt a^n_{k_n})}m_\times(a^1_{p_1}\tdt a^n_{p_n})=\sum_{p_1=1}^{k_1}\dots\sum_{p_n=1}^{k_n} m_\times(a^1_{p_1}\tdt a^n_{p_n})
-    \end{eqnarray*} because all marginals are necessity functions, and the natural inclusion ordered used for ranking their focal sets.
+    \end{eqnarray*} because all marginals are necessity functions, and the natural inclusion ordered is used for ranking their focal sets.
 \end{proof}
 
 As the lower probabilities of $\M_{agg}$ and $\M_{mass}$ coincide on cylindrical sets, the following set equality holds for credal sets $\M_i$ whose lower probabilities are necessity functions:
@@ -701,9 +769,162 @@ Without further assumptions, there is no inclusion relations between $\M_{robust
     On this event $\low>Nel_\times$ and because the belief function is coherent then $\M_{mass}\not\subseteq\M_{robust}$ and $\M_{agg}\not\subseteq\M_{robust}$.
 \end{example}
 
+\subsection{Natural ordering of P-boxes}\label{subsec:pboxes}
+P-boxes are special cases of belief functions that resemble the most classical CDFs. They are defined with two CDF $\underline{F},~\overline{F}$ such that $\underline{F}\leqslant\overline{F}$, their focal sets $a_\alpha$ are of the form $a_\alpha=[\overline{F}^{-1}(\alpha), \underline{F}^{-1}(\alpha)]$ with $\alpha\in[0,1]$ \cite{destercke_unifying_2008}, where $F^{-1}$ is the inverse of a CDF (or pseudo-inverse if not properly defined). It it thus possible to define a natural order on the focal sets. Let $a_\alpha$ and $a_\beta$ be two focal sets of a p-box $[\underline{F},~\overline{F}]$, with $(\alpha,\beta)\in[0,1]^2$. The natural order $\preceq$ on the focal sets is defined as follows:
+\begin{align}
+    a_\alpha\preceq a_\beta ~\Leftrightarrow~ \overline{F}^{-1}(\alpha)\leqslant\overline{F}^{-1}(\beta) \text{ and } \underline{F}^{-1}(\alpha)\leqslant\underline{F}^{-1}(\beta)~\Leftrightarrow~ \alpha\leqslant\beta\label{eq:order_pbox}
+\end{align}
+
+As it is the case for necessity functions, it is possible to find cases where the sets $\M_{robust}\not\subseteq \M_{mass}$ or $\M_{agg}\not\subseteq\M_{mass}$.
+\begin{example}\label{ex:pbox}
+    Consider the following p-boxes:
+    \begin{table}[!ht]
+        \centering
+        \begin{tabular}{|c|c|c|}
+            \hline
+            $\X_1$ & $x^1_1$ & $x^1_2$\\
+            \hline\hline
+            $\underline{F}_1$ & 0 & 1\\
+            \hline
+            $\overline{F}_1$ & 0.1 & 1\\
+            \hline
+        \end{tabular}
+        \quad
+        \begin{tabular}{|c|c|c|}
+            \hline
+            $\X_2$ & $x^2_1$ & $x^2_2$\\
+            \hline\hline
+            $\underline{F}_2$ & 0.9 & 1\\
+            \hline
+            $\overline{F}_2$ & 1 & 1\\
+            \hline
+        \end{tabular}
+        \caption{P-boxes over $\X_1$ and $\X_2$}
+        \label{tab:example_pbox}
+    \end{table}
+    The p-boxes from \ref{tab:example_pbox} lead to the same belief functions as in example \ref{ex:necessity}, thus leading to the same conclusions \ie ${M}_{robust}\not\subseteq\M_{mass}$, $\M_{mass}\not\subseteq\M_{robust}$ and $\M_{agg}\not\subseteq\M_{robust}$.
+\end{example}
+
+As stated previously, p-boxes are very closely related to CDF which can motivate one to apply Sklar's therorem (\ref{theorem:sklar}) to the lower CDF and upper CDF respectively. Given $n$ p-boxes $[\underline{F}_1,~\overline{F}_1],~\dots,~[\underline{F}_n,~\overline{F}_n]$ defined over $\X_1,\dots,\X_n$ and a copula $C$, we can define the lower and upper bounds of a $n$ variate CDF as:
+\begin{align*}
+    \underline{F}_\times&=C(\underline{F}_1,\dots, \underline{F}_n)\\
+    \overline{F}_\times&=C(\overline{F}_1,\dots, \overline{F}_n)
+\end{align*}
+Sklar's theorem states that $\underline{F}_\times$ and $\overline{F}_\times$ are both CDF, which means that $[\underline{F}_\times, \overline{F}_\times]$ is a multivariate p-box \cite{pelessoni_bivariate_2016, montes_sklars_2015} over cylindrical sets, defining a credal set $\M$. Clearly, the bounds of $\M_{robust}$ on cumulated events are the same as those of the credal set $\M$ induced by the multivariate p-box $[C(\underline{F}_1,\dots, \underline{F}_n),~C(\overline{F}_1,\dots, \overline{F}_n)]$.
+
+\begin{proposition}\label{prop:convexity_pbox}
+    When considering the natural order on p-boxes \eqref{eq:order_pbox} when joining masses with a copula $C$, then it holds that:
+    \begin{itemize}
+        \item if $C$ is D-convex, then $\M_{mass}\subseteq \M_{agg}$.
+        \item if $C$ is D-concave then $\M_{agg}\subseteq\M_{mass}$ 
+    \end{itemize}
+\end{proposition}
+Figure \ref{fig:copula_convex} illustrates the difference between $\mathrm{Bel}_\times$ and $\underline{P}$ in the case $n=2$.
+\begin{proof}
+    Consider $n$ p-boxes $[\underline{F}_1,~\overline{F}_1],~\dots,~[\underline{F}_n,~\overline{F}_n]$, a D-convex copula $C$ and the natural order on focal sets $(a^i_k)_{1\leqslant k \leqslant N_i}$ of each marginal p-box $[\underline{F}_i,~\overline{F}_i]$. We will denote $m_\times$ the joint mass functions obtained using equations \eqref{eq:joint_mass} and $\mathrm{Bel}_\times$ its associated belief function. We will also refer to $\underline{P}$ as the lower probability associated to $\M_{agg}$ from equation \eqref{eq:copula_on_lower_proba}.
+
+    When considering the natural order on focal sets of a p-box \eqref{eq:order_pbox}, it holds that for every focal set $a^i_p$, the set $\{k~|~a^i_k\subseteq a^i_p\}$ is composed of consecutive integers. In the following, we denote by $\underline{p}$ and $\overline{p}$ the lowest and highest indices of the focal sets included in $a^i_p$. This means that $\{a^i_{\underline{p}}, \dots, a^i_{\overline{p}}\}$ is the set of all focal sets included in $a^i_p$. 
+
+    Let $a^1_{p_1},\dots,a^n_{p_n}$ be focal sets of $m_1,\dots,m_n$. We note $u^i_p=\sum_{k=1}^p m_i(a^i_k)$. It then holds that:
+    \begin{align*}
+        \mathrm{Bel}_\times(a^1_{p_1}, \dots, a^n_{p_n}) &= \sum_{a^1_{k_1}\subseteq a^1_{p_1}}\dots\sum_{a^n_{k_n}\subseteq a^n_{p_n}}m_\times(a^1_{k_1},\dots, a^n_{k_n})\\
+        &= \sum_{k_1=\underline{p}_1}^{\overline{p}_1}\dots\sum_{k_n=\underline{p}_n}^{\overline{p}_n}m_\times(a^1_{k_1},\dots, a^n_{k_n})\\
+        &= \sum_{k_1=\underline{p}_1}^{\overline{p}_1}\dots\sum_{k_n=\underline{p}_n}^{\overline{p}_n}H_{u^1_{k_1-1},\dots,u^n_{k_n-1}}^{u^1_{k_1},\dots,u^n_{k_n}}
+    \end{align*}
+    As the H-volume is computed over a partitioning of $[u^1_{\underline{p}_1-1}, u^1_{\overline{p}_1}]\tdt[u^n_{\underline{p}_n-1} , u^n_{\overline{p}_n}]$, it is possible to greatly simplify the sums. The proof is the same as the proof of \eqref{eq:joint_mass} except that the CDF is computed over $[u^1_{\underline{p}_1-1}, u^1_{\overline{p}_1}]\tdt[u^n_{\underline{p}_n-1} , u^n_{\overline{p}_n}]$ and not $[0,1]^n$. This yields:
+    \begin{align*}
+        \mathrm{Bel}_\times(a^1_{p_1}, \dots, a^n_{p_n}) = H_{u^1_{\underline{p}_1-1},\dots,u^n_{\underline{p}_n-1}}^{u^1_{\overline{p}_1},\dots,u^n_{\overline{p}_n}}
+    \end{align*}
+    On the other hand, it holds that:
+    \begin{align*}
+        \underline{P}(a^1_{p_1}, \dots, a^n_{p_n}) &= C(\mathrm{Bel}_1(a^1_{p_1}),\dots,\mathrm{Bel}_n(a^n_{p_n}))\\
+        &= C(\sum_{k_1=\underline{p}_1}^{\overline{p}_1} m_1(a^1_{k_1}), \dots, \sum_{k_n=\underline{p}_n}^{\overline{p}_n} m_1(a^n_{k_n}))\\
+        &= C(u^1_{\overline{p}_1} - u^1_{\underline{p}_1-1}, \dots, u^n_{\overline{p}_n} - u^n_{\underline{p}_n-1})
+    \end{align*}
+    Using equation \eqref{eq:convex_diff_hvol} yields:
+    \begin{align*}
+        \mathrm{Bel}_\times(a^1_{p_1}, \dots, a^n_{p_n}) \geqslant \underline{P}(a^1_{p_1}, \dots, a^n_{p_n})
+    \end{align*}
+    The inequality is reversed if $C$ is D-concave, which concludes the proof.
+\end{proof}
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[%
+            xlabel=$u_1$,
+            ylabel=$u_2$,
+            xmin=0, xmax=1,
+            ymin=0, ymax=1,
+            xtick={0.35, 0.55,  0.9, 1},
+            xticklabels={$u^1_{\overline{p}_1} - u^1_{\underline{p}_1-1}~~$, $u^1_{\underline{p}_1-1}$, $u^1_{\overline{p}_1}$, $1$},
+            ytick={0, 0.3, 0.5,  0.8, 1},
+            yticklabels={$0$, $u^2_{\overline{p}_2} - u^2_{\underline{p}_2-1}$, $u^2_{\underline{p}_2-1}$, $u^2_{\overline{p}_2}$, $1$},
+            xticklabel style={rotate=30},
+            xtick pos=left,
+            ytick pos=left,],
+            
+            \addplot [domain=0:1,samples=40,draw opacity=0.3,color=gray]({x},{1-x});
+            \addplot [domain=0:1,samples=40,draw opacity=0.3,color=gray]({x},{1.2-x}); 
+            \addplot [domain=0:1,samples=40,draw opacity=0.3,color=gray]({x},{1.4-x}); 
+            \addplot [domain=0:1,samples=40,draw opacity=0.3,color=gray]({x},{1.6-x}); 
+            \addplot [domain=0:1,samples=40,draw opacity=0.3,color=gray]({x},{1.8-x});
+
+            \node[rotate=-45, fill=white, rounded corners=2pt, inner sep=1pt] (x) at (0.1, 0.9) {\color{gray}0};
+            \node[rotate=-45, fill=white, rounded corners=2pt, inner sep=1pt] (x) at (0.3, 0.9) {\color{gray}0.2};
+            \node[rotate=-45, fill=white, rounded corners=2pt, inner sep=1pt] (x) at (0.5, 0.9) {\color{gray}0.4};
+            \node[rotate=-45, fill=white, rounded corners=2pt, inner sep=1pt] (x) at (0.7, 0.9) {\color{gray}0.6};
+            \node[rotate=-45, fill=white, rounded corners=2pt, inner sep=1pt] (x) at (0.9, 0.9) {\color{gray}0.8};
+            
+            
+            \node (a) at (0.9, 0.8) {};
+            \node (b) at (0.55, 0.8) {};
+            \node (c) at (0.55, 0.5) {};
+            \node (d) at (0.9, 0.5) {};
+            \draw[ultra thick, black] (c.center) rectangle (a.center) node[pos=0.5]{$\mathrm{Bel}_\times$};
+            
+            \node (e) at (0, 0.8) {};
+            \node (f) at (0, 0.5) {};
+            \node (g) at (0.9, 0) {};
+            \node (h) at (0.55, 0) {};
+            \draw[thick, dashed, black] (e.center) -- (b.center);
+            \draw[thick, dashed, black] (f.center) -- (c.center);
+            \draw[thick, dashed, black] (g.center) -- (d.center);
+            \draw[thick, dashed, black] (h.center) -- (c.center);
+            
+            \node (i) at (0.35, 0.3) {};
+            \node (j) at (0, 0) {};
+            \draw[ultra thick, black] (i.center) rectangle (j.center) node[pos=0.5]{$\underline{P}$};
+            
+            \node (m) at (0.55, 0.45) {};
+            \node (n) at (0.9, 0.45) {};
+            \node (o) at (0.5, 0.8) {};
+            \node (p) at (0.5, 0.5) {};
+            \draw [stealth-stealth, thick, black] (m.center) -- (n.center) node[pos=0.5, below]{$u^1_{\overline{p}_1} - u^1_{\underline{p}_1-1}$};
+            \draw [stealth-stealth, thick, black] (o.center) -- (p.center) node[pos=0.5, left]{$u^2_{\overline{p}_2} - u^2_{\underline{p}_2-1}$};
+        
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Bird view of the \L ukaciewicz 2-copula $C_L$, where the gray lines are the isolines of the copula. $\mathrm{Bel}_\times$ and $\underline{P}$ are represented in the case where the marginals are p-boxes. The thick rectangles represent the bounds on which to compute the H-volume. Numbers $u^i_k$ use the notation of the proof of proposition \ref{prop:convexity_pbox}.}
+    \label{fig:copula_convex}
+\end{figure}
+
+\subsection{Joining different types of models}
+Different models can be used for multiple sources of uncertainty. When some marginals are modeled using possibility distributions and other by p-boxes, it is still possible to derive results similar as those of sections \ref{subsec:necessity_functions} and \ref{subsec:pboxes} if we use natural orders on the marginal focal sets. 
+\begin{proposition}
+    When joining marginal credal sets induced by a mix of possibility distributions and p-boxes using a copula $C$ the following inclusion hold:
+    \begin{itemize}
+        \item if $C$ is D-convex, then $\M_{mass}\subseteq \M_{agg}$.
+        \item if $C$ is D-concave then $\M_{agg}\subseteq\M_{mass}$ 
+    \end{itemize}
+\end{proposition}
+
+\begin{proof}
+    The proof is similar to the proof of proposition \ref{prop:convexity_pbox} using the fact that for every focal set $a^i_p$ of a possibility distribution, we can still define $\underline{p}_i$ and $\overline{p}_i$ as $\underline{p}_i=1$ and $\overline{p}_i=p$. The rest of the proof is identical.
+\end{proof}
 
 \subsection{Other orders}
-Instead of considering the natural ordering, or when such an order does not exists, one could consider an arbitrary order between focal sets when defining $\M_{mass}$ as in \ref{eq:joint_mass}. A few questions arise: is there always an arbitrary order allowing $\M_{robust}\subseteq\M_{mass}$? If such an order exists, is it possible to explicit it in advance, \ie without computing the lower bounds of the credal sets?
+Instead of considering the natural ordering, or when such an order does not exists, one could consider an arbitrary order between focal sets when defining $\M_{mass}$ as in \eqref{eq:joint_mass}. A few questions arise: is there always an arbitrary order allowing $\M_{robust}\subseteq\M_{mass}$? If such an order exists, is it possible to explicit it in advance, \ie without computing the lower bounds of the credal sets?
 
 It appears that an order allowing $\M_{robust}\subseteq\M_{mass}$ does not always exist. To prove it, let us find an example where no order allows either inclusion.
 
@@ -716,7 +937,7 @@ and $C(0,0)=0$ by continuity (we simplified the expression of the copula given i
 \begin{eqnarray*}
     \pi_1(x^1_1)=\pi_2(x^2_1)=0.2 \qquad \pi_1(x^1_2)=\pi_2(x^2_2)=1 \qquad \pi_1(x^1_3)=\pi_2(x^2_3)=0.7 
 \end{eqnarray*}
-and the marginal credal sets $\M(\pi_1)$, $\M(\pi_2)$ they induce. We note the focal sets as $a^1_1=\{x^1_2\},~a^1_2=\{x^1_2,\, x^1_3\},~a^1_3=\{x^1_1,\,x^1_2,\,x^1_3\}$ and $a^2_1=\{x^2_2\},~a^2_2=\{x^2_2,\, x^2_3\},~a^2_3=\{x^2_1,\, x^2_2,\, x^2_3\}$. By joining $\M(\pi_1)$ and $\M(\pi_2)$ using $C$, we can obtain the lower probability $\low$ of $\M_{robust}$ using equation \ref{eq:robust_set}, and a total of 6 belief functions $\mathrm{Bel}^{\preceq_1,\preceq_2}_\times$ using equation \ref{eq:joint_mass} depending on the orders $\preceq_1, \preceq_2$ used to join the marginal masses. For instance if $\preceq_1$ is such that $a^1_3\preceq_1 a^1_1 \preceq_1 a^1_2$ and $\preceq_2$ such that $a^2_1 \preceq_2 a^2_2 \preceq_2 a^2_3$, then the bivariate mass $m_\times$ would be defined as follows:
+and the marginal credal sets $\M(\pi_1)$, $\M(\pi_2)$ they induce. We note the focal sets as $a^1_1=\{x^1_2\},~a^1_2=\{x^1_2,\, x^1_3\},~a^1_3=\{x^1_1,\,x^1_2,\,x^1_3\}$ and $a^2_1=\{x^2_2\},~a^2_2=\{x^2_2,\, x^2_3\},~a^2_3=\{x^2_1,\, x^2_2,\, x^2_3\}$. By joining $\M(\pi_1)$ and $\M(\pi_2)$ using $C$, we can obtain the lower probability $\low$ of $\M_{robust}$ using equation \eqref{eq:robust_set}, and a total of 6 belief functions $\mathrm{Bel}^{\preceq_1,\preceq_2}_\times$ using equation \eqref{eq:joint_mass} depending on the orders $\preceq_1, \preceq_2$ used to join the marginal masses. For instance if $\preceq_1$ is such that $a^1_3\preceq_1 a^1_1 \preceq_1 a^1_2$ and $\preceq_2$ such that $a^2_1 \preceq_2 a^2_2 \preceq_2 a^2_3$, then the bivariate mass $m_\times$ would be defined as follows:
 \begin{eqnarray*}
     m_\times(a^1_3\times a^2_1) &=& C(m_1(a^1_3), m_2(a^2_1))\\
     m_\times(a^1_1\times a^2_1) &=& C(m_1(a^1_3)+m_1(a^1_1), m_2(a^2_1)) - C(m_1(a^1_3), m_2(a^2_1))\\
