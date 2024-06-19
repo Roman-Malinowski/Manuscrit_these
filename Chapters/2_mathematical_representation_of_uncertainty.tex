@@ -23,6 +23,11 @@ Define coherence, sure loss, cylindrical sets
 \section{Specific case of possibility distributions}
 Link with fuzzy sets. A simple and useful model, but with limited expressiveness (n focal sets and not $2^n$). Nested focal sets. Used to model experts opinions with examples \cite{baudrit_joint_2007}
 
+\begin{align}
+    \mathrm{Nec}(A)=1-\sup_{x\in A^c}\pi(x)\label{eq:bel_pl}\\
+    \Pi(A) = \sup_{x\in A}\pi(x)
+\end{align}
+
 \section{Copulas}\label{sec:copulas}
 \comroman{Define also sub copulas\\Talk briefly about imprecise copula too}
 
@@ -314,7 +319,7 @@ The rest of this section will present some remarks and useful properties for D-c
     The result is straightforward by induction using equation \eqref{eq:convex_diff}.
 \end{proof}
 
-\section{Sampling from a Copula}
+\section{Sampling from a Copula}\label{sec:sampling_copula}
 As a copula represent the CDF of a multivariate random variable, it is possible to sample from it. This section details a method for sampling from copulas in general, and a special method for sampling from copulas in the family of Gaussian copulas. Given a copula $C$, and two CDF $F_X$ and $F_Y$, a method to generate a pair of observations $(x, y)$ from a joint CDF $C(F_X, F_Y)$ is the following:
 
 \begin{itemize}
@@ -338,7 +343,7 @@ When working with multiple sources of uncertain information, one must take into 
 
 When working with precise probabilities, a copula $C$ joins univariate Cumulative Distribution Functions (CDF), called marginals, into a mutlivariate CDF. When working with marginals modeled by Imprecise Probabilities, joining the models with a copula on the product space $\X=\X_1\tdt\X_n$ is not as straightforward. We present here three different approaches to create a multivariate credal set using a copula and imprecise marginals. 
 
-\subsection{Point-wise aggregation}
+\subsection{Point-wise aggregation}\label{sec:robust_method}
 A first way of creating a joint credal set is to sample a precise marginal for each marginal credal sets $\M_i$ and to use Sklar's theorem with the copula $C$ to create a precise multivariate CDF. The set of all resulting CDFs is thus:
 \begin{eqnarray}\label{eq:robust_ancestor}
     \mathcal{S}(C,\M_i) = \{F~|~\forall x_i \in \X_i,~ F(x_1,\dots,x_n) = C(F_1(x_1), \dots, F_n(x_n))\}
@@ -387,7 +392,7 @@ Having defined a mass distribution function on the product space $\X$, we thus d
     \M_{mass} = \{P~|~\forall A\subseteq\X, P(A)\geqslant \sum_{a\subseteq A}m_\times(A)\}
 \end{eqnarray}
 
-With this way of defining the multivariate mass, the choice of arbitrary orders $\preceq_i$ can have a significant impact on the value of the multivariate mass function. The next example illustrate this statement.
+With this way of defining the multivariate mass, the choice of arbitrary orders $\preceq_i$ can have a significant impact on the value of the multivariate mass function. In the rest of this thesis, we suppose that marginal orders between focal sets have been set when referring to $m_\times$. Those order will specifically be ``natural'' orders in sections \ref{subsec:necessity_functions}, \ref{subsec:pboxes} and \ref{subsec:multiple_models}. When no natural order exists, the arbitrary choice of the order can greatly impact the output mass or belief functions, as illustrated by the following example.
 
 \begin{example}\label{ex:joint_mass}
     Let us present an example in the case $n=2$. Let $m_1$ be a mass distribution function over the power set $2^{\X_1}$ of $\X_1$ with two focal sets $a_1,\, a_2$. Similarly, let $m_2$ be a mass distribution function over the power set $\X_2$ with two focal sets $a_1^2,~a_2^2$. Throughout this example we will assume that $a_1^2\preceq_2a_2^2$. We consider the minimum copula $C(u,v)=\min(u,v)$ and $m_1(a_1^1)=m_1(a_2^1)=m_2(a_1^2)=0.5$.
@@ -607,7 +612,7 @@ where $\mathrm{Nec}_1$ and $\mathrm{Nec}_2$ are the marginal necessity functions
 \end{eqnarray}
 
 \begin{proposition}\label{prop:sklar_necessity}
-    Given two marginal necessity functions $\mathrm{Nec}_1, \mathrm{Nec}_2$ and a copula $C$, joining them using the copula $C$ as in \eqref{eq:sklar_on_necessity} or using the bivariate mass function as in \eqref{eq:joint_mass} with the natural inclusion ordering yields the same bivariate belief function $\mathrm{Bel}$.
+    Given two marginal necessity functions $\mathrm{Nec}_1, \mathrm{Nec}_2$ and a copula $C$, joining them using the copula $C$ as in \eqref{eq:sklar_on_necessity} or using the bivariate mass function as in \eqref{eq:joint_mass} with the natural inclusion ordering yields the same bivariate belief function.
 \end{proposition}
 
 \begin{proof}
@@ -909,7 +914,7 @@ Figure \ref{fig:copula_convex} illustrates the difference between $\mathrm{Bel}_
     \label{fig:copula_convex}
 \end{figure}
 
-\subsection{Joining different types of models}
+\subsection{Joining different types of models}\label{subsec:multiple_models}
 Different models can be used for multiple sources of uncertainty. When some marginals are modeled using possibility distributions and other by p-boxes, it is still possible to derive results similar as those of sections \ref{subsec:necessity_functions} and \ref{subsec:pboxes} if we use natural orders on the marginal focal sets. 
 \begin{proposition}
     When joining marginal credal sets induced by a mix of possibility distributions and p-boxes using a copula $C$ the following inclusion hold:

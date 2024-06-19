@@ -32,7 +32,18 @@ where $p_i$ and $q_i$ are pixels at the same position $i$ in their patch. For co
     \label{fig:SAD}
 \end{figure}
 
-We presented the uncertainty models for pixels in both images, but we also need to define the dependency model between every pixels of both images. In our case, we propose to model their dependency with the product copula if the pixels are not from the same physical object (meaning that the value of their intensities are independent), and by a Gaussian copula with a covariance matrix  $\bigl(\begin{smallmatrix}1 & \sigma_{\mathrm{obj}}\\ \sigma_{\mathrm{obj}} & 1\end{smallmatrix}\bigr)$, $\sigma_{\mathrm{obj}}\in\mathbb{R}^+$, if they belong to the same physical object in the scene, with $\sigma_{\mathrm{obj}}\in[0,1]$. To determine if two pixels belong to the same object, we use a segmentation of the image based on the ground truth of the disparity.
+We presented the uncertainty models for pixels in both images, but we also need to define the dependency model between every pixels of both images. In our case, we propose to model their dependency with the product copula if the pixels are not from the same physical object (meaning that the value of their intensities are independent), and by a Gaussian copula with a covariance matrix parameterized by a correlation matrix $R$. The correlation between the uncertain pixel intensities is based on a segmentation $S:(I_L\cup I_R)\rightarrow[\![0,K]\!]$, $K\in\mathbb{N}$, of the images, performed on the ground truth disparity of each pixel. Given two pixels $(p, q)\in(I_L\cup I_R)^2$, their covariance is determined by:
+\begin{equation}
+    \mathrm{cov}(p, q) =
+    \begin{cases}
+        1 &\text{ if }p=q\,,\\
+        \rho_k, &\text{ if } p\ne q\text{ and }S(p)=S(q)\,, \\
+        0, & \text{otherwise}\,.
+    \end{cases}\label{eq:correlation}
+\end{equation}
+During the simulations, the segmentation contains $K=8$ different clusters, and for every $k$ in $[\![0,K]\!]$, $\rho_k$ is assigned an arbitrary value between $0.9$ and $1$.
+
+We can thus build a correlation matrix $R$ for all pixels of $(I_L\cup I_R)$, and sample a perturbation on all of the pixels using a Gaussian copula with this correlation matrix. The Gaussian $18-$copula used to model the dependency between marginal masses in the uncertainty propagation step (using equation \eqref{eq:joint_mass}) is also constructed using Equation \eqref{eq:correlation}. 
 
 \section{Propagation of the Uncertainty with Belief Functions}
 This section will present how we can compute a Belief function on the matching cost curve values from the original beliefs as well as a copula representing the dependency between variables. We first detail how it can be done in the precise case, as the imprecise setting is similar. We use the case of the SAD cost function to illustrate the process.
@@ -156,21 +167,137 @@ which uses the same composition as vine copulas \cite{czado_vine_2022}, where th
     \end{align*}
 \end{remark}
 
-Extending this result to any number of independent subsets of $\{X_1, \dots, X_n\}$ is straightforward. This approach significantly simplifies the computation of the H-volume in high-dimensional spaces. Consider, for instance, splitting the set into two subsets: one containing $k$ elements and the other containing the remaining $n - k$ elements, with $k\in\opi1, n-1\cli$. Under this partitioning, the H-volume is now computed by evaluating a $k$-copula $2^k$ times, and a $n-k$ copula $2^{n-k}$ times instead of a $n$ copula $2^n$ times.
+Extending this result to any number of independent subsets of $\{X_1, \dots, X_n\}$ is straightforward. This approach significantly simplifies the computation of the H-volume in high-dimensional spaces. Consider, for instance, splitting the set into two independent subsets: one containing $k$ elements and the other containing the remaining $n - k$ elements, with $k\in\opi1, n-1\cli$. Under this partitioning, the H-volume is now computed by evaluating a $k$-copula $2^k$ times, and a $n-k$ copula $2^{n-k}$ times instead of a $n$ copula $2^n$ times.
 For comparison, splitting the aforementioned Gaussian $18$-copula into two Gaussian $9$-copula reduces the computation time from 20 seconds to approximately 1 second. This demonstrates the substantial time savings achieved by decomposing the problem into smaller, independent parts.
 
 Another way of reducing the computation time for Gaussian copulas is to notice that if its correlation matrix is of type:
-$$\begin{pmatrix}
-1 & \dots & \sigma & \dots & \sigma\\
-\vdots &  & \vdots & & \vdots\\
-\sigma & \dots & 1 & \dots & \sigma\\
-\vdots &  & \vdots & & \vdots\\
-\sigma & \dots & \sigma & \dots & 1
-\end{pmatrix}$$
-with $\sigma\in[0,1]$, are exchange/permutation symmetrical (i.e., the order between variables inside the copula does not matter). When every univariate focal sets have the same mass distribution functions, then:
+\begin{equation}
+    R=\begin{pmatrix}
+        1 &  & \sigma & \dots & \sigma\\
+         & & & & \vdots\\
+        \sigma &  & 1 & & \sigma\\
+        \vdots &  &  & & \\
+        \sigma & \dots & \sigma &  & 1
+    \end{pmatrix}\label{eq:corr_matrix_sym}
+\end{equation}
+with $\sigma\in[0,1]$, are exchange/permutation symmetrical, \ie for every permutation $\sigma:\opi 1, n\cli\rightarrow\opi 1, n\cli$, and every $u_1,\dots,u_n\in[0,1]^n$:
 \begin{eqnarray*}
-    C(m_1, m_1, m_2)=C(m_1,m_2,m_1)=C(m_2,m_1,m_1)\,.
+    C_R(u_1,\dots, u_n) = C_R(u_{\sigma(1)} ,\dots, u_{\sigma(n)})
 \end{eqnarray*}
-For every pixel of the same cluster of $j$ pixels, we thus only need to evaluate the copula $j+1$ times instead of $2^j$.
+In our case, pixels of the same image and of the same object possess identical mass distribution functions, and their correlation matrix is similar to equation \eqref{eq:corr_matrix_sym}. Using this symmetry property allows to limit the number of necessary computation to determine either $\mathrm{Bel}_\times$ or $m_\times$ for those pixels. For instance, let consider a cluster of $k$ pixels with $2$ focal sets as in our simulations. Then only $k$ evaluations of the copula are necessary to determine every values of $m_\times$, instead of the previous $2^k$ evaluations.
+
+\section{Envelopes defined by plausibility levels}
+To provide a concrete example of how to propagate uncertainty, we utilized the \textit{Middlebury} dataset (\url{https://vision.middlebury.edu/stereo/data/scenes2003/}). This dataset includes pairs of left and right images along with their corresponding ground truth disparity maps. Figure \ref{fig:Cones} shows an example of such an image pair.
+For each pixel in the left image, we calculated the SAD cost curve, incorporating the uncertainty model described in \eqref{eq:pixel_possibility}. The focal sets, representing the uncertainty associated with the SAD values at each considered disparity, are defined as intervals around the ``precise'' SAD value.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.8\linewidth]{Images/Cones.png}
+  \caption{Homologous pixels in a pair of images}\label{fig:Cones}
+\end{figure}
+
+To visualize this uncertainty, we computed upper and lower envelopes for various plausibility levels $\gamma$. These envelopes illustrate the largest (upper bound $\overline{a}$) and smallest (lower bound $\underline{a}$) focal sets where the plausibility, determined by Equation \eqref{eq:bel_pl}, meets or exceeds the given threshold $\gamma$: $\mathrm{Pl}(\overline{a}) \geqslant \gamma$. Consequently, there are two bounds for each level of $\gamma$.
+At the plausibility threshold of 0 ($\mathrm{Pl}(\overline{a}) > 0$), the bounds represent the full support of the SAD values. Conversely, at a threshold of 1, the bounds converge to the values of the cost curve obtained in the ``precise'' setting (\ie, without accounting for uncertainty).
+
+\begin{figure}
+    \centering
+    \begin{subfigure}{0.48\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/bel_independence_100_120.png}
+        \caption{SAD using the product Copula}
+        \label{fig:belief_independence}
+    \end{subfigure}\hfill
+    \begin{subfigure}{0.48\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/bel_independence_100_120_zoom.png}
+        \caption{Zoom of the rectangle in (a)}
+        \label{fig:belief_independence_zoom}
+    \end{subfigure}\\
+    \begin{subfigure}{0.48\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/bel_100_120.png}
+        \caption{SAD using the Gaussian Copula}
+        \label{fig:belief_gaussian}
+    \end{subfigure}\hfill
+    \begin{subfigure}{0.48\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/bel_100_120_zoom.png}
+        \caption{Zoom of the rectangle in (c)}
+        \label{fig:belief_gaussian_zoom}
+    \end{subfigure}
+    \caption{Plausibility levels of a cost curve for the product copula $C_\Pi$ and the Gaussian copula $C_R$. The green vertical line represents the true disparity. The figure on the right are a zoom of the black dashed rectangle.}
+    \label{fig:belief_curves}
+\end{figure}
+
+A visualization of different plausibility levels of the SAD cost curve are presented in figure \ref{fig:belief_curves}, computed with the product copula $C_\Pi$ and a Gaussian copula $C_R$. As both copulas assign non-null masses to the same focal sets, their support ($\mathrm{Pl}>0$) is the same. Taking a copula close to the lower Fréchet-Hoeffding bound (which is not a copula for $n>2$), would lead to a different support, as the image of marginal focal set would be assigned a null mass. Figures \ref{fig:belief_independence_zoom} and \ref{fig:belief_gaussian_zoom} display the fact that the values covered by the plausibility levels vary with the  copula used. The only exception to this concerns the plausibility level $\gamma=1$, corresponding to the SAD curve without noise. The plausibility levels $0.85$ and $0.5$ are more concentrated around plausibility level $1$ in the case of the product copula than in the case of the Gaussian copula. Conversely, plausibility level $0.9$ is closer to plausibility level $1$ in the case of the Gaussian copula. This is due to the fact that the Gaussian copula $C_R$ is more co-monotone than the product copula, given the correlation matrix $R$ described in \eqref{eq:correlation}.
+
+\section{Estimating Propagated Credal Sets Using Monte Carlo Sampling}
+In order to evaluate the validity of the propagated belief functions, we try to estimate $\M_{robust}$ using Monte Carlo samplings. We first generate probability distributions belonging in the marginal credal sets. This sampling is not random as we generate probability distributions in such a way that the probability range on events imposed by the marginal possibility distributions is uniformly covered. We also make sure that lower and upper bounds on events are all reached at least once, in order to include ``extreme'' distributions in our simulations. Once every marginal probability distribution of every pixel used to compute a cost curve has been sampled, we can generate random samples from their joint distribution. We thus generate samples from the copula and marginals as detailed in section \ref{sec:sampling_copula}. This yields noised version of patches from the left images, where the noised samples dependency is modeled by the provided copula. Finally, we compute the cost curves using those random images, giving us Monte Carlo samples of the SAD cost curves for a given copula.
+
+Note that we could simulate a single version of the noised pair of images, but that would require to sample from a copula of very large dimension (the number of pixels in both images). This is not realistically feasible, even thought it would ensure that the same version of noised pixels are used in all cost curves (or in other words, for a single draw, the noised intensities will not change depending on the cost curve computed). We instead generate noise samples for each row separately: noised values of pixels will not change during the evaluation of a cost curve for different disparities, or between the cost curves of pixels of the same row. However, their values might change between cost curves of pixels belonging to different rows. For instance, let's consider a pixel $p=(row,~col)\in I_L$ for which we computed a noised intensity $i_p$. Then we will use the same noised value $i_p$ of intensity when computing the SAD of every pixel $q=(row,~col')\in I_L$. But when computing the SAD of every pixel $q=(row-1,~col')\in I_L$, we will use a different Monte Carlo draw for the value $i_p$, which will stay the same for every pixel of row $row-1$. Because we draw a high number of Monte Carlo draws ($10,000$) for each row, the effect of this of proceeding should not be noticeable. 
+
+Monte Carlo draws using the Gaussian copula and marginals credal sets of \ref{eq:pixel_possibility} are plotted in figures \ref{fig:montecarlo_gauss_100_120} and \ref{fig:montecarlo_gauss_200_150}. Different plausibility levels, similar to those of figures \ref{fig:belief_curves}, also appear for comparison. The support envelopes from plausibility levels $\mathrm{Pl}>0$ correctly contain all Monte Carlo samplings for all considered copulas. We can observe in Figure \ref{fig:montecarlo_gauss_200_150_zoom2} that plausibility levels sometimes fail to correctly grasp the fluctuations of the dispersion of the samples, even though they seem to correctly contain Monte Carlo samples. For instance, Monte Carlo draws are first dense around disparity $-37$, then seem to spread around $-35$, and finally regather around disparity $-32$. The plausibility envelopes are more regular in this disparity range. This illustrates the fact the ``true'' point-wise credal $\M_{robust}$ set described in section \ref{sec:robust_method} and approximated with Monte Carlo samples is different from that the joint credal set $\M_{mass}$ from section \ref{sec:joint_mass}. Although some differences persist between those sets, Figure \ref{fig:montecarlo_gauss_100_120_zoom2} or \ref{fig:montecarlo_gauss_200_150_zoom2} suggest that Monte Carlo simulations can correctly estimate the point-wise credal set $\M_{robust}$ by joining belief functions using a copula as in equation \eqref{eq:joint_mass}. This is furthermore justified by the  quantitative analysis presented in Table \ref{tab:Coverage}, where the proportion of Monte Carlo samplings contained inside the plausibility envelopes, is computed for different plausibility levels $\gamma$. We will call this proportion ``coverage''. The coverage for figures \ref{fig:montecarlo_gauss_100_120} and \ref{fig:montecarlo_gauss_200_150} are presented in the first and second rows of Table \ref{tab:Coverage} respectively. The global coverage over the whole left image is presented in the last row of the table. The coverage is always $100\%$ for $\gamma=0$, which indicates that every sample is contained inside the support envelopes. \comroman{Je pense que ce que je dis ensuite est faux. Le coverage ne donne pas d'indication sur les plausibility estimées, car celles ci ne retranscrivent pas une fréquence mais seulement un niveau de croyance. Comment donner une interprétation correcte de la densité?} As envelopes are defined as lower and upper bounds of the focal sets with a plausibility superior to $\gamma$, the coverage should be superior to $1-\gamma$, which is indeed the case.
+
+\begin{figure}
+    \centering
+    \begin{subfigure}{1\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/cost_curve_100_120.png}
+        \caption{Plausibility levels and Monte Carlo sampling using a Gaussian copula}
+        \label{fig:montecarlo_gauss_100_120_large}
+    \end{subfigure}\\
+    \begin{subfigure}{0.45\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/cost_curve_100_120_zoom1.png}
+        \caption{Zoom over the first rectangle}
+        \label{fig:montecarlo_gauss_100_120_zoom1}
+    \end{subfigure}\hfill
+    \begin{subfigure}{0.45\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/cost_curve_100_120_zoom2.png}
+        \caption{Zoom over the second rectangle}
+        \label{fig:montecarlo_gauss_100_120_zoom2}
+    \end{subfigure}
+    \caption{Plausibility levels and Monte Carlo sampling for a pixel of the left image}
+    \label{fig:montecarlo_gauss_100_120}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}{\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/cost_curve_200_150.png}
+        \caption{Plausibility levels and Monte Carlo sampling using a Gaussian copula}
+        \label{fig:montecarlo_gauss_200_150_large}
+    \end{subfigure}\\
+    \begin{subfigure}{0.45\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/cost_curve_200_150_zoom1.png}
+        \caption{Zoom over the first rectangle}
+        \label{fig:montecarlo_gauss_200_150_zoom1}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.45\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/cost_curve_200_150_zoom2.png}
+        \caption{Zoom over the second rectangle}
+        \label{fig:montecarlo_gauss_200_150_zoom2}
+    \end{subfigure}
+    \caption{Plausibility levels and Monte Carlo sampling for a pixel of the left image}
+    \label{fig:montecarlo_gauss_200_150}
+\end{figure}
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\rowcolor[HTML]{C0C0C0}
+$p=(row,col)$ & $\gamma=0.9$  & $\gamma=0.85$ & $\gamma=0.5$  & $\gamma=0$   \\ \hline
+\cellcolor[HTML]{C0C0C0}$(100,~120)$     & $64,5\%$ & $94,5\%$ & $99,0\%$ & $100\%$ \\ \hline
+\cellcolor[HTML]{C0C0C0}$(200,~150)$     & $30,0\%$ & $82,6\%$ & $95,2\%$ & $100\%$ \\ \hline
+\cellcolor[HTML]{C0C0C0}Global        & $41,1\%$ & $87,6\%$ & $96,8\%$ & $100\%$ \\ \hline
+\end{tabular}
+\caption{Average coverage for various plausibility levels $\gamma$ and for different pixels $p$ of the left image.}\label{tab:Coverage}
+\end{table}
 
 \pagebreak
