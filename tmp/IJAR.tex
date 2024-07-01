@@ -1,0 +1,83 @@
+% Reformulated LaTeX Code
+
+\documentclass{article}
+\usepackage{amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{float}
+
+\begin{document}
+
+\section{Computing Confidence Envelopes in Stereo Matching}
+
+In stereo matching, computing confidence envelopes for the cost volume can provide valuable insights into potential matches. This section outlines observations suggesting that incorporating this information can enhance the performance of stereo-matching algorithms.
+
+A common metric for evaluating stereo algorithm performance is the proportion of pixels $(i, j)$ for which the absolute difference between the true disparity and the predicted disparity is less than one pixel. Let $d_{\mathrm{true}}(i, j)$ denote the true disparity and $\tilde{d}(i, j) = \arg \min_d \mathrm{SAD}(i, j, d)$ be the estimated disparity at pixel $(i, j)$. The score \( s \) is defined as:
+\begin{equation}
+    s = \frac{\#\{(i, j) \mid |d_{\mathrm{true}}(i, j) - \tilde{d}(i, j)| < 1\}}{\#\{(i, j)\}}\,.
+\end{equation}
+
+For a given confidence level $\gamma \in [0, 1]$ and a pixel $(i, j)$, we define the set of potential disparities $D_\gamma^{i, j}$ as:
+\begin{equation}
+    D_\gamma^{i, j} = \{d \mid \underline{\mathrm{SAD}}_\gamma(i, j, d) \leq \overline{\mathrm{SAD}}_\gamma(i, j, \tilde{d})\}\,.
+\end{equation}
+This set contains all disparities for which the lower estimate of $\mathrm{SAD}_\gamma$ at confidence level $\gamma$ is less than or equal to the upper estimate of $\mathrm{SAD}_\gamma$ at the predicted disparity $\tilde{d}$.
+
+To evaluate if this set holds relevant information, we compute the optimal score \( s_\gamma^{\text{opt}} \) achievable using the set of possible disparities:
+\begin{equation}
+    s_\gamma^{\text{opt}} = \frac{\#\{(i, j) \mid \min_{d \in D_\gamma^{i, j}} |d_{\mathrm{true}}(i, j) - d| < 1\}}{\#\{(i, j)\}}\,.
+\end{equation}
+
+We define the potential gain as \( \Delta s_\gamma = s_\gamma^{\text{opt}} - s \). Examples of optimal scores and potential gains for various $\gamma$ values are provided in Table \ref{tab:optimal_score}. It is observed that while the potential gain for $\gamma = 0.9$ is modest, it increases significantly for lower $\gamma$ values.
+
+A pixel at position $(i, j)$ benefits from the method if:
+\begin{equation}
+    |d_{\mathrm{true}}(i, j) - \tilde{d}(i, j)| \geq 1 \quad \text{and} \quad \min_{d \in D_\gamma^{i, j}} |d_{\mathrm{true}}(i, j) - d| < 1\,.
+\end{equation}
+In simpler terms, a pixel benefits if the estimated disparity $\tilde{d}$ is off by more than one pixel from the true disparity, but there exists a disparity in $D_\gamma^{i, j}$ within one pixel of the true disparity.
+
+Figure \ref{fig:improvements} shows the spatial distribution of pixels that can benefit from this method. Pixels in occluded regions, which lack a match, are highlighted in orange. Pixels where potential improvement can occur are shown in blue. Notably, these pixels are typically found in homogeneous areas where multiple disparities have low matching costs, as illustrated in Figure \ref{fig:montecarlo_gauss_200_150_large}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{path_to_your_figure.png}
+    \caption{Spatial distribution of pixels benefiting from the method. Pixels in occluded regions are marked in orange. Pixels with potential improvements are marked in blue.}
+    \label{fig:improvements}
+\end{figure}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|}
+        \hline
+        $\gamma$ & $s_\gamma^{\text{opt}}$ & $\Delta s_\gamma$ \\
+        \hline
+        0.9 & 0.85 & 0.02 \\
+        0.8 & 0.87 & 0.04 \\
+        % Add more rows as necessary
+        \hline
+    \end{tabular}
+    \caption{Examples of optimal scores and potential gains for different $\gamma$ values.}
+    \label{tab:optimal_score}
+\end{table}
+
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\rowcolor[HTML]{C0C0C0} 
+$s=52.87\%$                                & $\gamma=0.9$ & $\gamma=0.85$ & $\gamma=0.5$ & $\gamma=0$ \\ \hline
+\cellcolor[HTML]{C0C0C0}$s_\gamma^{opt}$   & $56.92\%$    & $66.99\%$     & $74.28\%$    & $81.75\%$  \\ \hline
+\cellcolor[HTML]{C0C0C0}$\Delta s_\gamma$ & $4.05\%$     & $16.11\%$     & $21.41\%$    & $28.87\%$  \\ \hline
+\end{tabular}
+\caption{Optimal score and potential gain for different plausibility $\gamma$}\label{tab:optimal_score}
+\end{table}
+
+\section{Conclusion}
+This work presents a real-world application of uncertainty propagation using possibility distributions as models, coupled with copulas to describe dependencies between different random sources. To address uncertainty in the matching step of a photogrammetry 3D pipeline, we introduce cost functions and propose a simple model to represent the sources of uncertainty in input images. The various steps of uncertainty propagation are detailed for instructional purposes, demonstrating the potential of using imprecise models in practical scenarios. Additionally, we propose a sufficient condition for preserving possibilities (i.e., maintaining the nesting of focal elements) after propagation, which can help reduce computational time.
+
+Envelopes are derived from the propagated plausibility functions, effectively framing different types of input noise, as shown by Monte Carlo simulations in our empirical studies. Although copulas have different interpretations when used with precise density functions versus mass functions induced by belief functions, simulations indicate that the propagated belief functions can generate accurate envelopes that estimate the possible values of the cost function. We also show that incorporating uncertain cost functions can potentially enhance the performance of stereo matching algorithms, despite introducing additional uncertainty.
+
+We have demonstrated the use of imprecise probability to estimate the cost function in a photogrammetry 3D pipeline but did not account for uncertainty arising from the function's formulation itself. In other words, we considered uncertainty in the input but not in the model. It is not guaranteed that comparing two image patches as we did will always determine all disparities with certainty. Future work should address both the uncertainty in the input image and the uncertainty related to the cost function's ability to accurately identify homologous pixels. This accuracy is influenced by various factors, such as the choice of the cost function, the size and shape of the windows, and the use of geometric regularization, among others. Imprecise models could provide the necessary tools to effectively manage this uncertainty. Another potential direction is to extend this approach to more complex cost functions and other stages of the 3D pipeline, such as the rasterization of imprecise 3D point clouds or the stereo-rectification of image pairs.
+
+\end{document}
+

@@ -1,7 +1,7 @@
 \chapter{Mathematical Representations of Uncertainty}
 
 \section{Notations}
-We introduce here a few notations that will be used in the rest of this chapter. \comroman{A ajouter au fur et à mesure}
+We introduce here a few notations that will be used in the rest of this chapter. \todoroman{A ajouter au fur et à mesure}
 \begin{itemize}
     \item \st means ``such that''
     \item We will often present theorems or results with $n$ different variables, spaces, or Cartesian products of $n$ elements. Notations therefore quickly become quite heavy. We try our best to make them clear and readable, which is why we often use the contraction ``$\dots$'' to imply that we are enumerating all variables. For instance, if we apply a function $f$ to four variables $x_1, x_2, x_3, x_4$, we will write $f(x_1, \dots, x_4)$.
@@ -20,8 +20,14 @@ Classical framework to represent uncertainty. Epistemic vs stochastic uncertaint
 \section{Gambles, imprecise probabilities}
 Introduction to IP, how it contains the classical probability framework. Pboxes there?
 Define coherence, sure loss, cylindrical sets
-\section{Specific case of possibility distributions}
+\section{Specific case of possibility distributions}\label{sec:possibilities}
 Link with fuzzy sets. A simple and useful model, but with limited expressiveness (n focal sets and not $2^n$). Nested focal sets. Used to model experts opinions with examples \cite{baudrit_joint_2007}
+
+Formally, a possibility distribution is defined as a mapping $\pi: \Omega \rightarrow [0,1]$ satisfying:
+\begin{equation}
+	\exists \omega \in \Omega, \pi(\omega) = 1 \label{eq:possibility}
+\end{equation}
+where $\Omega$ is the set of possible observed states. The value $\pi(\omega)$ represents the degree of possibility of the event $\omega$, with $\pi(\omega) = 1$ indicating full possibility, and $\pi(\omega) = 0$ indicating impossibility.
 
 \begin{align}
     \mathrm{Nec}(A)=1-\sup_{x\in A^c}\pi(x)\label{eq:bel_pl}\\
@@ -29,7 +35,7 @@ Link with fuzzy sets. A simple and useful model, but with limited expressiveness
 \end{align}
 
 \section{Copulas}\label{sec:copulas}
-\comroman{Define also sub copulas\\Talk briefly about imprecise copula too}
+\todoroman{Define also sub copulas\\Talk briefly about imprecise copula too}
 
 In the following sections, we will work with multiple random variables. Let $n\in\mathbb{N}^*$ be the number of random variables considered. A copula is a multivariate distribution function $C:[0,1]^{n}\rightarrow [0,1]$ whose marginals follow uniform distributions on $[0,1]$. It can be interpreted as a joint cumulative distribution of $n$ random variables. For all $i\in\opi 1,n\cli $, we will refer to $u_i\in[0,1]$ as its $i$-th variable (or marginal). A copula verifies a number of properties:
 \begin{align}
@@ -346,17 +352,17 @@ When working with precise probabilities, a copula $C$ joins univariate Cumulativ
 \subsection{Point-wise aggregation}\label{sec:robust_method}
 A first way of creating a joint credal set is to sample a precise marginal for each marginal credal sets $\M_i$ and to use Sklar's theorem with the copula $C$ to create a precise multivariate CDF. The set of all resulting CDFs is thus:
 \begin{eqnarray}\label{eq:robust_ancestor}
-    \mathcal{S}(C,\M_i) = \{F~|~\forall x_i \in \X_i,~ F(x_1,\dots,x_n) = C(F_1(x_1), \dots, F_n(x_n))\}
-\end{eqnarray} where $F_i\in\M_i$.
-
-This set is not strictly a credal set as it is not guaranteed to be convex \cite{schmelzer_random_2023}. We thus define the joint credal set as the convex hull $\M_{robust}$ of $\mathcal{S}$:
-
-\begin{eqnarray}\label{eq:robust_set}
-    \M_{robust}(C,\M_i) = \{&&F~|~\forall A \subseteq \X,\nonumber\\
-    &&\inf_{G\in\mathcal{S}(C,\M_i)}G(A)\leqslant F(A)\leqslant\sup_{G\in\mathcal{S}(C,\M_i)}G(A)~\}
+    \mathcal{S}(C,\M_i) = \{F~|~\forall x_i \in \X_i,~ F(x_1,\dots,x_n) = C(F_1(x_1), \dots, F_n(x_n)),~F_i\in\M_i \}
 \end{eqnarray}
 
-We refer to this joint credal set as $\M_{robust}(C,\M_i)$ as it contains every element of the marginal credal sets with copula $C$ as their dependency model. We will omit ``$(C,\M_i)$'' when there are no confusion possible to avoid using heavy notations. $\M_{robust}$ is thus the smallest credal set containing $\mathcal{S}$. It is interesting to notice that it can contain additional multivariate CDFs that do not possess the copula $C$ as the dependency model of its marginals. This credal set is not easy to compute for events that are not Cartesian products of marginal cumulated events
+This set is not is not guaranteed to be convex \cite{schmelzer_random_2023}. We thus define the joint credal set as the convex hull $\M_{robust}$ of $\mathcal{S}$:
+ \todoroman{Bien introduire la définition de convex hull au début du chapitre}
+\begin{eqnarray}\label{eq:robust_set}
+    \M_{robust}(C,\M_i) = CH\{\mathcal{S}(C,\M_i)\}
+\end{eqnarray}
+with $F_i$ the cumulative distribution
+
+We refer to this joint credal set as $\M_{robust}(C,\M_i)$ as it contains every element of the marginal credal sets with copula $C$ as their dependency model. We will omit ``$(C,\M_i)$'' when there are no confusion possible to avoid using heavy notations. As we take the convex hull of $\mathcal{S}$, it is interesting to notice that it can contain additional multivariate CDFs that do not possess the copula $C$ as the dependency model of its marginals. This credal set is usually hard to compute for events that are not Cartesian products of marginal cumulated events
 
 \subsection{Copula applied to cumulated mass functions}\label{sec:joint_mass}
 In this section, we will present another way of creating a joint credal set from multiple marginal ones. Consider the same copula $C$ as before and the same marginal credal sets $\M_i$. Each credal set $\M_i$ is fully determined by a mass distribution function $m_i$, which is strictly positive over its $N_i$ focal sets $a^i_1, \dots, a^i_{N_i}$. As described in \cite{ferson_dependence_2004}, it is possible to use the cumulated mass distribution functions as marginals of the copula to create a joint mass distribution function, granted that there is a complete order defined on the focal sets. Links between copulas and belief functions have been investigated in the continuous case in \cite{schmelzer_joint_2015, schmelzer_multivariate_2019}, the special case of necessity functions in \cite{schmelzer_sklars_2015} and of p-boxes in \cite{schmelzer_random_2023}.
@@ -529,7 +535,6 @@ Conversely, no lower probability $\low_C$ obtained using \eqref{eq:copula_on_low
 \end{proof}
 
 \section{Inclusions between joint credal sets}
-\comroman{small results from IJAR}
 \subsection{Product copula}\label{subsection:product_copula}
 In this section, we will consider the case of the product copula $C_\Pi$, representing independence between variables. Using this copula in the robust approach defined by equation \eqref{eq:robust_set} is referred as the strong product in \cite{kacprzyk_factorisation_2010}. Let us denote $\low_{robust}$ the infimum of $\M_{robust}(C_\Pi, \M_i)$ and $\mathcal{S}$ the set from which $\M_{robust}$ is computed (eq. \eqref{eq:robust_ancestor}).
 For cylindrical sets $(A_1, \dots, A_n)$ of $\X$, it holds that:
@@ -541,13 +546,8 @@ For cylindrical sets $(A_1, \dots, A_n)$ of $\X$, it holds that:
 \end{eqnarray*}
 We can split the infimum of a product as a product of infima because we consider mappings with positive values. As this is equivalent of applying the copula directly to the marginals, $\M_{robust}$ and $\M_{agg}$ have the same bounds on cylindrical events. On other events, the lower probabilities are defined as the infimum of the credal sets, thus all bounds are the same and it holds that:
 \begin{eqnarray}
-    \M_{robust}(C_\Pi, \M_i)=\M_{agg}(C_\Pi, \M_i)
+    \M_{robust}(C_\Pi, \M_i)\subseteq\M_{agg}(C_\Pi, \M_i)
 \end{eqnarray}
-\comroman{Sébastien est-ce que tu peux me confirmer cela? Jusqu'à présent on disait que $\M_{robust}\subseteq\M_{agg}$ mais je n'arrive pas à voir pourquoi l'égalité ne tiendrait pas. Il me semble que Bernhard disait dans \cite[Example 5]{schmelzer_random_2023} que ce n'était pas le cas mais je ne suis pas certain qu'on parle bien des mêmes credal sets pour commencer.}
-
-\comseb{Non, on ne peut pas dire ça. Enfin, on peut le dire étant donné ta déf de $\M_{robust}$, mais cette dernière ne revient pas à prendre le CH d'une application point à point de la copule: elle revient à prendre la CH une fois qu'on a projeté l'application point à point sur le sous-domaine des événements. Voir le Chat pour plus d'infos ;). Mais il faut effectivement revoir la déf de $\M_{robust}$.}
-
-\comroman{Je vois. Donc il faudrait définir $\M_{robust}$ uniquement comme dans l'équation \eqref{eq:robust_ancestor}, et laisser tomber la contrainte de convexité si j'ai bien compris. Je t'en reparlerai lundi}
 
 In the case of the product copula $C_\Pi$, the arbitrary orders on the marginal focal sets have no impact on the value of the joint mass $m_\times$ defined in \eqref{eq:joint_mass}. If $a^1_{k_1},\dots,a^n_{k_n}$ is a focal set of $m_1,\dots,m_n$, then $m_\times$ is given by:
 \begin{eqnarray}\label{eq:joint_mass_product}

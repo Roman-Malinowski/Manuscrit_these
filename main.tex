@@ -29,19 +29,22 @@
 
 \usepackage[acronym, toc]{glossaries}
 \usepackage{breakcites} % Citations over multiple lines
-
 %\setlength{\parindent}{0pt}  % Paragraph indentation 
+
+\usepackage[margin,index]{fixme}
 
 %Import the natbib package and sets a bibliography  and citation styles
 \bibliographystyle{apalike}
 
 %=============================== Commands ===================================
 
-\newcommand{\comseb}[1]{{\color{red}SEB: \textit{#1}}}
-\newcommand{\comroman}[1]{{\color{purple}ROMAN: \textit{#1}}}
-\newcommand{\commanu}[1]{{\color{green}MANU: \textit{#1}}}
-\newcommand{\commanue}[1]{{\color{cyan}MANUE: \textit{#1}}}
-\newcommand{\comloic}[1]{{\color{orange}LOIC: \textit{#1}}}
+\newcommand{\todoroman}[1]{{\color{purple}TODO: \textit{#1}}}
+
+\newcommand{\comseb}[1]{{\color{red}\footnote{\color{red}Seb: \textit{#1}}}}
+\newcommand{\comroman}[1]{{\color{purple}\footnote{\color{purple}Roman: \textit{#1}}}}
+\newcommand{\commanu}[1]{{\color{green}\footnote{\color{green}Manu: \textit{#1}}}}
+\newcommand{\commanue}[1]{{\color{blue}\footnote{\color{blue}Manue: \textit{#1}}}}
+\newcommand{\comloic}[1]{{\color{orange}\footnote{\color{orange}Loïc: \textit{#1}}}}
 
 \newcommand{\M}{{\mathfrak{M}}}
 \newcommand{\X}{{\mathcal{X}}}

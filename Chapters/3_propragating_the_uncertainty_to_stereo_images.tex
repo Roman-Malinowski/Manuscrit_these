@@ -1,8 +1,8 @@
-\chapter{Propagating the Uncertainty of Stereo Images}
+\chapter{Propagating the Uncertainty of Stereo Images}\label{chap:propagating}
 This chapter details the work conducted on the propagation of uncertainty from images into the cost curves of dense matching problems. We consider a simple model of uncertainty on the input images, a dependency model between the uncertain intensities of the images, and estimate the resulting uncertainty on the output cost curves. This chapter takes up work and data already published \cite{malinowski_copulas_2022, malinowski_uncertainty_2023, malinowski_robust_2024}.
 
-\section{Sources of uncertainty in stereo matching}
-\comroman{Points à aborder: Atmospheric correction, vibration, resolution of a pixel, discretization.
+\section{Sources of uncertainty in stereo matching}\label{sec:sources_of_uncertainty}
+\todoroman{Points à aborder: Atmospheric correction, vibration, resolution of a pixel, discretization.
 CO3D mission will not have the epipolar line correction problem that is encountered with pleiades images.
 Epipolar line rectification for Pléiades is a problem that is not dealt here.}
 
@@ -17,13 +17,15 @@ with $\alpha \in [0,1]$. The $\pm$ indicates that both positive and negative val
 \end{eqnarray}
 with $\opi\cdot, \cdot\cli$ referring to integer intervals. In particular, $\opi i_p, i_p\cli$ correspond to the singleton $\{i_p\}$.
 
-It is important to note that in this disparity estimation problem, we only account for the uncertainty in our input image intensities, without considering the uncertainty in our cost function's ability to correctly identify the true disparity as its minimum. In other words, we do not account for the uncertainty arising from the difference between ``two patches are very similar'' and ``the pixels at the center of the patches are homologous''. To better illustrate this, imagine a scenario where two pixels should be matched, but the surrounding patches are dissimilar. In this case, the cost function between those two patches would be high, potentially leading to the selection of a different patch with a lower cost function as the estimated disparity. The correct disparity would not be the minimum of the cost curve.
+It is important to note that in this disparity estimation problem, we only account for the uncertainty in our input image intensities, without considering the uncertainty in our cost function's ability to correctly identify the true disparity as its minimum. In other words, we do not account for the uncertainty arising from the difference between ``two patches are very similar'' and ``the pixels at the center of the patches are homologous''. To better illustrate this, imagine a scenario where two pixels should be matched, but the surrounding patches are dissimilar. In this case, the cost function between those two patches would be high, potentially leading to the selection of a different patch with a lower cost function as the estimated disparity. The correct disparity would not be the minimum of the cost curve. This problem tends to appear more often when considering large windows, as the cost function can `average' the similarity of all its pixels, regardless of the similarity of the central ones. 
 
 We consider the Sum of Absolute Differences (SAD) as our cost function, defined as follows. Given patches $W_L\subset I_L$ and $W_R\subset I_R$ of the same shape with $n$ pixels (usually squares):
 \begin{align}
     \mathrm{SAD}(W_L, W_R) = \sum_{(p_i, q_i)\in (W_L, W_R)}|I_L(p_i) - I_R(q_i)|\label{eq:SAD}
 \end{align}
-where $p_i$ and $q_i$ are pixels at the same position $i$ in their patch. For convenience purposes, we will refer to the Absolute Difference as AD. This cost function is not ideal compared to more complex state-of-the-art cost function (\cite{zbontar_stereo_2016}, \cite{laga_survey_2022}), but it is preferred here to focus on simplicity and to ease didactic explanations regarding uncertainty propagation. An illustration of the SAD cost function can be found in Figure \ref{fig:SAD}. An ideal cost function would generate a cost curve with a unique minimum corresponding to the correct disparity. In practice, such a function is hard to determine. There is no guarantee that the minimum is unique, nor that it corresponds to the correct disparity. 
+where $p_i$ and $q_i$ are pixels at the same position $i$ in their patch. For convenience purposes, we will refer to the Absolute Difference as AD. This cost function is not ideal compared to more complex state-of-the-art cost function (\cite{zbontar_stereo_2016}, \cite{laga_survey_2022}), but it is preferred here to focus on simplicity and to ease didactic explanations regarding uncertainty propagation. An illustration of the SAD cost function can be found in Figure \ref{fig:SAD}. Furthermore, we will not consider in this chapter the use of Semi Global Matching (or similar regularization methods), as it necessitates many operations due to its recursive formulation and thus greatly increases complexity for the uncertainty propagation. We diverge from state-of-the-art methods to keep explanations as simple as possible, however the modeling of uncertainty for more advanced cost functions and SGM methods will be considered in chapter \ref{chap:epistemic_uncertainty}.
+
+An ideal cost function would generate a cost curve with a unique minimum corresponding to the correct disparity. In practice, such a function is hard to determine. There is no guarantee that the minimum is unique, nor that it corresponds to the correct disparity. 
 
 \begin{figure}
     \centering
@@ -85,7 +87,7 @@ The non-monotonicity of the absolute value around $0$ needs to be taken into acc
 Bounds of the AD are then summed to obtain the final values of the SAD focal sets. The mass $m_{\mathrm{SAD}}$ of those focal sets are computed using equations \eqref{eq:joint_mass} and \eqref{eq:mass_propagated}. To represent the dependency between pixels of both windows, a Gaussian $18$-copula is used. Splitting the problem using lower dimension copulas is tempting, similarly to what can be done with vine copulas (\cite{czado_vine_2022}). However this is a complex problem that will not be explored in this thesis. We will instead work with Gaussian copulas, introducing a simple method for creating a correlation matrix. This will also allow us to present simple optimisation to reduce computation complexity and splitting the copulas into mutually independent groups of variables. 
 
 \section{Leveraging specificities to accelerate computations}
-\comroman{H Volume etc for SAD example, see IJAR.}
+\todoroman{H Volume etc for SAD example, see IJAR.}
 
 Determining the bounds of the SAD focal sets is mostly straightforward. However, computing the joint mass over two $3 \times 3$ windows is significantly more complex. For each combination of marginal focal sets, the mass $m_{\mathrm{SAD}}$ is computed using the $H$-volume of an $18$-copula, involving a sum of $2^{18}$ terms. Given that the uncertainty for each pixel is represented by $2$ focal sets, we need to evaluate $2^{18}$ combinations of these focal sets in total. This computation can thus become quite costly in memory and computation time, especially when computing it over a whole image. A strategy to reduce computation time is to leverage the fact that the focal sets derived from a possibility distribution (or equivalently from its necessity measure) form a nested family of sets. For simplicity, the following observations will be detailed in the case where there are $n=2$ sources of uncertainty to join, but they hold for every $n\geqslant2$. Propagating two necessity measures $\mathrm{Nec}_1:2^{\X_1} \rightarrow [0,1]$ and $\mathrm{Nec}_2: 2^{\X_2} \rightarrow [0,1]$ through a mapping $f: \X_1 \times \X_2 \rightarrow \mathcal{Z}$ using a copula $C$ does not generally result in a necessity measure, but rather a belief function.
 
@@ -236,7 +238,7 @@ In order to evaluate the validity of the propagated belief functions, we try to 
 
 Note that we could simulate a single version of the noised pair of images, but that would require to sample from a copula of very large dimension (the number of pixels in both images). This is not realistically feasible, even thought it would ensure that the same version of noised pixels are used in all cost curves (or in other words, for a single draw, the noised intensities will not change depending on the cost curve computed). We instead generate noise samples for each row separately: noised values of pixels will not change during the evaluation of a cost curve for different disparities, or between the cost curves of pixels of the same row. However, their values might change between cost curves of pixels belonging to different rows. For instance, let's consider a pixel $p=(row,~col)\in I_L$ for which we computed a noised intensity $i_p$. Then we will use the same noised value $i_p$ of intensity when computing the SAD of every pixel $q=(row,~col')\in I_L$. But when computing the SAD of every pixel $q=(row-1,~col')\in I_L$, we will use a different Monte Carlo draw for the value $i_p$, which will stay the same for every pixel of row $row-1$. Because we draw a high number of Monte Carlo draws ($10,000$) for each row, the effect of this of proceeding should not be noticeable. 
 
-Monte Carlo draws using the Gaussian copula and marginals credal sets of \ref{eq:pixel_possibility} are plotted in figures \ref{fig:montecarlo_gauss_100_120} and \ref{fig:montecarlo_gauss_200_150}. Different plausibility levels, similar to those of figures \ref{fig:belief_curves}, also appear for comparison. The support envelopes from plausibility levels $\mathrm{Pl}>0$ correctly contain all Monte Carlo samplings for all considered copulas. We can observe in Figure \ref{fig:montecarlo_gauss_200_150_zoom2} that plausibility levels sometimes fail to correctly grasp the fluctuations of the dispersion of the samples, even though they seem to correctly contain Monte Carlo samples. For instance, Monte Carlo draws are first dense around disparity $-37$, then seem to spread around $-35$, and finally regather around disparity $-32$. The plausibility envelopes are more regular in this disparity range. This illustrates the fact the ``true'' point-wise credal $\M_{robust}$ set described in section \ref{sec:robust_method} and approximated with Monte Carlo samples is different from that the joint credal set $\M_{mass}$ from section \ref{sec:joint_mass}. Although some differences persist between those sets, Figure \ref{fig:montecarlo_gauss_100_120_zoom2} or \ref{fig:montecarlo_gauss_200_150_zoom2} suggest that Monte Carlo simulations can correctly estimate the point-wise credal set $\M_{robust}$ by joining belief functions using a copula as in equation \eqref{eq:joint_mass}. This is furthermore justified by the  quantitative analysis presented in Table \ref{tab:Coverage}, where the proportion of Monte Carlo samplings contained inside the plausibility envelopes, is computed for different plausibility levels $\gamma$. We will call this proportion ``coverage''. The coverage for figures \ref{fig:montecarlo_gauss_100_120} and \ref{fig:montecarlo_gauss_200_150} are presented in the first and second rows of Table \ref{tab:Coverage} respectively. The global coverage over the whole left image is presented in the last row of the table. The coverage is always $100\%$ for $\gamma=0$, which indicates that every sample is contained inside the support envelopes. \comroman{Je pense que ce que je dis ensuite est faux. Le coverage ne donne pas d'indication sur les plausibility estimées, car celles ci ne retranscrivent pas une fréquence mais seulement un niveau de croyance. Comment donner une interprétation correcte de la densité?} As envelopes are defined as lower and upper bounds of the focal sets with a plausibility superior to $\gamma$, the coverage should be superior to $1-\gamma$, which is indeed the case.
+Monte Carlo draws using the Gaussian copula and marginals credal sets of \ref{eq:pixel_possibility} are plotted in figures \ref{fig:montecarlo_gauss_100_120} and \ref{fig:montecarlo_gauss_200_150}. Different plausibility levels, similar to those of figures \ref{fig:belief_curves}, also appear for comparison. The support envelopes from plausibility levels $\mathrm{Pl}>0$ correctly contain all Monte Carlo samplings for all considered copulas. We can observe in Figure \ref{fig:montecarlo_gauss_200_150_zoom2} that plausibility levels sometimes fail to correctly grasp the fluctuations of the dispersion of the samples, even though they seem to correctly contain Monte Carlo samples. For instance, Monte Carlo draws are first dense around disparity $-37$, then seem to spread around $-35$, and finally regather around disparity $-32$. The plausibility envelopes are more regular in this disparity range. This illustrates the fact the ``true'' point-wise credal $\M_{robust}$ set described in section \ref{sec:robust_method} and approximated with Monte Carlo samples is different from that the joint credal set $\M_{mass}$ from section \ref{sec:joint_mass}. Although some differences persist between those sets, Figure \ref{fig:montecarlo_gauss_100_120_zoom2} or \ref{fig:montecarlo_gauss_200_150_zoom2} suggest that Monte Carlo simulations can correctly estimate the point-wise credal set $\M_{robust}$ by joining belief functions using a copula as in equation \eqref{eq:joint_mass}. This is furthermore justified by the  quantitative analysis presented in Table \ref{tab:Coverage}, where the proportion of Monte Carlo samplings contained inside the plausibility envelopes, is computed for different plausibility levels $\gamma$. We will call this proportion ``coverage''. The coverage for figures \ref{fig:montecarlo_gauss_100_120} and \ref{fig:montecarlo_gauss_200_150} are presented in the first and second rows of Table \ref{tab:Coverage} respectively. The global coverage over the whole left image is presented in the last row of the table. The coverage is always $100\%$ for $\gamma=0$, which indicates that every sample is contained inside the support envelopes. \todoroman{Je pense que ce que je dis ensuite est faux. Le coverage ne donne pas d'indication sur les plausibility estimées, car celles ci ne retranscrivent pas une fréquence mais seulement un niveau de croyance. Comment donner une interprétation correcte de la densité?} As envelopes are defined as lower and upper bounds of the focal sets with a plausibility superior to $\gamma$, the coverage should be superior to $1-\gamma$, which is indeed the case.
 
 \begin{figure}
     \centering
@@ -299,5 +301,81 @@ $p=(row,col)$ & $\gamma=0.9$  & $\gamma=0.85$ & $\gamma=0.5$  & $\gamma=0$   \\ 
 \end{tabular}
 \caption{Average coverage for various plausibility levels $\gamma$ and for different pixels $p$ of the left image.}\label{tab:Coverage}
 \end{table}
+
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}{0.48\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Improvements_Pl=0.9.png}
+        \caption{$\gamma=0.9,~\Delta s_\gamma=4.05\%$}
+        \label{fig:improvements_a}
+    \end{subfigure}
+    \begin{subfigure}{0.48\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Improvements_Pl=0.85.png}
+        \caption{$\gamma=0.85,~\Delta s_\gamma=16.11\%$}
+        \label{fig:improvements_b}
+    \end{subfigure}\\
+    \begin{subfigure}{0.48\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Improvements_Pl=0.5.png}
+        \caption{$\gamma=0.5,~\Delta s_\gamma=21.41\%$}
+        \label{fig:improvements_c}
+    \end{subfigure}
+    \begin{subfigure}{0.48\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Improvements_Pl=0.0.png}
+        \caption{$\gamma=0,~\Delta s_\gamma=28.87\%$}
+        \label{fig:improvements_d}
+    \end{subfigure}
+    \caption{Spatial disposition of potential improvements for different values of $\gamma$. Pixels with potential improvements appear in blue. Occluded pixels, for which a correct disparity does not exist, appear in orange. Grayscale left image is displayed on the background.}
+    \label{fig:improvements}
+\end{figure}
+
+\section{Leveraging Confidence Envelopes for Potential Improvements}
+
+Knowing the uncertainty, in our case represented as confidence envelopes, can provide valuable insights into potential matches. This section outlines observations suggesting that incorporating this information can enhance the performance of stereo-matching algorithms.
+
+A common metric for evaluating stereo algorithm performance is the proportion of pixels $(row, col)$ for which the absolute difference between the true disparity and the predicted disparity is less than one pixel. This metric is used as we only consider integer disparities, but the ground truth disparity can be any real number in the disparity range. We thus consider a disparity to be ``correct'' if it is less than one pixel away from the true disparity. With this definition, there can be two ``correct'' disparities for every cost curve, which is inherent to the limited number of disparities one can consider. Let $d_{\mathrm{true}}(row, col)$ denote the true disparity and $\tilde{d}(row, col) = \arg \min_d \mathrm{SAD}(row, col, d)$ be the estimated disparity at pixel $(row, col)$. The score \( s \) is defined as:
+\begin{equation}
+    s = \frac{\#\{(row, col) \text{ such that } |d_{\mathrm{true}}(row, col) - \tilde{d}(row, col)| < 1\}}{\#\{(row, col)\}}\,.
+\end{equation}
+
+For a given confidence level $\gamma \in [0, 1]$ and a pixel $(row, col)$, we define the set of potential disparities $D_\gamma^{row, col}$ as:
+\begin{equation}
+    D_\gamma^{row, col} = \{d \mid \underline{\mathrm{SAD}}_\gamma(row, col, d) \leq \overline{\mathrm{SAD}}_\gamma(row, col, \tilde{d})\}\,.
+\end{equation}
+
+This set contains all disparities for which the lower estimate of $\mathrm{SAD}_\gamma$ at confidence level $\gamma$ is less than or equal to the upper estimate of $\mathrm{SAD}_\gamma$ at the predicted disparity $\tilde{d}$.
+
+To evaluate if this set holds relevant information, we compute the optimal score \( s_\gamma^{\text{opt}} \) achievable using the set of possible disparities:
+\begin{equation}
+    s_\gamma^{\text{opt}} = \frac{\#\{(row, col) \mid \min_{d \in D_\gamma^{row, col}} |d_{\mathrm{true}}(row, col) - d| < 1\}}{\#\{(row, col)\}}\,.
+\end{equation}
+
+\todoroman{Inclure un schéma pour montrer ce qu'est $s_\gamma$}
+
+We define the potential gain as \( \Delta s_\gamma = s_\gamma^{\text{opt}} - s \). Examples of optimal scores and potential gains for various $\gamma$ values are provided in Table \ref{tab:optimal_score}. We can see that while the potential gain for $\gamma = 0.9$ is low, it increases significantly for $\gamma$ values closer to $0$.
+
+A pixel at position $(row, col)$ benefits from the method if:
+\begin{equation}
+    |d_{\mathrm{true}}(row, col) - \tilde{d}(row, col)| \geq 1 \quad \text{and} \quad \min_{d \in D_\gamma^{row, col}} |d_{\mathrm{true}}(row, col) - d| < 1
+\end{equation}
+In simpler terms, the disparity at a given position could be improved if it is currently not correct, and if a correct  disparity is in $D_\gamma^{row, col}$.
+
+Figure \ref{fig:improvements} displays the spatial distribution of pixels that can benefit from this method. Pixels in occluded regions, \ie pixels only appearing in one of the two images, are highlighted in orange. Those pixels cannot be improved as no true disparity exists. Pixels where potential improvement can occur are shown in blue. Notably, these pixels are typically found in homogeneous areas where multiple disparities have low matching costs, as illustrated in Figure \ref{fig:montecarlo_gauss_200_150_large}. For those cost curves, there can exist a cost curve contained in the plausibility envelopes which would give a correct disparity as its minimum.
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\rowcolor[HTML]{C0C0C0} 
+$s=52.87\%$                                & $\gamma=0.9$ & $\gamma=0.85$ & $\gamma=0.5$ & $\gamma=0$ \\ \hline
+\cellcolor[HTML]{C0C0C0}$s_\gamma^{opt}$   & $56.92\%$    & $66.99\%$     & $74.28\%$    & $81.75\%$  \\ \hline
+\cellcolor[HTML]{C0C0C0}$\Delta s_\gamma$ & $4.05\%$     & $16.11\%$     & $21.41\%$    & $28.87\%$  \\ \hline
+\end{tabular}
+\caption{Optimal score and potential gain for different plausibility $\gamma$. The potential gain is computed with regards to the usual score $s=52,87\%$.}\label{tab:optimal_score}
+\end{table}
+
 
 \pagebreak

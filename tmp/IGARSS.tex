@@ -1,0 +1,170 @@
+\section{Intro}
+\begin{figure}[b]
+    \centering
+    \includegraphics[width=\linewidth]{Images/CARS_pipeline_detailed.png}
+    \caption{CARS Pipeline}
+    \label{fig:Cars_pipeline}
+\end{figure}
+
+Digital Surface Models (DSM) find widespread use in various remote sensing applications \cite{berthier_glacier_2014, deschamps-berger_apport_2021}. The CO3D mission, initiated by CNES and Airbus Defense & Space (\url{https://co3d.cnes.fr/fr}), aims to automatically generate DSM from Very High Resolution (VHR) images on a global scale. To process VHR satellite images, CNES has developed the CARS multi-view stereo pipeline \cite{michel_new_2020}, which ensures scalability, robustness, and high performance through parallel computations. The pipeline constructs DSM from pairs of images, employing several conventional steps illustrated in Figure~\ref{fig
+}.
+
+\begin{figure}[b]
+\centering
+\includegraphics[width=1\linewidth]{Images/Peyto_ROI_4200_520-830.png}
+\caption{Elevation intervals along a row of the Peyto scene. The orthoimage with the highlighted row appears in the bottom left.}
+\label{fig
+}
+\end{figure}
+
+Alongside generating DSM, CARS evaluates the quality of height reconstructions using a confidence measure \cite{sarrazin_ambiguity_2021}, indicating the reliability of elevation values at each pixel. While valuable, these measures do not indicate the range of other possible outcomes around predicted values. This paper proposes addressing this limitation by introducing confidence intervals, as depicted in Figure \ref{fig
+}. Confidence intervals capture the magnitude of errors, a feature absent in traditional confidence measures.
+
+Traditional methods for computing confidence intervals on DSM use \textit{a posteriori} approaches \cite{deschamps-berger_apport_2021, hugonnet_uncertainty_2022, wang_robust_2015}, deriving intervals solely from the output DSM and a reference DSM, irrespective of the process used to derive them. These methods statistically estimate squared error residuals between the computed DSM and a set of reference points obtained independently or by resampling the computed DSM, resulting in a single confidence interval on the mean or median of squared errors. In contrast, this article computes elevation confidence intervals concurrently with DSM production by estimating potential algorithmic errors within the pipeline. This approach diverges from traditional \textit{a posteriori} methods by eliminating the need for a reference DSM. Moreover, it produces confidence intervals for the elevation of every pixel in the output raster with a targeted 90% accuracy, rather than a single interval estimating the mean or median squared errors.
+
+A significant contribution of this paper lies in leveraging robust uncertainty models, specifically possibility distributions \cite{dubois_when_1992}, to characterize uncertainty in the dense stereo matching phase of the pipeline. Possibility distributions are adept at modeling epistemic uncertainty (due to knowledge gaps) and facilitating the retrieval of confidence intervals.
+
+The subsequent section details the methodology for creating disparity intervals during stereo matching, followed by an explanation of how these intervals propagate into elevation intervals across triangulation, filtering, and rasterization steps. Finally, we evaluate the accuracy of the confidence intervals on DSM derived from Pléiades images, which boast sub-meter resolution. Evaluation includes comparison against LiDAR acquisitions serving as reference data in Montpellier, France, Peyto glaciers in Canada, and mountains in Yosemite Park, USA.
+
+\section{Method for Creating Disparity Intervals}\label{sec
+}
+
+The computation of the disparity map is a critical step in the DSM generation process, as its accuracy directly impacts the quality of the resulting DSM. Consequently, we focus on determining confidence intervals during this disparity computation phase. The CARS pipeline utilizes Pandora, a stereo matching framework developed by CNES and CS, to compute the disparity map (see Figure \ref{fig
+}) \cite{cournet_ground_2020}. Pandora estimates a cost volume CVCV​, where CV(i,j,d)CV​(i,j,d) represents the matching cost between pixel (i,j)(i,j) in the left image and pixel (i,j+d)(i,j+d) in the right image, with dd being the disparity. We leverage this cost volume information to identify the most probable disparities for each pixel (i,j)(i,j).
+
+To model the uncertainty in these disparities, we utilize \textit{possibility distributions}. A possibility distribution is a function mapping disparities to values in the range [0,1][0,1], where the value 1 is reached at least once. This concept is closely related to fuzzy sets \cite{dubois_when_1992}. The possibility distribution πi,j(d)πi,j​(d) expresses the degree to which dd is a plausible disparity for pixel (i,j)(i,j): a value of 1 indicates that dd is fully possible, while a value of 0 indicates that dd is impossible. We define the possibility πi,jπi,j​ for each pixel using the following formula, where CVmin⁡CVmin​ and CVmax⁡CVmax​ denote the minimum and maximum values of the cost volume:
+
+\begin{equation}
+\pi_{i,j}(d) = 1 - \frac{C_V(i,j,d) - \min_{\delta} C_V(i,j,\delta)}{C_V^{\max} - C_V^{\min}}
+\end{equation}
+
+Using πi,jπi,j​, we determine the set of most probable disparities DD, defined as the set of disparities for which the possibility is at least 0.9. The disparity confidence interval [d‾,d‾][d​,d] is then given by:
+
+\begin{eqnarray}
+\mathcal{D} = { d \mid \pi_{i,j}(d) \geq 0.9 }, \quad \underline{d} = \min \mathcal{D}, \quad \overline{d} = \max \mathcal{D}
+\end{eqnarray}
+
+Figure \ref{fig} illustrates an example of a cost function transformed into a possibility distribution, with the resulting disparity interval marked by arrows. Figure \ref{fig
+} shows an example of disparity intervals along a row of an epipolar image.
+
+\begin{figure}[htb]
+\includegraphics[width=\linewidth]{Images/disp_to_poss.png}
+\caption{Transformation of a cost function (left) into a possibility distribution (right). The arrows indicate the derived disparity interval.}
+\label{fig
+}
+\end{figure}
+
+\begin{figure}[htb]
+\includegraphics[width=\linewidth]{Images/disp_intervals.jpg}
+\caption{Disparity intervals along a row of an epipolar image.}
+\label{fig
+}
+\end{figure}
+
+In our experiments, we compute the cost volume using the CENSUS similarity measure combined with Semi-Global Matching (SGM) for regularization. To refine the disparity map and ensure consistency, we apply a median filter to correct local outliers. This filter is applied independently to the disparity map and the interval bounds. For a detailed methodology on creating disparity intervals, refer to \cite{malinowski_robust_2024}, which validates the $90\%$ confidence rate of the intervals. The next section explains how these disparity intervals are propagated into elevation intervals.
+
+\section{Propagating Disparity Intervals into Elevation Intervals}
+
+\subsection{Triangulation}
+With the disparity map and the sensor model in hand, we can compute the 3D coordinates for each pixel in the images by intersecting the sensor's lines of sight—a process known as triangulation (see Figure \ref{fig:Cars_pipeline}). Each pixel \( p = (i, j) \) corresponds to a 3D point \( P_{i,j} = (x, y, z) \). Similarly, we estimate the upper and lower bounds of these 3D coordinates by intersecting the lines of sight using the bounds of the disparity intervals. Consequently, each pixel \( p = (i, j) \) is associated with a triplet of 3D points: \( P_{i,j} = (x, y, z) \), \( \underline{P}_{i,j} = (\underline{x}, \underline{y}, \underline{z}) \), and \( \overline{P}_{i,j} = (\overline{x}, \overline{y}, \overline{z}) \), calculated using the predicted disparity and its confidence interval bounds.
+
+\footnote{When dealing with disparities that are entirely negative, the points \( \overline{P}_{i,j} \) are derived using \( \underline{d} \), and \( \underline{P}_{i,j} \) using \( \overline{d} \).}
+
+For further processing, we simplify by considering that horizontal coordinates (\( x, y \)) remain approximately constant, \( \underline{x} \approx \overline{x} \approx x \) and \( \underline{y} \approx \overline{y} \approx y \), given that the $B/H$ ratio (baseline to height ratio) is about 0.3. This means variations in \( x \) and \( y \) are minor compared to variations in \( z \). For each pixel \( p = (i, j) \), we obtain a set of 3D points as follows:
+
+\begin{equation}
+    \underline{P}_{i,j} = (x, y, \underline{z}), \quad P_{i,j} = (x, y, z), \quad \overline{P}_{i,j} = (x, y, \overline{z})
+\end{equation}
+
+\subsection{Filtering}
+To ensure the quality of the 3D point cloud, various filtering steps are employed. It's crucial to maintain consistency between the predicted 3D coordinates and their confidence intervals during these steps. In the point cloud filtering phase, we remove statistical outliers and small clusters of 3D points that are isolated from other clusters. Applying filters independently to the main point cloud and to the interval bounds could lead to inconsistencies. Therefore, when filtering out a point \( P_{i,j} = (x, y, z) \) from the main point cloud, we also remove its associated interval bounds \( \underline{P}_{i,j} \) and \( \overline{P}_{i,j} \).
+
+\subsection{Rasterization}
+The point cloud is then converted into a raster format (Figure \ref{fig:Cars_pipeline}) using a weighted mean approach. Weights are calculated based on a Gaussian function that considers the distance between each 3D point and the center of the corresponding raster cell. To maintain consistency, this Gaussian weighting is applied uniformly to the main point cloud and to the interval bounds.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{Images/Peyto.png}
+    \caption{LiDAR DSM and misestimated intervals (red pixels) on the orthoimage for the Peyto region. Achieved accuracy is 92%.}
+    \label{fig:peyto}
+\end{figure}
+
+\section{Evaluation}
+
+\subsection{Datasets}
+Using the CARS pipeline, we generate DSMs at a resolution of 0.5 meters from Pléiades images originally at 0.7 meters, resampled to 0.5 meters. For validation, we use reference DSMs obtained through LiDAR acquisitions. The computed DSMs are co-registered with the ground truth using the method described in \cite{nuth_co-registration_2011}. The evaluation covers scenes from Montpellier, France (MTP), Peyto Glacier in Canada (Peyto), and two locations in California, USA (Cal 1 and Cal 2). Detailed information about these datasets is provided in Table \ref{tab:datasets}. We extend our gratitude to the Engineering Research Council of Canada, the Tula Foundation (Hakai Institute), CESBIO, and the Airborne Snow Observatories for providing the ground truth data.
+
+\begin{table}[ht]
+\begin{center}
+\small
+\begin{tabular}{|c|c|c|c|} 
+    \hline
+    \cellcolor[gray]{0.7}Location & \cellcolor[gray]{0.7}Size & \cellcolor[gray]{0.7}Date of Image & \cellcolor[gray]{0.7}Date of LiDAR\\
+    \hline\hline
+    MTP & $4001 \times 4000$ & 2019-09-12 & 2021-07-30 \\
+    \hline
+    Peyto & $5178 \times 4009$ & 2016-09-13 & 2016-09-13 \\
+    \hline
+    Cal 1 & $8354 \times 8315$ & 2017-05-01 & 2017-02-05 \\
+    \hline
+    Cal 2 & $8354 \times 8315$ & 2017-05-02 & 2017-02-05 \\
+    \hline
+\end{tabular}
+\end{center}
+\caption{Details of evaluation datasets including size and acquisition dates.}
+\label{tab:datasets}
+\end{table}
+
+\subsection{Evaluation Metrics}
+To evaluate the performance of our method, we use three key metrics:
+
+1. **Interval Accuracy (\(I_{acc}\))**: This metric measures the proportion of intervals that correctly include the ground truth elevation. 
+\begin{equation}
+    I_{acc} = \frac{\# \text{correct intervals}}{\# \text{total intervals}}
+\end{equation}
+
+2. **Median Interval Size (\(I_{size}\))**: Given that overly large confidence intervals could trivially include the ground truth, this metric assesses the median size of the intervals relative to the \textit{disparity to altitude ratio} (\(r_{alt}\)). This ratio, expressed in meters per pixel, indicates the altitude change corresponding to a one-pixel shift during disparity computation. 
+\begin{equation}
+    I_{size} = \text{med}\left( \frac{\overline{z} - \underline{z}}{r_{alt}} \right)
+\end{equation}
+
+3. **Median Error Magnitude (\(I_{err}\))**: For intervals that do not encompass the true elevation \( Z \), this metric evaluates the median magnitude of the deviation from the ground truth, normalized by \( r_{alt} \). 
+\begin{equation}
+    I_{err} = \text{med}\left( \frac{1}{r_{alt}} \times \min\left( |Z - \underline{z}|, |Z - \overline{z}| \right) \right)
+\end{equation}
+
+\subsection{Results}
+Figures \ref{fig:intro_fig} and \ref{fig:mtp_detailed} illustrate examples of confidence intervals along rows of DSMs. The interval sizes vary based on their positions within the image, reflecting areas where the algorithm faces challenges in accurately estimating elevation. In complex urban scenes, such as those shown in Figure \ref{fig:mtp_detailed}, intervals tend to widen near building edges, indicating increased uncertainty. Detailed results for each scene, including global metrics and metrics for various slope categories, are summarized in Table \ref{tab:results}. Our method achieves over 90\% accuracy across all scenes, with the exception of slopes greater than 20° in the MTP and Peyto datasets. Errors tend to be spatially correlated with steep slopes, as depicted in Figure \ref{fig:peyto}. The interval sizes generally range between 2 to 3 pixels in altitude, which is relatively small. When intervals fail to capture the true elevation, the discrepancies are usually less than half a pixel.
+
+\begin{table}
+%\small
+\centering
+\begin{tabular}{|c|c||c|c|c|c|}
+\hline
+Metric & Slope (°) & MTP & Peyto & Cal 1 & Cal 2 \\ \hline\hline
+ & \cellcolor[gray]{0.6}Global & \cellcolor[gray]{0.6}$90.7$ & \cellcolor[gray]{0.6}$92.0$ & \cellcolor[gray]{0.6}$96.5$ & \cellcolor[gray]{0.6}$94.1$ \\ \cline{2-6} 
+ & \cellcolor[gray]{0.95}$[0,20[$ & \cellcolor[gray]{0.95}$93.8$ & \cellcolor[gray]{0.95}$99.3$ & \cellcolor[gray]{0.95}$97.0$ & \cellcolor[gray]{0.95}$95.0$ \\ \cline{2-6} 
+ & \cellcolor[gray]{0.8}$[20,45[$ & \cellcolor[gray]{0.8}$89.7$ & \cellcolor[gray]{0.8}$86.9$ & \cellcolor[gray]{0.8}$98.1$ & \cellcolor[gray]{0.8}$96.7$ \\ \cline{2-6} 
+\multirow{-4}{*}{\begin{tabular}[c]{@{}c@{}}$I_{acc}$\\ (\%)\end{tabular}} & $[45,90]$ & $88.1$ & $59.0$ & $93.9$ & $90.0$ \\ \hline\hline
+ & \cellcolor[gray]{0.6}Global & \cellcolor[gray]{0.6}$2.2$ & \cellcolor[gray]{0.6}$2.1$ & \cellcolor[gray]{0.6}$2.9$ & \cellcolor[gray]{0.6}$2.5$ \\ \cline{2-6} 
+ & \cellcolor[gray]{0.95}$[0,20[$ & \cellcolor[gray]{0.95}$2.0$ & \cellcolor[gray]{0.95}$2.1$ & \cellcolor[gray]{0.95}$3.0$ & \cellcolor[gray]{0.95}$2.6$ \\ \cline{2-6} 
+ & \cellcolor[gray]{0.8}$[20,45[$ & \cellcolor[gray]{0.8}$1.9$ & \cellcolor[gray]{0.8}$2.1$ & \cellcolor[gray]{0.8}$3.4$ & \cellcolor[gray]{0.8}$2.7$ \\ \cline{2-6} 
+\multirow{-4}{*}{\begin{tabular}[c]{@{}c@{}}$I_{size}$\\ (pix)\end{tabular}} & $[45,90]$ & $2.7$ & $2.4$ & $2.4$ & $2.3$ \\ \hline\hline
+ & \cellcolor[gray]{0.6}Global & \cellcolor[gray]{0.6}$0.2$ & \cellcolor[gray]{0.6}$0.3$ & \cellcolor[gray]{0.6}$0.3$ & \cellcolor[gray]{0.6}$0.3$ \\ \cline{2-6} 
+ & \cellcolor[gray]{0.95}$[0,20[$ & \cellcolor[gray]{0.95}$0.2$ & \cellcolor[gray]{0.95}$0.1$ & \cellcolor[gray]{0.95}$0.3$ & \cellcolor[gray]{0.95}$0.3$ \\ \cline{2-6} 
+ & \cellcolor[gray]{0.8}$[20,45[$ & \cellcolor[gray]{0.8}$0.2$ & \cellcolor[gray]{0.8}$0.2$ & \cellcolor[gray]{0.8}$0.3$ & \cellcolor[gray]{0.8}$0.2$ \\ \cline{2-6} 
+\multirow{-4}{*}{\begin{tabular}[c]{@{}c@{}}$I_{error}$\\ (pix)\end{tabular}} & $[45,90]$ & $0.3$ & $0.5$ & $0.3$ & $0.3$ \\ \hline
+\end{tabular}
+\caption{Metrics evaluated for different slope categories.}
+\label{tab:results}
+\end{table}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{Images/Montpellier_ROI_1250_900-1750.png}
+    \caption{Elevation intervals along a row of the MTP scene. Orthoimage with highlighted row appear in the bottom left.}
+    \label{fig:mtp_detailed}
+\end{figure}
+
+\section{Conclusion}
+This paper introduces a novel approach for determining confidence intervals for elevation, directly tied to the inherent uncertainties of the algorithms used in Digital Surface Model (DSM) generation. Unlike traditional methods that require a reference DSM for assessing uncertainty, our approach autonomously generates intervals that dynamically adjust based on terrain complexity and algorithmic challenges encountered during elevation estimation. These intervals are carefully managed to ensure they meet the desired accuracy. Our method is implemented within the CARS pipeline and is openly accessible for use. We anticipate that this contribution will be beneficial to DSM users, enhancing their ability to handle elevation data with greater confidence. Future research will focus on evaluating the method's performance on extremely steep slopes and investigating the sources of sub-pixel errors, specifically whether these arise from our methodology or from the resampling processes when transitioning from sensor geometry to epipolar geometry.

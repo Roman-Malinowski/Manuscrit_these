@@ -1,0 +1,241 @@
+\section{Related Works}\label{sec:related_works}
+
+\subsection{Stereo Matching}
+
+Our method is tailored for traditional 3D reconstruction pipelines using remote sensing imagery \cite{shean_automated_2016, franchis_automatic_2014, rupnik_micmac_2017, youssefi_cars_2020}. These pipelines typically retrieve stereo information through dense matching algorithms, which can be broadly classified into two categories: classical approaches following the steps outlined by Scharstein \etal \cite{scharstein_taxonomy_2001}, and deep-learning based methods.
+
+Classical approaches usually encompass the following steps: matching cost computation, cost aggregation, disparity computation, and disparity refinement. Conversely, deep-learning approaches, while capable of delivering robust results (as reviewed in \cite{laga_survey_2022}), often face generalization challenges, particularly when applied to imagery different from their training datasets, such as satellite images \cite{mari_disparity_2022}. Given the difficulty in obtaining ground truth data for diverse landscapes, our focus remains on classical methods to develop a robust and generalizable approach for generating confidence intervals.
+
+We employ two types of similarity functions in our study: the Census cost function \cite{goos_non-parametric_1994}, and the MC-CNN cost function \cite{zbontar_stereo_2016}, the latter being learned via convolutional neural networks. Both functions are \textit{minimitive}, indicating that lower values represent greater similarity between compared patches. By including both handcrafted and learned similarity functions, we demonstrate the versatility of our interval creation method. The resulting cost volume from these functions is regularized using semi-global matching (SGM) techniques \cite{hirschmuller_accurate_2005, facciolo_mgm_2015}, which are widely utilized in state-of-the-art methods \cite{chebbi_deepsim-nets_2023}.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=1\linewidth]{images/figure_2.png}
+  \caption{Example of three MC-CNN cost curves with varying confidences due to ambiguity.}
+  \label{fig:ambiguity}
+\end{figure}
+
+Various confidence measures have been proposed to evaluate the disparity map \cite{hu_quantitative_2012}, including handcrafted measures derived from properties of the reference image, the cost volume, or the disparity map itself. However, learning-based approaches dominate the current state of the art in confidence measurement \cite{poggi_confidence_2021}. Notable examples include deep learning methods that estimate confidence using CNNs applied to the cost volume \cite{mehltretter_cnn-based_2019} or the disparity map \cite{poggi_learning_2016}, and random forests trained on handcrafted confidence measures \cite{gouveia_confidence_2015}. For comprehensive details, refer to \cite{poggi_confidence_2021, hu_quantitative_2012}. Estimating confidence in the disparity map can lead to strategies that enhance overall results \cite{dumas_improving_2022, tosi_leveraging_2019, hollmann_geometry-based_2020}. In this work, we utilize a confidence measure derived from the matching cost volume, referred to as \textit{ambiguity} \cite{sarrazin_ambiguity_2021}.
+
+Chen \etal \cite{chen_learning_2023} estimate the magnitude of the absolute symmetric error using a multi-layer perceptron (MLP), showing the benefit of estimating error magnitude alongside confidence measures. We extend this idea further. While estimating the absolute error provides insights into the error's magnitude, it does not indicate \textit{where} the correct disparity might be—whether it is likely to be higher or lower than the predicted value.
+
+To address this, we propose using confidence intervals for the disparity. Our method is distinct in that it can be integrated with a wide range of cost-volume based stereo algorithms employing a \textit{winner-takes-all} strategy. Moreover, our approach does not depend on the precision of the disparity prediction algorithm. In contrast, the method in \cite{chen_learning_2023} is specifically designed for inputs from 3D CNNs estimating disparities at various resolutions \cite{guo_group-wise_2019}, which limits its applicability. To the best of our knowledge, their work is the only one that estimates disparity error in a manner comparable to ours, though due to their restricted application scope, a direct comparison of our approaches is not feasible.
+
+\subsection{Possibility Distributions}
+
+To construct confidence intervals, we explore the use of \textit{possibility distributions}, closely associated with \textit{fuzzy sets} \cite{dubois_random_1991}, as models for uncertainty. These distributions are well-suited for representing \textit{epistemic} uncertainty, which arises from incomplete knowledge \cite{baudrit_joint_2007}. In stereo matching problems, errors predominantly stem from epistemic uncertainty. Similarity functions assess the likeness of two patches based on given or learned features, and there is inherent uncertainty in how accurately this similarity denotes a true match between corresponding pixels. Possibility distributions address the limitations of probability distributions in capturing epistemic uncertainty \cite{walley_statistical_1991}. They are effective for modeling expert opinions on the uncertainty of imprecise observations, as seen in applications like groundwater contamination \cite{bardossy_l-_1995, baudrit_joint_2007}. In stereo matching, a regularized cost curve obtained using SGM can be likened to an expert's assessment of whether two patches are homologous, based on their features and the overall properties of the cost volume. Utilizing possibility distributions leverages the advanced capabilities of imprecise probability (IP) theory for robust uncertainty estimation.
+
+Formally, a possibility distribution is defined as a mapping $\pi: \Omega \rightarrow [0,1]$ satisfying:
+\begin{equation}
+	\exists \omega \in \Omega, \pi(\omega) = 1 \label{eq:possibility}
+\end{equation}
+where $\Omega$ is the set of possible observed states. The value $\pi(\omega)$ represents the degree of possibility of the event $\omega$, with $\pi(\omega) = 1$ indicating full possibility, and $\pi(\omega) = 0$ indicating impossibility. Possibility distributions can define the envelope of a convex set of probability distributions $\mathbb{P}$ \cite{dubois_when_1992}:
+\begin{equation}
+    \mathbb{P} = \{ P: 2^\Omega \rightarrow [0,1]~|~P(E) \leqslant \sup_{\omega \in E} \pi(\omega) \} \label{eq:credal_set}
+\end{equation}
+where $P$ is a probability distribution on the power set $2^\Omega$ of $\Omega$.
+
+Additionally, $\alpha$-cuts $\mathcal{C}^{\pi}_\alpha$ are often defined for possibility distributions and are used to construct confidence intervals:
+\begin{equation}
+	\mathcal{C}_\alpha^\pi = \{ \omega \in \Omega~|~\pi(\omega) \geqslant \alpha \} \label{eq:alpha_cut}
+\end{equation}
+$\alpha$-cuts represent the maximal sets where the possibility is at least $\alpha$ for each $\omega \in \Omega$. From a probabilistic perspective, $\alpha$-cuts consist of all $\omega \in \Omega$ for which there exists a $P \in \mathbb{P}$ as defined in \cref{eq:credal_set}, such that $P(\omega) \geqslant \alpha$:
+\begin{equation}
+    \mathcal{C}_\alpha^\pi = \{ \omega~|~\exists P \in \mathbb{P},~P(\omega) \geqslant \alpha \} \label{eq:alpha_proba}
+\end{equation}
+
+
+\section{Creation of Disparity Confidence Intervals}\label{sec:intervals}
+
+In this section, we assume that images are resampled in epipolar geometry. This resampling restricts the pixel displacement between the left image \( I_L \) and the right image \( I_R \) to a horizontal shift within a given disparity range \(\mathcal{D} = [d_{min}, d_{max}]\). Therefore, a pixel \( p = (i, j) \) in the left image with disparity \( d \in \mathcal{D} \) corresponds to the pixel \( q = (i, j + d) \) in the right image with a cost \( C_V(i, j, d) \).
+
+\subsection{From Cost Curves to Possibility Distributions}
+
+To model the epistemic uncertainty in similarity functions, we use possibility distributions. These distributions reflect the likely disparities for each pixel based on the cost curves.
+
+First, we normalize the cost curve to a range of \([0,1]\), using the minimum and maximum values of the cost volume after SGM regularization. For a pixel \( p = (i, j) \), the normalized cost curve is given by:
+\begin{equation}
+    f_{i,j}^{norm}(d) = \frac{C_V(i,j,d) - \max C_V}{\min C_V - \max C_V}
+\end{equation}
+Here, the \(\min\) and \(\max\) operations are reversed to ensure higher possibility when the cost function is minimal. This normalization transforms the cost curve \( f_{i,j}^{norm} \) into a possibility distribution \( \pi_{i,j}(d) \):
+\begin{equation}
+    \pi_{i,j}(d) = f_{i,j}^{norm}(d) + 1 - \max_{d \in \mathcal{D}} f_{i,j}^{norm}(d) \label{eq:constant_norm}
+\end{equation}
+
+\Cref{fig:possibility} shows examples of cost curves converted into possibility distributions. This method preserves the shape of the cost curve without exaggerating differences in matching costs.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=1\linewidth]{images/figure_3.jpg}
+  \caption{Possibility distributions derived from the cost curves in \cref{fig:ambiguity}. Arrows and vertical lines mark the disparity intervals obtained with \(\alpha = 0.9\).}
+  \label{fig:possibility}
+\end{figure}
+
+\subsection{Deducing Intervals from Alpha-cuts}
+
+With the possibility distributions defined, we aim to establish a set of possible disparities that meet a \(90\%\) confidence level. Each possibility distribution \( \pi_{i,j} \) corresponds to a set of probability distributions \(\mathbb{P}\), as defined by \cref{eq:credal_set}. Disparities \( d \) are considered unlikely if their probability, under any distribution in \( \mathbb{P} \), is less than \(0.9\).
+
+We use \(\alpha\)-cuts to determine disparities \( d \) with a probability \( P \in \mathbb{P} \) such that \( P(d) \geq 0.9 \). For an \(\alpha\)-cut \( C^{\pi_{i,j}}_\alpha \) with \(\alpha = 0.9\), we define the confidence interval \( I_\alpha(i,j) \) as:
+\begin{equation}
+    I_\alpha(i,j) = [\min C^{\pi_{i,j}}_\alpha, \max C^{\pi_{i,j}}_\alpha] \label{eq:confidence_interval}
+\end{equation}
+
+While this reduces detailed information from \( C^{\pi_{i,j}}_\alpha \), it simplifies processing and conserves memory. The confidence level of \( I_\alpha(i,j) \) is at least as high as \( C^{\pi_{i,j}}_\alpha \) since \( C^{\pi_{i,j}}_\alpha \subseteq I_\alpha(i,j) \). 
+
+\Cref{fig:possibility} illustrates confidence intervals derived from these distributions.
+
+\subsection{Refinement and Filtering with Intervals}
+
+Stereo pipelines often include post-processing steps such as sub-pixel refinement and filtering. These steps must be reflected in the confidence intervals to maintain coherence with the disparity map.
+
+Sub-pixel refinement slightly extends confidence intervals if the predicted disparity \( d_{i,j} \) matches one of the interval bounds. Denote the lower and upper bounds of an interval \( I \) as \( \underline{I} \) and \( \overline{I} \) respectively. Adjust the bounds as follows:
+\begin{align}
+    \text{if } d_{i,j} = \min C^{\pi_{i,j}}_\alpha, &\quad \underline{I}_\alpha(i,j) = \min C^{\pi_{i,j}}_\alpha - 1 \\
+    \text{if } d_{i,j} = \max C^{\pi_{i,j}}_\alpha, &\quad \overline{I}_\alpha(i,j) = \max C^{\pi_{i,j}}_\alpha + 1
+\end{align}
+
+Filtering, such as with a median filter, can be applied to both the disparity map and the confidence intervals while preserving coherence. For a set of pixels \( \{p(i,j)\} \) with confidence intervals \( \{I_\alpha(i,j)\} \):
+\begin{align}
+    \text{if } \forall (i,j), p(i,j) \in I_\alpha(i,j), \quad & \text{then:} \nonumber \\
+    \text{median}(\{\underline{I}_\alpha(i,j)\}) &\leq \text{median}(\{p(i,j)\}) \label{eq:median_1} \\
+    \text{median}(\{p(i,j)\}) &\leq \text{median}(\{\overline{I}_\alpha(i,j)\}) \label{eq:median_2}
+\end{align}
+
+\subsection{Regularization in Low Confidence Areas}\label{subsec:regularization}
+
+Confidence interval quality is affected by the similarity function, especially near surface discontinuities where SGM may struggle with disparity changes. These challenges can lead to biases, making the cost curve interpretation problematic. To address this, we adopt a more cautious approach in low confidence areas.
+
+Low confidence areas are identified using confidence measures, such as the confidence from ambiguity \cite{sarrazin_ambiguity_2021}, which is both effective and interpretable. Higher values indicate clear disparity identification, while values near zero suggest multiple patches with similar minimal similarity. Examples are shown in \cref{fig:ambiguity}.
+
+The ambiguity measure is smoothed using a \(1 \times 5\) minimum convolution kernel. Pixels with smoothed ambiguity below a threshold \( \tau \) are classified as low confidence:
+\begin{align}
+    amb_{smooth}(i,j) &= \min_{-2 \leq k \leq 2} amb(i, j+k) \\
+    \text{Low confidence if } amb_{smooth}(i,j) &\leq \tau \label{eq:low_confidence}
+\end{align}
+We set \( \tau = 0.6 \) based on experimental observations.
+
+To avoid overly pessimistic interval extensions in low confidence areas, we use quantiles for a robust adjustment. For each low confidence pixel, we find the largest set \( A \) of contiguous low confidence pixels within \( l \) lines above and below. With \( l = 2 \), this set is sufficiently large for statistical relevance (\cref{fig:low_confidence_area}). The lower bound of the confidence interval for these pixels is set to the 10th percentile of the lower bounds in \( A \), and the upper bound to the 90th percentile.
+
+\Cref{fig:regularization_example} compares confidence intervals with and without this regularization. Errors in low confidence areas are reduced with regularization.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{images/4_3_Low_confidence_zones.jpg}
+  \caption{Low confidence areas with \( l = 2 \).}
+  \label{fig:low_confidence_area}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\begin{subfigure}{0.5\linewidth}
+  \includegraphics[width=1\linewidth]{images/figure_5_a.png}
+  \caption{Without regularization}
+  \label{fig:no_reg}
+\end{subfigure}
+\begin{subfigure}{0.5\linewidth}
+  \includegraphics[width=1\linewidth]{images/figure_5_b.png}
+  \caption{With regularization}
+  \label{fig:reg}
+\end{subfigure}
+\caption{Comparison of intervals without (\cref{fig:no_reg}) and with (\cref{fig:reg}) regularization from the Middlebury $cones$ dataset using the CENSUS cost function. Low confidence areas are shaded in gray.}
+\label{fig:regularization_example}
+\end{figure}
+
+
+\section{Evaluation}\label{sec:evaluation}
+
+% Define a custom column type for tables
+\newcolumntype{?}[1]{!{\vrule width #1}}
+
+% Set table column separation and row height
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.4}
+
+\comroman{Vérifier les résultats des tableaux, ou copier coller depuis l'original}
+\begin{table*}[ht]
+\centering
+\begin{tabular}{ |c?{1.5pt}c|c|c|c|c|c?{1.5pt}}
+\cline{2-7}
+\multicolumn{1}{c?{1.5pt}}{} & \multicolumn{4}{c?{1.5pt}}{Global} & \multicolumn{2}{c?{1.5pt}}{High confidence areas} \\
+\cline{2-7}
+\multicolumn{1}{c?{1.5pt}}{} & \multicolumn{2}{c|}{Accuracy} & \multicolumn{2}{c|}{Relative Size} & \multicolumn{2}{c?{1.5pt}}{Accuracy} \\
+\cline{2-7}
+\multicolumn{1}{c?{1.5pt}}{} & CENSUS & MCCNN & CENSUS & MCCNN & CENSUS & MCCNN \\
+\hline\hline
+2003 & \cellcolor{lightgray!10}$\mathbf{0.973}$ & $0.954$ & \cellcolor{lightgray!10}$\mathbf{0.033}$ & $\mathbf{0.033}$ & \cellcolor{lightgray!10}$\mathbf{0.983}$ & $0.968$ \\
+2005 & \cellcolor{gray!30}$0.963$ & $\mathbf{0.971}$ & \cellcolor{gray!30}$\mathbf{0.026}$ & $0.038$ & $\mathbf{0.969}$ & $\mathbf{0.973}$ \\
+2006 & \cellcolor{lightgray!10}$\mathbf{0.989}$ & $\mathbf{0.989}$ & \cellcolor{lightgray!10}$\mathbf{0.026}$ & $0.038$ & $\mathbf{0.993}$ & $0.992$ \\
+2014 & \cellcolor{gray!30}$0.957$ & $\mathbf{0.983}$ & $0.063$ & \cellcolor{gray!30}$\mathbf{0.029}$ & $0.912$ & $\mathbf{0.972}$ \\
+2021 & \cellcolor{lightgray!10}$0.936$ & $\mathbf{0.991}$ & \cellcolor{lightgray!10}$\mathbf{0.594}$ & $1.0$ & $0.818$ & $\mathbf{0.969}$ \\
+Rural & $0.904$ & $\mathbf{0.975}$ & \cellcolor{gray!30}$\mathbf{0.100}$ & $0.250$ & $0.867$ & $\mathbf{0.967}$ \\
+Urban & $0.926$ & $\mathbf{0.986}$ & \cellcolor{lightgray!10}$\mathbf{0.100}$ & $0.263$ & $0.894$ & $\mathbf{0.981}$ \\
+\hline
+\end{tabular}
+\caption{Evaluation metrics (Accuracy and Relative Size) for Middlebury and satellite datasets using CENSUS and MCCNN methods.}\label{table:results}
+\end{table*}
+
+\subsection{Evaluation Metrics}
+We define several evaluation metrics for interval reliability and size. These metrics are tailored for future use in propagating disparity intervals to height intervals for 3D reconstruction from satellite imagery. Evaluation is done globally across all intervals in each dataset, and separately for high and low confidence areas based on a threshold from \cref{eq:low_confidence}.
+
+\subsubsection{Accuracy}
+The \textit{accuracy} of intervals is measured by the proportion of accurate intervals over the total number of intervals:
+\begin{equation}
+    Acc = \frac{\# \text{accurate intervals}}{\# \text{total intervals}}\label{eq:accuracy}
+\end{equation}
+
+\subsubsection{Relative Size}
+The \textit{relative size} of intervals compared to the disparity range is calculated as the median:
+\begin{equation}
+    S_{rel} = \text{median}\left(\frac{\overline{I} - \underline{I}}{d_{max} - d_{min}}\right)\label{eq:size_of_interval}
+\end{equation}
+
+\subsubsection{Relative Overestimation}
+In low confidence areas where intervals are purposely extended (\cref{subsec:regularization}), \textit{relative overestimation} is assessed:
+\begin{equation}
+    O_{rel} = \text{median}\left(1 - \frac{\Delta|d - \hat{d}|}{\overline{I} - \underline{I}}\right)\label{eq:relative_error}
+\end{equation}
+Here, $\Delta|d - \hat{d}|$ represents the maximal difference between true and predicted disparity in low confidence areas.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[height=4cm]{images/relative_error.png}
+    \caption{Visualization of relative error and interval size in a low confidence area (gray).}
+    \label{fig:relative_error}
+\end{figure}
+
+\subsection{Reference Datasets}
+We evaluated intervals on 83 scenes from Middlebury datasets (2003, 2005, 2006, 2014, 2021) and 120 pairs of satellite images. Disparity ranges and dataset specifics are detailed in references \cite{scharstein_taxonomy_2001, scharstein_high-accuracy_2003, scharstein_learning_2007, jiang_high-resolution_2014, cournet_ground_2020}. Dataset evaluation included urban and rural scenes, each with distinct characteristics in disparity range and scene composition.
+
+\subsection{Accuracy Results}\label{sec:accuracy}
+Intervals computed using CENSUS and MCCNN methods achieved high accuracy (over 90\% for most datasets) and met objectives set for both global and confidence-specific assessments (\cref{table:results}). Ablation studies (\cref{tab:baseline_alpha}) confirmed the necessity and impact of regularization in improving accuracy, especially in datasets with high variability and low confidence intervals.
+
+\subsection{Size of Intervals}\label{sec:size}
+While intervals demonstrated high accuracy, attention to interval size was critical. High confidence areas required small relative sizes (around 25%), while low confidence areas accepted larger overestimations (around 30%). This balance was crucial for subsequent height interval propagation in 3D reconstruction scenarios.
+
+\begin{figure}[ht]
+\centering\begin{subfigure}{0.5\linewidth}
+  \includegraphics[width=1\linewidth]{images/figure_8_a.png}
+  \caption{Left epipolar image}
+    \label{fig:fig_8_a}
+\end{subfigure}
+\begin{subfigure}{1\linewidth}
+    \centering
+  \includegraphics[width=1\linewidth]{images/figure_8_b.png}
+    \caption{Detailed confidence intervals}
+  \label{fig:fig_8_b}
+\end{subfigure}
+\caption{Example of confidence interval analysis in a rural area near Montpellier, France.}
+\label{fig:fig_8}
+\end{figure}
+
+In conclusion, the evaluation metrics defined (\cref{eq:accuracy,eq:size_of_interval,eq:relative_error}) provided robust assessment of interval reliability and size across various datasets, laying the groundwork for effective 3D reconstruction from disparity intervals in satellite imagery.
+
+
+\section{Conclusion}
+In summary, we introduce a pioneering approach for constructing confidence intervals on stereo matching disparity. Our method is versatile, compatible with any stereo algorithm producing a 3D cost volume. It leverages possibility distributions to transform matching cost functions into interpretable expert opinions, drawing on robust theoretical foundations to estimate uncertainties effectively.
+
+Confidence intervals are derived from $\alpha$-cuts of possibility distributions and regularized to ensure accuracy across varying confidence levels. We integrate post-processing techniques to maintain coherence between predicted disparity maps and their associated confidence intervals. In the absence of comparable methods for direct benchmarking, we evaluate our approach based on accuracy, relative size, and overestimation criteria using the Middlebury datasets. Achieving a $90\%$ accuracy objective, our method demonstrates minimal relative size in high-confidence areas and avoids overestimation in low-confidence regions. Importantly, the accuracy of our confidence intervals remains consistent irrespective of the underlying disparity estimation performance.
+
+All methodologies and implementations discussed are openly available on our GitHub repository, encouraging further exploration and validation by the research community.
+
+Looking ahead, our future research will extend these confidence intervals from disparity to elevation estimations, crucial for enhancing 3D reconstruction processes. These elevation confidence intervals can serve as complementary outputs alongside digital surface models, benefiting numerous Earth Observation applications. Through this work, we emphasize the potential of possibility distributions to model and manage epistemic uncertainty in a transparent and understandable manner, paving the way for enhanced accuracy and reliability in disparity and elevation estimation fields.
