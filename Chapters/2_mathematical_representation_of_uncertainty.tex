@@ -1,4 +1,6 @@
-\chapter{Mathematical Representations of Uncertainty}
+\chapter{Mathematical Representations of Uncertainty}\label{chap:representation_of_uncertainty}
+
+This chapter takes some distance from the stereo vision problem presented previously, and instead describe more formally the different representations of uncertainty and the tools that can be used to manipulate them. We present different models of uncertainty which will be considered in the different contributions of this thesis. We also present a way of aggregating different sources of uncertainty, taking into account their dependency, which will serve to propagate the uncertainty in chapter \ref{chap:propagating} .
 
 \section{Notations}
 We introduce here a few notations that will be used in the rest of this chapter. \todoroman{A ajouter au fur et à mesure}
@@ -11,9 +13,10 @@ We introduce here a few notations that will be used in the rest of this chapter.
     \item The power set of a set $\X$ is noted $2^\X$. It correspond to the set of all sets included in $\X$. In the discrete case, if the cardinal of $\X$ is $n$, then the cardinal of the power set is $2^n$, thus the notation.
 \end{itemize}
 
-
 \comseb{Ca ne me semble pas forcément idéal de faire du spécifique $->$ général $->$ spécifique? Dans un sens, les possibilités qui étendent les ensembles sont tout aussi "fondamentale" que les probabilités. Introduire d'abord l'idée générale de modèle d'incertitude, puis décliner les modèles particulier dont tu auras besoin?}
 
+\section{Different models of uncertainty}
+Assessing the reliability of an engineering system requires to quantify the uncertainty and imprecision of input parameters or of the system itself, using models of uncertainty. It is common to use 
 \section{Probabilities}
 Define what is an atom
 Classical framework to represent uncertainty. Epistemic vs stochastic uncertainty. Paradoxes with uniform distribution, dependency (sum of dices etc). Definition of a random variable \etc
@@ -29,9 +32,22 @@ Formally, a possibility distribution is defined as a mapping $\pi: \Omega \right
 \end{equation}
 where $\Omega$ is the set of possible observed states. The value $\pi(\omega)$ represents the degree of possibility of the event $\omega$, with $\pi(\omega) = 1$ indicating full possibility, and $\pi(\omega) = 0$ indicating impossibility.
 
+It has been proven in \cite{dubois_when_1992} that a possibility distribution define a specific type of plausibility functions called \textit{possibility} function and noted \(\Pi\). By duality, it also defines a specific belief function called \textit{necessity} function and noted \(\mathrm{Nec}\). They are defined as:
 \begin{align}
     \mathrm{Nec}(A)=1-\sup_{x\in A^c}\pi(x)\label{eq:bel_pl}\\
     \Pi(A) = \sup_{x\in A}\pi(x)
+\end{align}
+Their specificity lies in the fact that the focal sets of the belief function form a nested family of sets in the sense of inclusion. Formally, if \( \{a_1,\dots,a_n\} \) are all the focal sets of \(\mathrm{Nec}\), then there exists a permutation $\sigma$ such that \( a_{\sigma(1)}\subset\dots\subset a_{\sigma(n)}\). For simplicity, we will suppose that the focal sets are already numbered using the inclusion order.
+
+Focal sets can be determined directly from the possibility distribution by looking at their \( \alpha \)-cuts \cite{destercke_unifying_2008}, defined as follows:
+
+\begin{align}
+    \alpha_\pi=\{\omega~|~\pi(\omega)\geqslant\alpha\} \label{eq:alpha_cut}   
+\end{align}
+
+As \( \pi \) defines a plausibility function, it also define a credal set noted \( \M(\pi) \):
+\begin{align}
+    \M(\pi)=\{P~|~\forall A, P(A)\leqslant \sup_{x\in A}\pi(x)\}\label{eq:credal_set_possibility}
 \end{align}
 
 \section{Copulas}\label{sec:copulas}
