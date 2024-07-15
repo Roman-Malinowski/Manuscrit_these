@@ -13,7 +13,7 @@ Nowadays, \acrshort{dsm} are mostly generated from laser scanning with LiDAR sen
 This thesis focuses on \acrshort{dsm} obtained from stereophotogrammetry, however we will use \acrshort{dsm} obtained from air-borne LiDAR acquisitions as references to validate our results, considering their high resolutions.
 
 \todoroman{Schema de \acrshort{dsm} par avion LiDAR, satellite interfero et stereo}
-\section{CO3D mission and Pléiades satellites}
+\section{CO3D mission and Pléiades Satellites}
 The following paragraphs detail satellites characteristics relevant to stereophotogrammetry. It is important to notice that although the sensor used greatly determines the resolution of the final \acrshort{dsm}, it is not the only factor at stake here. The altitude and positions of the satellites are also crucial for the resolution, and can be characterized by the \acrfull{b/h} \todoroman{Schema de \acrshort{dsm} par stereo avec le ratio B/H}. This ratio is computed by dividing the distance separating the stereo acquisitions by the altitude of the satellite. It indicates the angle formed between the line of sights originating from the satellites towards an object of the scene. A high \acrshort{b/h} allows for high elevation accuracy, but possesses more occluded regions (for instance a narrow street between two high buildings), and conversely for a low B/H. 
 
 The main source of images used in this thesis comes from Pléiades images. The Pléiades constellation developed by Airbus is composed of two identical satellites, 1A and 1B. The satellites were launched in 2011 and 2012 in an heliosynchronous orbit at $690$km, for both civilian and defense usage. They provide panchromatic images at a resolution of $70$cm (resampled at $50$cm), and RGB-NIR images at a resolution of $2$m, with a $20$km swath. Their high agility and revisit rate allow them to capture stereo and tri-stereo images for any location on the globe, ideal to produce \acrshort{dsm} with high accuracy. The \acrshort{b/h} ratio for stereo acquisitions can vary between $0.1$ and $0.4$. However, stereo acquisitions is not the only objective of this mission, even though the demand for those products is increasing \cite{berthier_glacier_2014, poli_radiometric_2015, rieg_pleiades_2018, loghin_potential_2020}. The acquisition of stereo images is thus provided on command, which can conflict with other usages of the satellite, and can become costly when trying to cover large areas.  
@@ -43,7 +43,7 @@ In order to produce a worldwide \acrshort{dsm} with $1$m resolution by 2025, the
 
 One a side note, when an image is acquired both in panchromatic and RGB mode, it is possible to leverage the high resolution of the panchromatic image to improve that of the color image. This fusion technique is called \textit{pansharpening} \cite{loncan_hyperspectral_2015}. We use this technique for clarity in figures and other illustrations of this thesis. It is important to remember that the processed images are the panchromatic images, and not the pansharpened ones which are only used for the final visualization.
 
-\section{Sensors and georegistration}
+\section{Sensors and Georegistration}
 Different types of sensors can be used to acquire satellite images. Below is detailed a (non-exhaustive) list of sensors of interest \cite{cnes_imagerie_2008}
 
 \textbf{CCD matrix sensor}. CDD are classical sensors used, for instance, in current digital cameras. They possess multiple advantages, such as good geometrical quality as all pixels are acquired simultaneously, or the possibility to perform many acquisitions with various angles possible. However, CCD sensors with small pixel sizes are technologically difficult to built. Augmenting the number of pixels complicates the shutter function, and requires more radiometric calibration as one pixel equals one sensor. It is also more complex to acquire long segments of an image. CO3D satellites will use this technology.
@@ -81,7 +81,7 @@ In stereophotogrammetry or ortho-rectification, it is useful to use the inverse 
 
 \todoroman{Schéma des RPC (voir Grodecki)}
 
-\section{Principle of stereophotogrammetry}
+\section{Principle of Stereophotogrammetry}
 This section dives more into details onto the inner workings of stereophotogrammetry. Photogrammetry is the science of deducing information from photographic images. A sub domain of photogrammetry is stereophotogrammetry, which specifically consists in deducing 3D information from multiple photographic images. Although multiple stereophotogrammetry setups can be achieved, for instance using structured light \cite{scharstein_high-accuracy_2003} or different wavelength \cite{geng_rainbow_1996}, we focus here on the pipelines designed for processing satellite images, which are used and studied in this thesis \cite{franchis_automatic_2014, shean_automated_2016, rupnik_micmac_2017, michel_new_2020}\comroman{MICMAC est plus généraliste (et complexe) que juste des images satellite}. For more in-depth details on every step of those pipelines, see chapter \ref{sec:classical_stero_pipeline}.
 
 The main idea of stereophotogrammetry for satellite images and other 3D pipelines is to identify the parallax of objects between multiple images, and to deduce the distance between the object and the sensors from this displacement. When expressed in pixels, the displacement is called disparity. To determine this disparity, the images must first be corrected from atmospheric effects (small clouds, aerosols, \etc) to go from top-of-the-atmosphere radiance to the actual light that illuminates the Earth surface \cite{hagolle_maja_2017}, called reflectance. Many stereo setups align their cameras in such a way that objects only move horizontally between images \cite{geiger_are_2012, scharstein_high-resolution_2014, keselman_intel_2017}. This allows to restrict the search space for pixel matches to a single row instead of the whole image. In a way, most people's eyes also present this alignment. When operating satellites, it is more complex to ensure that the sensors disposition will stay consistent, thus requiring some pre-processing step to rectify images and ensuring that the displacement of an object only occurs horizontally. Then matching pixels are determined by computing their disparity. This step is called stereo matching. Usually the depth $z$ of a pixel is computed using the following formula:
@@ -94,7 +94,7 @@ where $B$ is the baseline between cameras, $f$ is the focal length of the camera
 
 Epipolar geometry p128 \cite{cnes_imagerie_2008}
 
-\section{Uncertainty in stereophotogrammetry}
+\section{Uncertainty in Stereophotogrammetry}
 The quality of \acrshort{dsm} obtained using stereophotogrammetry can greatly vary depending on the quality/resolution of the images used, the precision of the georegistration, the performances of the stereo matching algorithm \etc. Reducing the magnitude of errors, or evaluating the uncertainty \textit{a posteriori} has been investigated in multiple work.
 Uncertainty on \acrshort{dsm} (global intervals) \cite{hugonnet_uncertainty_2022, deschamps-berger_apport_2021, wang_robust_2015}, \cite{oksanen_digital_2006} \cite{panagiotakis_validation_2018}.Intervals are computed based on a set of reference points (better resolution \acrshort{dsm}, ground truth data).
 Fusing \acrshort{dsm} to get better accuracy \cite{qin_uncertainty-guided_2022}
@@ -105,11 +105,11 @@ The ASP pipeline can take as inputs camera standard deviation of position uncert
 
 In this thesis, we focused on quantifying the uncertainty alongside the creation process of \acrshort{dsm}. We thus differ in this regard from previous work. Our methodology estimates the uncertainty independently for every pixels, 
 
-\section{Classical stereo pipeline}\label{sec:classical_stero_pipeline}
-\subsection{Resampling in epipolar geometry}
+\section{Classical Stereo Pipeline}\label{sec:classical_stero_pipeline}
+\subsection{Resampling in Epipolar Geometry}
 SIFT computation, sparse matching, rectification grid
 
-\subsection{Stereo matching}
+\subsection{Stereo Matching}
 Optical demonstration for disparity to height
 Taxonomy. Cost functions. SGM. Deep learning methods
 
@@ -124,7 +124,7 @@ Filtering of point clouds
 \subsection{Rasterization}
 Gaussian rasterization. Holes filling.  
 
-\subsection{From LiDAR to disparity GT}
+\subsection{From LiDAR to Ground Truth Disparity}
 Explaination on how to obtain GT disparity maps from georeferenced LiDAR, \cite{cournet_ground_2020}. Line of sight and default geoid. 
 
 \pagebreak
