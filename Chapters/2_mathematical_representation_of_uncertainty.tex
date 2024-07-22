@@ -14,12 +14,12 @@ We introduce here a few notations that will be used in the rest of this chapter.
 \end{itemize}
 \comseb{Ca ne me semble pas forcément idéal de faire du spécifique $->$ général $->$ spécifique? Dans un sens, les possibilités qui étendent les ensembles sont tout aussi "fondamentale" que les probabilités. Introduire d'abord l'idée générale de modèle d'incertitude, puis décliner les modèles particulier dont tu auras besoin?}
 
-\section{Different Models of Uncertainty}
+\section{Different Models of Uncertainty}\label{sec:different_models_of_uncertainty}
 Assessing the reliability of an engineering system requires to quantify the uncertainty and imprecision of input parameters or of the system itself, using models of uncertainty. It is common to use 
-\section{Probabilities}
+\section{Probabilities}\label{sec:probabilities}
 Define what is an atom
 Classical framework to represent uncertainty. Epistemic vs stochastic uncertainty. Paradoxes with uniform distribution, dependency (sum of dices etc). Definition of a random variable \etc
-\section{Gambles, Imprecise Probabilities}
+\section{Gambles, Imprecise Probabilities}\label{sec:imprecise_probabilities}
 Introduction to IP, how it contains the classical probability framework. Pboxes there?
 Define coherence, sure loss, cylindrical sets
 \section{Possibility Distributions}\label{sec:possibilities}
@@ -233,6 +233,10 @@ Another important family of copulas is the family of Gaussian copulas. Each Gaus
     \caption{Examples of families of copulas in the case $n=2$ which can be generated using a parameter \( \theta \). D-convexity/concavity is detailed in section \ref{sec:dconvexity}}
     \label{tab:familiy_of_copula}
 \end{table}}
+
+\begin{remark}
+	As a copula is also a multivariate CDF, one can imagine an ``imprecise'' copula similarly to what can be done with univariate probability distribution (see section \ref{sec:imprecise_probabilities}). Imprecise copula allow to model partially known dependences, but can be hard to manipulate at times, as for instance the lower and upper bounds of an imprecise copula are not necessarily copulas themselves. In this thesis, we will not consider imprecise copula
+\end{remark}
 
 \subsection{Directional convexity/concavity for copulas}\label{sec:dconvexity}
 This section will investigate convexity/concavity properties for copulas. This is more of a theoretical contribution, as we do not exploit them in our applications. However, we will see that those properties are share by many practical families of copulas, and that those properties will help us prove a specific relationship between multivariate uncertainty models in sections \ref{subsec:pboxes} and \ref{subsec:multiple_models}. For readers that do not want to dive into details regarding directional convexity/concavity, we advise to consider only definition \ref{def:convex} and the main result of this section which is presented in equation \eqref{eq:convex_diff_hvol}.
