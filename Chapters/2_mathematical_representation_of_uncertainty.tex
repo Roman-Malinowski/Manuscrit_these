@@ -1,28 +1,107 @@
 \chapter{Mathematical Representations of Uncertainty}\label{chap:representation_of_uncertainty}
 
-This chapter takes some distance from the stereo vision problem presented previously, and instead describe more formally different representations of uncertainty and the tools that can be used to manipulate them. In this thesis, we consider possibility distributions to model uncertainty (sec \ref{sec:possibilities}). In the presence of multiple sources of uncertainty, the question of how to join those sources arises. Using probability distributions, the usual method for joining the uncertainty models is to use copulas (section \ref{sec:copulas}). However, there are multiple ways of joining possibility distributions with a copula, which are presented in sections \ref{sec:robust_method} , \ref{sec:joint_mass} and \ref{sec:aggregation_method}. Those three methods are not equivalent, we thus explore their similarities and differences in section \ref{sec:inclusions_between_methods}. The methods used to join possiblity distributions will serve to propagate the uncertainty in chapter \ref{chap:propagating}. 
+\section{Introduction}
+This chapter takes some distance from the stereo vision problem presented previously, and instead describe more formally different representations of uncertainty and the tools that can be used to manipulate them. In this thesis, we consider possibility distributions to model uncertainty (sec \ref{sec:possibilities}). In the presence of multiple sources of uncertainty, the question of how to join those sources arises. Using probability distributions, the usual method for joining the uncertainty models is to use copulas (section \ref{sec:copulas}). However, there are multiple ways of joining possibility distributions with a copula, which are presented in sections \ref{sec:robust_method} , \ref{sec:joint_mass} and \ref{sec:aggregation_method}. Those three methods are not equivalent, we thus explore their similarities and differences in section \ref{sec:inclusions_between_methods}. The methods used to join possibility distributions will serve to propagate the uncertainty in chapter \ref{chap:propagating}. 
 
 \section{Notations}
-We introduce here a few notations that will be used in the rest of this chapter. \todoroman{A ajouter au fur et à mesure}
+We introduce here a few notations that will be used in the rest of this chapter. \todoroman{A ajouter au fur et à mesure, peut être déplacer au début de la thèse, à côté du glossaire.}
 \begin{itemize}
     \item \st means ``such that''
     \item We will often present theorems or results with $n$ different variables, spaces, or Cartesian products of $n$ elements. Notations therefore quickly become quite heavy. We try our best to make them clear and readable, which is why we often use the contraction ``$\dots$'' to imply that we are enumerating all variables. For instance, if we apply a function $f$ to four variables $x_1, x_2, x_3, x_4$, we will write $f(x_1, \dots, x_4)$.
     \item When working with $n$ variables, the index $i$ will usually be used to refer to the $i$-th variable (or one of its attribute), and will be appended as a subscript when possible, otherwise as a superscript. For instance, if $x\in\mathbb{R}^n$, then $x_i$ will refer to the $i$-th component of $x$. If $m_\times\in\mathbb{R}^n$, then $m_\times^i$ will refer to $i$-th component of $m_\times$.
     \item $\opi\cdot,\cdot\cli$ refers to an interval of integers. For instance $\opi1,~4\cli=\{1,~2,~3,~4\}$. 
     \item CDF will refer to Cumulative Distribution Function, \ie if $X$ is random variable in $\mathbb{R}$ and $P$ its associated probability, then the CDF of $X$ is $F(x)=P(X\leqslant x)$.
-    \item The power set of a set $\X$ is noted $2^\X$. It correspond to the set of all sets included in $\X$. In the discrete case, if the cardinal of $\X$ is $n$, then the cardinal of the power set is $2^n$, thus the notation.
+    \item The power set of a set $\X$ is noted $2^\X$. It corresponds to the set of all sets included in $\X$. In the discrete case, if the cardinal of $\X$ is $n$, then the cardinal of the power set is $2^n$, thus the notation.
 \end{itemize}
-\comseb{Ca ne me semble pas forcément idéal de faire du spécifique $->$ général $->$ spécifique? Dans un sens, les possibilités qui étendent les ensembles sont tout aussi "fondamentale" que les probabilités. Introduire d'abord l'idée générale de modèle d'incertitude, puis décliner les modèles particulier dont tu auras besoin?}
 
-\section{Different Models of Uncertainty}\label{sec:different_models_of_uncertainty}
-Assessing the reliability of an engineering system requires to quantify the uncertainty and imprecision of input parameters or of the system itself, using models of uncertainty. It is common to use 
-\section{Probabilities}\label{sec:probabilities}
-Define what is an atom
-Classical framework to represent uncertainty. Epistemic vs stochastic uncertainty. Paradoxes with uniform distribution, dependency (sum of dices etc). Definition of a random variable \etc
-\section{Gambles, Imprecise Probabilities}\label{sec:imprecise_probabilities}
-Introduction to IP, how it contains the classical probability framework. Pboxes there?
+\section{Different Models to Represent Uncertainty}\label{sec:different_models_of_uncertainty}
+Assessing the reliability of an engineering system requires to quantify the uncertainty of the input parameters or of the system itself, using models of uncertainty. Modelling the uncertainty can be done in various ways, depending on the type of uncertainty considered and the available measures or \textit{a priori} regarding the uncertainty sources. The most common models are probability distributions, which have been studied extensively. When using those models, we know -or suppose- that the information we try to estimate is of stochastic (or random) nature, and that we are able to precisely describe its structure using a probability distribution. However, there are many cases where such assumptions cannot be made. Other models can instead be used, such as:
+\begin{itemize}
+    \item fuzzy sets \cite{zadeh_fuzzy_1999} when trying to estimate the degree of truth of a statement such as ``This person is tall''
+    \item intervals \cite{jaulin_applied_2001}, where no preferences are given inside a specific range of possible values
+    \item imprecise probabilities which tries to extend the concept of probabilities in order to model epistemic uncertainty
+\end{itemize}
+This list is not exhaustive, and those different models can sometimes be equivalent. Choosing to use one or another depends on the nature of the problem. In this chapter, we will mainly consider probability distributions (section \ref{sec:probabilities}) and imprecise probabilities (section \ref{sec:imprecise_probabilities}). Two specific cases of imprecise probabilities will be detailed, namely possibility distributions in section \ref{sec:possibilities} and p-boxes in section \ref{sec:pboxes}.
+
+At the end of the day, choosing one model over another is not always straightforward. It requires to be aware of the type of uncertainty faced, of the strengths and limitations of each model, of the tools available to manipulate the models \etc When it comes to less common models cited above, it fundamentally requires to be aware of the existence of such models, which is not always the case for non-specialists. During this thesis, we tried to promote less common models, especially possibility distributions. We did so by presenting real life cases where they could be used while improving uncertainty modeling in the field of stereo-photogrammetry (see chapters \ref{chap:propagating} and \ref{chap:epistemic_uncertainty}). \comroman{Je pense que cette remarque devrait plutôt se retrouver dans l'intro de la thèse, car elle s'éloigne de ce qui suit. Peut être même que les deux paragraphes pourraient être déplacés dans l'intro}
+
+\subsection{A Common Model: Probabilities}\label{sec:probabilities}
+Probability measures are a classical framework to represent uncertainty. There are fitted to represent stochastic uncertainty, \ie uncertainty regarding events that can get a different result each time we run an experiment or acquire a measure (typically, noise on a sensor). We remind here basic definitions regarding probability distributions.
+
+\begin{definition}[Probability Space]
+    We call a probability space $(\Omega,~\mathcal{A},~P)$ a tuple where:
+    \begin{itemize}
+        \item $\Omega$ is the set of possible outcomes (for instance head or tails for a toss coin)
+        \item $\mathcal{A}$ is the set of all subsets of $\Omega$ for which a probability can be measured (for instance $\{\emptyset, \{\text{heads}\}, \{\text{tails}\}, \{\text{heads, tails}\}\}$)
+        \item $P$ is the probability measure assigning a probability to each of the sets of $\mathcal{A}$. For instance for a fair coin, $P(\emptyset)=0$, $P(\{\text{heads}\})=P(\{\text{tails}\}=0.5$ and $P(\Omega)=1$.
+    \end{itemize}
+    Note that $\mathcal{A}$ must be a $\sigma$-algebra meaning that it is closed under complement, countable unions and countable intersections. $P$ is a probability measure if it verifies all the Kolmogorov axioms:
+    \begin{itemize}
+        \item $\forall A\in\mathcal{A},~P(A)\in[0,1]$
+        \item $P(\Omega) = 1$
+        \item for any countable disjoint family of sets $A_i\in\mathcal{A}$, $P(\cup_i A_i)=\sum_i~P(A_i)$
+    \end{itemize}
+\end{definition}
+
+\begin{definition}[Random Variable]
+    A random variable $X$ is a measurable function from $\Omega$ to a measurable space $\X$ (which is often $\mathbb{R}$ or a subset of $\mathbb{R}$). We can then measure the probability that $X$ takes a value in $E\subseteq\X$ is then:
+    \begin{align*}
+        P(E) = P(\{\omega\in\Omega~|~X(\omega)\in E\})
+    \end{align*}
+\end{definition}
+
+Using a random variable allows to consider the probability measure on different spaces. We then call $P$ the probability distribution of the considered random variable $X$.
+
+Other useful concepts regarding probability distributions are cumulative distribution functions and density functions:
+\begin{definition}[Cumulative Distribution Function]\label{def:cdf}
+    A Cumulative Distribution Function $F_X$ of a random variable $X$ with real values is the probability that $X$ will be less or equal to a number $x$. Formally, we define $F_X:\X\rightarrow[0,1]$:
+    \begin{equation*}
+        \forall x\in\X,~F_X(x)=P(X\leqslant x)
+    \end{equation*}
+\end{definition}
+
+\begin{definition}[Density Function]\label{def:density}
+    A random variable $X$ is said to possess a density function if there exists a positive integrable function $f$ over $\mathbb{R}$ \st $\forall (x_1, x_2)\in\mathbb{R}^2$:
+\begin{equation*}
+    P(x_1\leqslant X \leqslant x_2) = \int_{x_1}^{x_2}f(x)dx
+\end{equation*}
+    If it exists, the density $f$ is also the derivative of the CDF of $X$.
+\end{definition}
+%For instance, the uniform distribution on the interval $[1,100]$ has a density function $f(x)=\frac{1}{100-1}$ if $x\in[1,100]$ and $0$ elsewhere. Its CDF is thus $0$ if $x<1$, $\frac{x}{100-1}$ if $x\in[1,100]$ and $1$ elsewhere. The concept of a CDF for multiple variables will be explored in section \ref{sec:copulas}.
+
+In the rest of the chapter, we consider random variables $X$ on discrete spaces $\X$. If $\X=\{x_1,~\dots,~x_n\}$, we call $\{x_i\}$ an atom of $\X$, and the probability distribution $P$ of $X$ on $\X$ is completely determined by its density, which is the value of $P$ on atoms. For simplicity of notation, we will not always use braces around atoms when computing their probability. So we will sometimes write $P(x_1)$ instead of $P(X=\{x_1\})$.
+
+As stated previously, probability measures are fitted to represent stochastic uncertainty. The following example illustrates why probability measures are not adapted to represent epistemic uncertainty:
+%%%% Complex example, a simpler one is presented bellow
+%\begin{example}
+%    Consider a thermometer measuring the temperature of an unknown container. We only know that the temperature is above $1$ and bellow $100$ degrees Celsius. We define $X:\Omega\rightarrow[1,~100]$ as the random variable representing the output of the thermometer and are interested in its value. In the absence of further information on the container, a common procedure is to associate the uniform distribution to $X$. The CDF $F_X$ of $X$ is thus:
+%    \begin{equation*}
+%        \forall x\in\mathbb{R},~CDF_X(x)=\mathds{1}_{[1,~100]}(x)\frac{x}{100-1}
+%    \end{equation*}
+%    We now consider a random variable $Y$ defined as the logarithm of $X$: $Y=\ln X$. We still do not have any further information on the device and we have thus no preference on the values of its logarithm. Following the method above, one could also be tempted to associate a uniform distribution to $Y$. However, computing the CDF $F_Y$ of $Y$ from that of $X$ yields for all $y$:
+%    \begin{align*}
+%        F_Y(y) &= P(Y\leqslant y) = P(\ln(X)\leqslant y) = P(X \leqslant e^y) = F_X(e^y)\\
+%        &= \mathds{1}_{[1,~100]}(e^y)\frac{e^y}{100-1}
+%    \end{align*}
+%    Which is clearly not the CDF of a uniform distribution. This is because a uniform distribution is well suited for representing statements like ``all values have the same likelyhood'' but not for statements like ``I have no information over the values (and thus no preference)''. In general, probability distributions cannot represent epistemic uncertainty as a probability distribution actually contains a lot of information about a random variable.    
+%\end{example}
+\begin{example}
+    Let consider a card facing down, with a number written on its hidden side. The person who wrote the number tells you that they wrote either $1$, $2$ or $3$ on it. They then ask you to evaluate your chances of guessing the correct number and its parity, \ie if it is odd or even. We first consider the random variable $X$ taking values in $\{1,~2,~3\}$. Because you have no further information and thus no preferences on the values of $X$, you may choose to associate the uniform distribution $P$ to $X$:
+    \begin{equation*}
+        P(X=1)=P(X=2)=P(X=3)=\frac{1}{3}
+    \end{equation*}
+    For the parity of the number, we may now consider the random variable $Y$ define such that $Y=0$ if $X=1$ or $X=3$ and $Y=1$ if $X=2$. Because you have no information on the number written on the card, you also do not have any preferences on the values of $Y$. Following the same reasoning as before, you might be tempted to associate an uniform distribution to it. However, deducing the density of $Y$ from that of $X$ yields:
+    \begin{equation*}
+        P(Y=0)=P(X=1)+P(X=3)=\frac{2}{3},\qquad P(Y=1)=P(X=2) = \frac{1}{3}
+    \end{equation*}
+    Which is clearly not the density of an uniform distribution. By supposing we have no preferences on the values of a variable, we actually deduced preferences on the values of another variable. This is because uniform distributions are well suited for representing statements like ``all values have the same likelyhood'' but not for statements like ``I have no information over the values (and thus no preference)''. In general, probability distributions cannot represent uncertainty due to a lack of knowledge as a probability distribution actually contains a lot of information about a random variable.
+\end{example}
+
+
+\subsection{Another Model: Imprecise Probabilities}\label{sec:imprecise_probabilities}
+Introduction to IP, how it contains the classical probability framework.
 Define coherence, sure loss, cylindrical sets
-\section{Possibility Distributions}\label{sec:possibilities}
+\subsection{Possibility Distributions}\label{sec:possibilities}
 Link with fuzzy sets. Define random sets. A simple and useful model, but with limited expressiveness (n focal sets and not $2^n$). Nested focal sets. Used to model experts opinions with examples \cite{baudrit_joint_2007}
 
 Formally, a possibility distribution is defined as a mapping $\pi: \Omega \rightarrow [0,1]$ satisfying:
@@ -49,16 +128,18 @@ As \( \pi \) defines a plausibility function, it also define a credal set noted 
     \M(\pi)=\{P~|~\forall A, P(A)\leqslant \sup_{x\in A}\pi(x)\}\label{eq:credal_set_possibility}
 \end{align}
 
-\section{Copulas}\label{sec:copulas}
-\todoroman{Define also sub copulas\\Talk briefly about imprecise copula too}
-We will present in this section copulas, which are mathematical tools used to represent the dependency between multiple random variables. Copulas can represent many types of dependency, ranging from complete monotonicity to complete counter-monotonicity, but can also represent independence between variables. Section \ref{sec:copula_def} will present the mathematical definition of a copula as well as practical families of copulas and how they can model different dependencies. Section \ref{sec:dconvexity} will present a specific property shared by some copulas and a theoretical contribution that will used later in sections \ref{subsec:pboxes} and \ref{subsec:multiple_models}. Finally, we present how to generate multivariate samples from a copula, which will be used in section \ref{sec:montecarlo}.
+\subsection{P-boxes}\label{sec:pboxes}
+
+\section{Dependency Models: Copulas}\label{sec:copulas}
+\todoroman{Define also sub copulas\\Talk briefly about imprecise copula too. Faire le lien avec ce qui venait avant.}
+In this section, we will present dependency models called copulas, which are mathematical tools used to represent the dependency between multiple random variables. Copulas can represent many types of dependency, ranging from complete monotonicity to complete counter-monotonicity, but can also represent independence between variables. Section \ref{sec:copula_def} will present the mathematical definition of a copula as well as practical families of copulas and how they can model different dependencies. Section \ref{sec:dconvexity} will present a specific property shared by some copulas and a theoretical contribution that will used later in sections \ref{subsec:pboxes} and \ref{subsec:multiple_models}. Finally, we present how to generate multivariate samples from a copula, which will be used in section \ref{sec:montecarlo}.
 
 \subsection{Core Definitions and Examples}\label{sec:copula_def}
-In the following, let $n\in\mathbb{N}^*$ be the number of sources of uncertainty considered (either rerpesented by random variables or random sets). Formally, a copula is a multivariate distribution function $C:[0,1]^{n}\rightarrow [0,1]$ whose marginals follow uniform distributions on $[0,1]$. It can be interpreted as a joint cumulative distribution of $n$ random variables. For all $i\in\opi 1,n\cli $, we will refer to $u_i\in[0,1]$ as its $i$-th variable (or marginal). A copula verifies a number of properties:
+In the following, let $n\in\mathbb{N}^*$ be the number of sources of uncertainty considered (either represented by random variables or random sets). Formally, a copula is a multivariate distribution function $C:[0,1]^{n}\rightarrow [0,1]$ whose marginals follow uniform distributions on $[0,1]$. It can be interpreted as a joint cumulative distribution of $n$ random variables. For all $i\in\opi 1,n\cli $, we will refer to $u_i\in[0,1]$ as its $i$-th variable (or marginal). A copula verifies a number of properties:
 \begin{align}
     &\text{if }\exists j\in\opi 1,n\cli  \text{ \st }~u_j=0, \text{ then }C(u_1,\dots,u_j,\dots,u_n)=0\label{eq:zero_copula}\\
     &\forall i\in\opi 1,n\cli ,~C(1,1,\dots,1,u_i,1,\dots,1)=u_i\label{eq:copula_ones}\\
-    &\forall (v_1,\dots,v_n)\in[0,1]^n \text{ \st }~\forall i\in\in\opi 1,n\cli ,~v_i\geqslant u_i\nonumber\\
+    &\forall (v_1,\dots,v_n)\in[0,1]^n \text{ \st }~\forall i\in\opi 1,n\cli ,~v_i\geqslant u_i\nonumber\\
     &\sum_{(w_1, \dots, w_n)\in\Pi_{i=1}^n\{u_i, v_i\}}(-1)^{|\{i~|~w_i=u_i\}|}C(w_1, \dots, w_n)\geqslant 0\label{eq:cop_hvolume}
 \end{align}
 where $\Pi_{i=1}^n$ is the Cartesian product of $n$ elements, meaning that $(w_1, \dots, w_n)\in\Pi_{i=1}^n\{u_i, v_i\}$ is a tuple of $n$ elements, where each element is either $u_i$ or $v_i$. Additionally, $|\{i~|~w_i=u_i\}|$ refers to the cardinal of the set $\{i~|~w_i=u_i\}$. The first term in equation \eqref{eq:cop_hvolume} is also called H-volume or hyper-volume. It is used to compute joint probability mass assignments in the precise case (and also in the imprecise case, see section \ref{sec:joint_mass}). In the rest of this thesis, we will use the following notation to refer to the $H$-volume:
@@ -66,10 +147,10 @@ where $\Pi_{i=1}^n$ is the Cartesian product of $n$ elements, meaning that $(w_1
     &&\forall i\in\opi 1,n\cli ,~\forall~0\leqslant u_i \leqslant v_i \leqslant 1,\nonumber\\
     &&H^{v_1,\dots v_n}_{u_1,\dots,u_n}=\sum_{(w_1, \dots, w_n)\in\Pi_{i=1}^n\{u_i, v_i\}}(-1)^{|\{i~|~w_i=u_i\}|}C(w_1, \dots, w_n)
 \end{eqnarray}
-The formula of the H-volume can be difficult to grasp in the general case. A way of interpreting it is presented later after theorem \ref{theorem:sklar}.
+The formula of the H-volume can be difficult to grasp in the general case. A way of interpreting it is presented later after theorem \ref{theorem:sklar}. \todoroman{Mettre un exemple où on utilise le H volume en 2D pour expliquer aux gens}
 
 A central theorem regarding copulas is Sklar's theorem \cite{sklar_fonctions_1959}:
-\begin{theorem}[Sklar's theorem]\label{theorem:sklar}
+\begin{theorem}[Sklar's Theorem]\label{theorem:sklar}
     Let $F:\X_1\tdt\X_n\rightarrow[0,1]$ be a multivariate cumulative distribution function, where $\X_i\subseteq\overline{\mathbb{R}}$. The marginals $F_i$ of $F$ are defined as $\forall i\in\opi 1,n\cli , \forall x\in\X_i, F_i(x) = F( +\infty, \dots,  +\infty, x,  +\infty, \dots, +\infty)$ where $x$ is the $i$-th component of $F$. If $F_i$ are continuous, then a unique copula $C$ exists on $\X_1\tdt\X_n$ such that:
     \begin{eqnarray}
         \forall (x_1,\dots,x_n)\in \overline{\mathbb{R}}^n, F(x_1,\dots,x_n)=C(F_1(x_1),\dots, F_n(x_n))
@@ -91,12 +172,12 @@ The upper bound is a copula, usually called the Minimum copula $C_M$, modelling 
 Independence between variables is modeled by the product copula $C_\Pi(u_1, \dots, u_n)=u_1\dots u_n$, which will be used later in subsection \ref{subsection:product_copula}. Graphical representations of the product copula and of the lower and upper Fréchet–Hoeffding bounds are represented in figure \ref{fig:copulas}. 
 
 \begin{example}
-	The following example tries to illustrate how different copulas can represent different dependencies. Imagine a game where a dealer has two dices and throws them without you being able to see the result. The dealer tells you the result of the first dice and you have to guess the result of the second dice. Suppose that, as an atempt to be fair, you have access to throw records for the first dice, throw records for the second dice, but not to records for the two dices together. Looking at the records indicates that the dices seem equiprobable. We note \(X_1\) the random variable indicating the result of the first dice and \(P_1\) its probability measure over \( \X_1 = \{1,~\dots,~6\} \). We note \(X_2\) the random variable indicating the result of the second dice and \(P_2\) its probability measure over \( \X_2 = \{1,~\dots,~6\} \).  The records indicate that:
+	The following example tries to illustrate how different copulas can represent different dependencies. Imagine a game where a dealer has two dices and throws them without you being able to see the result. The dealer tells you the result of the first dice and you have to guess the result of the second dice. Suppose that, as an attempt to be fair, you have access to throw records for the first dice, throw records for the second dice, but not to records for the two dices together. Looking at the records indicates that the dices seem equiprobable. We note \(X_1\) the random variable indicating the result of the first dice and \(P_1\) its probability measure over \( \X_1 = \{1,~\dots,~6\} \). We note \(X_2\) the random variable indicating the result of the second dice and \(P_2\) its probability measure over \( \X_2 = \{1,~\dots,~6\} \).  The records indicate that:
 	\begin{align*}
 		P_1(X_1=1)&=\dots=P_1(X_1=6)=\frac{1}{6}\\
 		P_2(X_2=1)&=\dots=P_2(X_2=6)=\frac{1}{6}
 	\end{align*}
-	We are interested in the joint probability \(P\) of the random variable \(X_1,~X_2\) (or its CDF \(  F \)), whose marginals are \(P_1\) and \(P_2\) (and whose CDFs are \( F_1\) and \( F_2 \)). Sklar's therorem indicates that there exists a copula $C$ such that \(P=C(P_1,~P_2)\). You can not see how dices are thrown, so there is no guarantee that they are independent, only that they are equiprobable when looked at separately. We can imagine different scenarios for the joint throws, each leading to a different copula $C$ modelling the dependency:
+	We are interested in the joint probability \(P\) of the random variable \(X_1,~X_2\) (or its CDF \(  F \)), whose marginals are \(P_1\) and \(P_2\) (and whose CDFs are \( F_1\) and \( F_2 \)). Sklar's theorem indicates that there exists a copula $C$ such that \(P=C(P_1,~P_2)\). You can not see how dices are thrown, so there is no guarantee that they are independent, only that they are equiprobable when looked at separately. We can imagine different scenarios for the joint throws, each leading to a different copula $C$ modelling the dependency:
 	\begin{itemize}
 		\item If the dealer throws the two dices independently, then the joint probability is uniform and is the product of its marginals. It is thus link to its marginal by the product copula:
 		\begin{equation*}
@@ -111,8 +192,8 @@ Independence between variables is modeled by the product copula $C_\Pi(u_1, \dot
 		\begin{equation*}
 			\forall x_1\in\X_1, \forall x_2 \in \X_2, ~F(x_1,~x_2)=C_M(F_1(x_1),~F_2(x_2))=\min(F_1(x_1),~F_2(x_2))
 		\end{equation*}
-		Checking that this definintion of \( F \) does lead to the probability described above is straightforward. 
-		\item Imagine now that the dealer is still not being fair, but this time forces the second dice to land such that the sum of the dices always equals to 7 (\ie, if the first dice lands on 1 then the second dice is then set to 6, if the first dice land on 2 then the second dice is set to 5 \etc). Looking at marginal distributions separately will still suggests that dices are fair as their marginals are uniform. However, they appear fully conter-monotone when looked at jointly. In this case, the joint probability will be defined as follows: 
+		Checking that this definition of \( F \) does lead to the probability described above is straightforward. 
+		\item Imagine now that the dealer is still not being fair, but this time forces the second dice to land such that the sum of the dices always equals to 7 (\ie, if the first dice lands on 1 then the second dice is then set to 6, if the first dice land on 2 then the second dice is set to 5 \etc). Looking at marginal distributions separately will still suggests that dices are fair as their marginals are uniform. However, they appear fully counter-monotone when looked at jointly. In this case, the joint probability will be defined as follows: 
 		\begin{align*}
 			\forall x_1\in\X_1, \forall x_2 \in \X_2, &\text{ if }x_1=7-x_2, ~P(x_1,~x_2)=\frac{1}{6}\\
 			&\text{ if }x_1\neq 7-x_2, ~P(x_1,~x_2)=0\\
@@ -121,12 +202,12 @@ Independence between variables is modeled by the product copula $C_\Pi(u_1, \dot
 		\begin{equation*}
 			\forall x_1\in\X_1, \forall x_2 \in \X_2, ~F(x_1,~x_2)=C_L(F_1(x_1),~F_2(x_2))=1-\max(F_1(x_1)+F_2(x_2) - 1, 0)
 		\end{equation*}
-		Checking that this definintion of \( F \) does lead to the probability described above is straightforward. 
+		Checking that this definition of \( F \) does lead to the probability described above is straightforward. 
 	\end{itemize}
-	Those three cases indicate how copulas can represent very different dependency structures from the same marginals. It also intuitiates the fact that the Lukasiewicz copula favors values thar are ``opposite'', whereas the minimum copula tends to favor values that are similar. In those examples, the dependency is so important that knowing the result of one dice throw determines the result of the second, which is therefore modeled by the upper and lower Fréchet-Hoeffding bounds.  We will see in the following that there are other families of copula that allow less ``extreme'' dependencies.
+	Those three cases indicate how copulas can represent very different dependency structures from the same marginals. It also intuitiates the fact that the Lukasiewicz copula favors values that are ``opposite'', whereas the minimum copula tends to favor values that are similar. In those examples, the dependency is so important that knowing the result of one dice throw determines the result of the second, which is therefore modeled by the upper and lower Fréchet-Hoeffding bounds.  We will see in the following that there are other families of copula that allow less ``extreme'' dependencies.
 \end{example}
 
-Some examples of families of copulas that can be generated using a single parameter $\theta$ in the case $n=2$ are presented in table \ref{tab:familiy_of_copula}. Those families are quite common in the litterature, but this list is not exhaustive. Section \ref{sec:{sec:dconvexity}} will define and explore directionnal convexity/concavity, which is a property that most families of copulas presented share. This propery will be used in section \ref{sec:inclusions_between_methods} to demonstrate relationship between different multivariate uncertain models.
+Some examples of families of copulas that can be generated using a single parameter $\theta$ in the case $n=2$ are presented in table \ref{tab:familiy_of_copula}. Those families are quite common in the literature, but this list is not exhaustive. Section \ref{sec:dconvexity} will define and explore directional convexity/concavity, which is a property that most families of copulas presented share. This property will be used in section \ref{sec:inclusions_between_methods} to demonstrate relationship between different multivariate uncertain models.
 
 Another important family of copulas is the family of Gaussian copulas. Each Gaussian copula is generated with a correlation matrix $R\in[-1,1]^{(n,n)}$:
 \begin{align}
@@ -235,13 +316,13 @@ Another important family of copulas is the family of Gaussian copulas. Each Gaus
 \end{table}}
 
 \begin{remark}
-	As a copula is also a multivariate CDF, one can imagine an ``imprecise'' copula similarly to what can be done with univariate probability distribution (see section \ref{sec:imprecise_probabilities}). Imprecise copula allow to model partially known dependences, but can be hard to manipulate at times, as for instance the lower and upper bounds of an imprecise copula are not necessarily copulas themselves. In this thesis, we will not consider imprecise copula
+	As a copula is also a multivariate CDF, one can imagine an ``imprecise'' copula similarly to what can be done with univariate probability distribution (see section \ref{sec:imprecise_probabilities}). Imprecise copula allow to model partially known dependencies, but can be hard to manipulate at times, as for instance the lower and upper bounds of an imprecise copula are not necessarily copulas themselves. In this thesis, we will not consider imprecise copulas.
 \end{remark}
 
 \subsection{Directional convexity/concavity for copulas}\label{sec:dconvexity}
 This section will investigate convexity/concavity properties for copulas. This is more of a theoretical contribution, as we do not exploit them in our applications. However, we will see that those properties are share by many practical families of copulas, and that those properties will help us prove a specific relationship between multivariate uncertainty models in sections \ref{subsec:pboxes} and \ref{subsec:multiple_models}. For readers that do not want to dive into details regarding directional convexity/concavity, we advise to consider only definition \ref{def:convex} and the main result of this section which is presented in equation \eqref{eq:convex_diff_hvol}.
 
-\begin{definition}\label{def:convex}
+\begin{definition}[D-convexity, D-concavity]\label{def:convex}
     A copula $C$ is called directionally convex (D-convex) \cite{alvoni_dierent_2007} if for every $(u_1,\dots,u_n)\in[0,1]^n$, $(v_1, \dots, v_n)\in[0,1]^n$ and $t\in[0,1]$ it verifies:
     \begin{eqnarray}
         \forall i\in[1,n],&&\nonumber\\
@@ -251,40 +332,45 @@ This section will investigate convexity/concavity properties for copulas. This i
     In other words, the copula is convex when fixing all but one of its variables. A copula $C$ is called directionally concave (D-concave) if the inequality is reversed.
 \end{definition}
 
-D-convexity/D-concavity is quite common in known family of copulas. The following paragraphs provide additional insight on the properties of practical families of copulas presented in table \ref{tab:familiy_of_copula}, in the case $n=2$.
-As the copulas presented are symmetric regarding their variables, D-convexity/D-concavity is only detailed for $u_1$. We assume that \( \theta \) always belong to the domain of definition detailed in table \ref{tab:familiy_of_copula}, and that \(u_1, u_2\) are in \([0, 1]\)]. For the Clayton and Gumbel family, the copula is defined by continuous extension in cases $u_1=0$ and $u_2=0$. 
-\begin{description}
-    \item[Ali-Mikhail-Haq copula] This copula is two times differentiable, and its second order partial derivative is
-    $$\frac{\partial^2 C}{\partial {u_1}^2}=u_2(1-\theta(1-u_2))\frac{-2\theta(1-u_2)}{(1-\theta(1-u_1)(1-u_2))^3}$$
-    Thus the Ali-Mikhail-Haq copula is D-convex for $\theta\in[-1,0]$ and D-concave for $\theta\in[0,1)$
-    \item[Clayton copula] This copula is not always differentiable on all of its domain, depending on the value retained in the maximum function. It is however continuous as it is the maximum of two continuous function. For convenience, we work with $(u_1, u_2)$ in $\mathbb{I}^2$, where $\mathbb{I}$ is the open unit interval (the closed unit interval is then covered by continuity). Let $u_2\in\mathbb{I}$. We split the possible range $\mathbb{I}$ of $u_1$ in two:
-\begin{itemize}
-    \item the first domain $\mathcal{D}_1^{\theta,u_2}$ is where $u_1^{-\theta}+u_2^{-\theta}-1\leqslant0$, and thus $C(u_1, u_2)=0$. Here, $\frac{\partial^2 C}{\partial {u_1}^2}=0$ and the copula is both D-convex and D-concave.
-    \item the second domain $\mathcal{D}_2^{\theta,u_2}$ is where $u_1^{-\theta}+u_2^{-\theta}-1>0$ and thus $C(u_1, u_2)\geqslant0$. Here it holds that
-    $$\frac{\partial^2 C}{\partial {u_1}^2}=(1+\theta)(1-u_2^{-\theta})u_1^{-2-\theta}(u_1^{-\theta}+u_2^{-\theta}-1)^{-2-\frac{1}{\theta}}$$
-    Because of the definition of $\mathcal{D}_2^{\theta,u_2}$, the sign of $\frac{\partial^2 C}{\partial {u_1}^2}$ on $\mathcal{D}_2^{\theta,u_2}$ is that of $1-u_2^{-\theta}$.
-\end{itemize}
+\begin{remark}
+    D-convexity/D-concavity is quite common in known family of copulas. The following paragraphs provide additional insight on the properties of practical families of copulas presented in table \ref{tab:familiy_of_copula}, in the case $n=2$.
+    As the copulas presented are symmetric regarding their variables, D-convexity/D-concavity is only detailed for $u_1$. We assume that \( \theta \) always belong to the domain of definition detailed in table \ref{tab:familiy_of_copula}, and that \(u_1, u_2\) are in \([0, 1]\)]. For the Clayton and Gumbel family, the copula is defined by continuous extension in cases $u_1=0$ and $u_2=0$. 
+    \begin{description}
+        \item[Ali-Mikhail-Haq copula] This copula is two times differentiable, and its second order partial derivative is
+        $$\frac{\partial^2 C}{\partial {u_1}^2}=u_2(1-\theta(1-u_2))\frac{-2\theta(1-u_2)}{(1-\theta(1-u_1)(1-u_2))^3}$$
+        Thus the Ali-Mikhail-Haq copula is D-convex for $\theta\in[-1,0]$ and D-concave for $\theta\in[0,1)$
+        \item[Clayton copula] This copula is not always differentiable on all of its domain, depending on the value retained in the maximum function. It is however continuous as it is the maximum of two continuous function. For convenience, we work with $(u_1, u_2)$ in $\mathbb{I}^2$, where $\mathbb{I}$ is the open unit interval (the closed unit interval is then covered by continuity). Let $u_2\in\mathbb{I}$. We split the possible range $\mathbb{I}$ of $u_1$ in two:
+    \begin{itemize}
+        \item the first domain $\mathcal{D}_1^{\theta,u_2}$ is where $u_1^{-\theta}+u_2^{-\theta}-1\leqslant0$, and thus $C(u_1, u_2)=0$. Here, $\frac{\partial^2 C}{\partial {u_1}^2}=0$ and the copula is both D-convex and D-concave.
+        \item the second domain $\mathcal{D}_2^{\theta,u_2}$ is where $u_1^{-\theta}+u_2^{-\theta}-1>0$ and thus $C(u_1, u_2)\geqslant0$. Here it holds that
+        $$\frac{\partial^2 C}{\partial {u_1}^2}=(1+\theta)(1-u_2^{-\theta})u_1^{-2-\theta}(u_1^{-\theta}+u_2^{-\theta}-1)^{-2-\frac{1}{\theta}}$$
+        Because of the definition of $\mathcal{D}_2^{\theta,u_2}$, the sign of $\frac{\partial^2 C}{\partial {u_1}^2}$ on $\mathcal{D}_2^{\theta,u_2}$ is that of $1-u_2^{-\theta}$.
+    \end{itemize}
+    
+    If $\theta>0$, then $D^\theta_2=\mathbb{I}$ and $\frac{\partial^2 C}{\partial {u_1}^2}\leqslant0$ which means that the copula is D-concave an all of its domain.
+    
+    The case where $\theta<0$ is less straightforward. In that case, $\frac{\partial^2 C}{\partial {u_1}^2}\geqslant0$ on $\mathcal{D}_2^{\theta,u_2}$. The restrictions of the copula to $\mathcal{D}_1^{\theta,u_2}$ and $\mathcal{D}_2^{\theta,u_2}$ are both D-convex, but we need to prove that it is still true on their union. Let $u_1\in\mathcal{D}_1^{\theta,u_2}$, $v_1\in\mathcal{D}_2^{\theta,u_2}$ and $t\in[0,1]$. We note $w_1=(1-u_2^{-\theta})^{-\frac{1}{\theta}}$, such that $\mathcal{D}_1^{\theta,u_2}=]0,w_1]$ and $\mathcal{D}_2^{\theta,u_2}=]w_1, 1[$. By continuity, $C$ is D-convex on $\mathcal{D}_2^{\theta,u_2}\bigcup\{w_1\}$. Because $u_1,w_1\in \mathcal{D}_1^{\theta,u_2}$, it holds that:
+        \begin{eqnarray*}
+            tC(u_1,~u_2)+(1-t)C(v_1,~u_2) &=& tC(w_1,~u_2)+(1-t)C(v_1,~u_2)\\
+            &\geqslant& C(tw_1+(1-t)v_1,~u_2)\\
+            &&\text{by convexity of $C$ on $\mathcal{D}_2^{\theta,u_2}\bigcup\{w_1\}$}\\
+            &\geqslant& C(tu_1+(1-t)v_1,~u_2)\\
+            && \text{because $C$ is component-wise increasing}
+        \end{eqnarray*}
+    which, by definition \ref{def:convex}, proves that $C$ is D-convex on $\mathcal{D}_1^{\theta,u_2}\bigcup \mathcal{D}_2^{\theta,u_2}$. By continuity, $C$ is D-convex on all of its domain.
+    \item[Frank copula] This copula is two times differentiable, and its second order partial derivative is
+    $$\frac{\partial^2 C}{\partial {u_1}^2}=\frac{(e^{-\theta u_2}-1)e^{-\theta u_1}\theta(e^{-\theta u_2}-e^{-\theta} )}{(e^{-\theta}-1+(e^{-\theta u_1}-1)(e^{-\theta u_2}-1))^2}$$
+    If $\theta\geqslant0$ then $\frac{\partial^2 C}{\partial {u_1}^2}\leqslant 0$ and $C$ is D-concave. If $\theta\leqslant0$ then $\frac{\partial^2 C}{\partial {u_1}^2}\geqslant 0$ and $C$ is D-convex.
+    \item[Gumbel copula] This copula is two times differentiable on $]0,1]^2$, and its second order partial derivative is
+    $$\frac{\partial^2 C}{\partial {u_1}^2}=-\theta\frac{u_2}{u_1}\ln(u_2)(1-\theta\ln(u_2))e^{-\theta\ln(u_1)\ln(u_2)}$$
+    It holds that for all $\theta\in(0,1]$, $\frac{\partial^2 C}{\partial {u_1}^2}\geqslant0$. By continuity, $C$ is always D-convex.
+    \end{description}
+    
+    As there is no explicit formula for the family of multivariate Gaussian copulas, it is difficult to prove its D-concavity or D-convexity. However, numerical approximations in the case $n=2$ seem to indicate that a Gaussian copula would be D-convex if its marginals are positively correlated, and D-concave if they are negatively correlated. Figure \ref{fig:gaussian_copula_simu} present those observations, with solid lines representing positive correlation, and dashed lines representing negative correlations. In the case $n>2$, the copula can be neither D-convex nor D-concave depending on the value of the correlation matrix. An example of this effect is provided in figure \ref{fig:gaussian_copula_simu_n3}.
+\end{remark}
 
-If $\theta>0$, then $D^\theta_2=\mathbb{I}$ and $\frac{\partial^2 C}{\partial {u_1}^2}\leqslant0$ which means that the copula is D-concave an all of its domain.
+The rest of this section will present some remarks and useful properties for D-convex and D-concave copulas.
 
-The case where $\theta<0$ is less straightforward. In that case, $\frac{\partial^2 C}{\partial {u_1}^2}\geqslant0$ on $\mathcal{D}_2^{\theta,u_2}$. The restrictions of the copula to $\mathcal{D}_1^{\theta,u_2}$ and $\mathcal{D}_2^{\theta,u_2}$ are both D-convex, but we need to prove that it is still true on their union. Let $u_1\in\mathcal{D}_1^{\theta,u_2}$, $v_1\in\mathcal{D}_2^{\theta,u_2}$ and $t\in[0,1]$. We note $w_1=(1-u_2^{-\theta})^{-\frac{1}{\theta}}$, such that $\mathcal{D}_1^{\theta,u_2}=]0,w_1]$ and $\mathcal{D}_2^{\theta,u_2}=]w_1, 1[$. By continuity, $C$ is D-convex on $\mathcal{D}_2^{\theta,u_2}\bigcup\{w_1\}$. Because $u_1,w_1\in \mathcal{D}_1^{\theta,u_2}$, it holds that:
-    \begin{eqnarray*}
-        tC(u_1,~u_2)+(1-t)C(v_1,~u_2) &=& tC(w_1,~u_2)+(1-t)C(v_1,~u_2)\\
-        &\geqslant& C(tw_1+(1-t)v_1,~u_2)\\
-        &&\text{by convexity of $C$ on $\mathcal{D}_2^{\theta,u_2}\bigcup\{w_1\}$}\\
-        &\geqslant& C(tu_1+(1-t)v_1,~u_2)\\
-        && \text{because $C$ is component-wise increasing}
-    \end{eqnarray*}
-which, by definition \ref{def:convex}, proves that $C$ is D-convex on $\mathcal{D}_1^{\theta,u_2}\bigcup \mathcal{D}_2^{\theta,u_2}$. By continuity, $C$ is D-convex on all of its domain.
-\item[Frank copula] This copula is two times differentiable, and its second order partial derivative is
-$$\frac{\partial^2 C}{\partial {u_1}^2}=\frac{(e^{-\theta u_2}-1)e^{-\theta u_1}\theta(e^{-\theta u_2}-e^{-\theta} )}{(e^{-\theta}-1+(e^{-\theta u_1}-1)(e^{-\theta u_2}-1))^2}$$
-If $\theta\geqslant0$ then $\frac{\partial^2 C}{\partial {u_1}^2}\leqslant 0$ and $C$ is D-concave. If $\theta\leqslant0$ then $\frac{\partial^2 C}{\partial {u_1}^2}\geqslant 0$ and $C$ is D-convex.
-\item[Gumbel copula] This copula is two times differentiable on $]0,1]^2$, and its second order partial derivative is
-$$\frac{\partial^2 C}{\partial {u_1}^2}=-\theta\frac{u_2}{u_1}\ln(u_2)(1-\theta\ln(u_2))e^{-\theta\ln(u_1)\ln(u_2)}$$
-It holds that for all $\theta\in(0,1]$, $\frac{\partial^2 C}{\partial {u_1}^2}\geqslant0$. By continuity, $C$ is always D-convex.
-\end{description}
-
-As there is no explicit formula for the family of multivariate Gaussian copulas, it is difficult to prove its D-concavity or D-convexity. However, numerical approximations in the case $n=2$ seem to indicate that a Gaussian copula would be D-convex if its marginals are positively correlated, and D-concave if they are negatively correlated. Figure \ref{fig:gaussian_copula_simu} present those observations, with solid lines representing positive correlation, and dashed lines representing negative correlations. In the case $n>2$, the copula can be neither D-convex nor D-concave depending on the value of the correlation matrix. An example of this effect is provided in figure \ref{fig:gaussian_copula_simu_n3}.
 \begin{figure}
     \centering
     \begin{subfigure}{0.4\linewidth}
@@ -310,12 +396,10 @@ As there is no explicit formula for the family of multivariate Gaussian copulas,
     \label{fig:gaussian_copula_simu_n3}
 \end{figure}
 
-The rest of this section will present some remarks and useful properties for D-convex and D-concave copulas.
-
-\begin{remark}
+\begin{proposition}
     All D-convex copulas $C$ are dominated by the product copula. 
     Similarly, all D-concave copulas dominate the product copula.
-\end{remark}
+\end{proposition}
 \begin{proof}
     Let $C$ be a D-convex copula and let $(u_1, \dots, u_n)\in[0,1]^n$.
     \begin{eqnarray*}
@@ -404,10 +488,12 @@ Details of this method in the $n$-dimensional case can be found in \cite{cherubi
     \item The desired draw is $(x_1,\dots, x_n)=(F^{-1}_1(w_1), \dots, F^{-1}_n(w_n))$ with $F_i^{-1}$, being the quasi-inverse of the $i$-th marginal CDF.
 \end{itemize}
 
-\section{Methods for Joining Credal Sets with Copulas}
-When working with multiple sources of uncertain information, one must take into account the dependency between the different sources in order to correctly determine the joint model. Section \ref{sec:copulas} introduced copulas, a type of dependency model that we will be using for joining the uncertainty model on images intensities. We consider here $n\in\mathbb{N}^*$ uncertain variables $(X_i)_{1\leqslant i\leqslant n}$ taking values respectively in an totally ordered finite space $\X_i$. Index $i$ will usually refer to the $i$-th random variable (or random set). We note $\M_i$ the credal set representing the uncertainty of $X_i$, and $C$ a $n$-copula. Focal sets of a belief function will be noted $a^i_k$, where $k$ refers to the $k$-th focal set if they are numbered. We also note $\bigsqcup$ the union of disjoint elements.
+\section{Methods for Joining Credal Sets with Copulas}\label{sec:methods_for_joining_credal_sets}
+When working with multiple sources of uncertain information, one must take into account the dependency between the different sources in order to correctly determine the joint model. Section \ref{sec:copulas} introduced copulas, a type of dependency model that we will be using for joining the uncertainty model on images intensities. 
 
-When working with precise probabilities, a copula $C$ joins univariate Cumulative Distribution Functions (CDF), called marginals, into a mutlivariate CDF. When working with marginals modeled by Imprecise Probabilities, joining the models with a copula on the product space $\X=\X_1\tdt\X_n$ is not as straightforward. We present here three different approaches to create a multivariate credal set using a copula and imprecise marginals. 
+When working with precise probabilities, using a copula $C$ to join univariate Cumulative Distribution Functions (CDF), called marginals, into a mutlivariate CDF is straightforward. When working with marginals modeled by Imprecise Probabilities, joining the models with a copula on the product space is not as trivial. We present here three different approaches to create a multivariate credal set using a copula and imprecise marginals. The first approach in section \ref{sec:robust_method} maintain the classical interpretation found of a copula found in Sklar's theorem, but is hard to compute. The second approach in section \ref{sec:joint_mass} takes some distances with the classical interpretation of a copula, but is easier to compute. Finally a third approach is presented in section \ref{sec:aggregation_method}, which completely let go of Sklar's theorem interpretation, but is very easy to compute. Inclusion relationships between those three approaches are explored in section \ref{sec:inclusions_between_methods}.
+
+We consider here $n\in\mathbb{N}^*$ uncertain variables $(X_i)_{1\leqslant i\leqslant n}$ taking values respectively in an totally ordered finite space $\X_i$. Index $i$ will usually refer to the $i$-th random variable (or random set). We note $\M_i$ the credal set representing the uncertainty of $X_i$, and $C$ a $n$-copula. Focal sets of a belief function will be noted $a^i_k$, where $k$ refers to the $k$-th focal set if they are numbered. We also note $\bigsqcup$ the union of disjoint elements.
 
 \subsection{Point-wise Aggregation}\label{sec:robust_method}
 A first way of creating a joint credal set is to sample a precise marginal for each marginal credal sets $\M_i$ and to use Sklar's theorem with the copula $C$ to create a precise multivariate CDF. The set of all resulting CDFs is thus:
@@ -431,11 +517,15 @@ Let suppose, without loss of generality, that the marginal focal sets are number
 \begin{eqnarray}\label{eq:joint_mass}
     m_\times(a^1_{k_1}\tdt a^n_{k_n}) = H_{\sum_{k=0}^{k_1-1}m_1(a^1_k), \dots, \sum_{k=0}^{k_n-1}m_n(a^n_k)}^{\sum_{k=0}^{k_1}m_1(a^1_k), \dots, \sum_{k=0}^{k_n}m_n(a^n_k)}
 \end{eqnarray}
-with the convention that $\forall i,\, a^i_0=\emptyset$, which is not strictly a focal set but allows to deal with the case $k_i=1$ as $m_i(a^i_0)=0$. For sets that are not of the form $a^1_{k_1}\tdt a^n_{k_n}$, the mass $m_\times$ is null. By this definition, $m_\times$ is a correctly defined mass distribution function.
+with the convention that $\forall i,\, a^i_0=\emptyset$, which is not strictly a focal set but allows to deal with the case $k_i=1$ as $m_i(a^i_0)=0$. For sets that are not of the form $a^1_{k_1}\tdt a^n_{k_n}$, the mass $m_\times$ is null.
+\begin{proposition}
+    The function $m_\times$ defined in equation \eqref{eq:joint_mass} is a correctly defined mass distribution function over $\X$. 
+\end{proposition}
 \begin{proof}
     By definition it holds that $m_\times(\emptyset)=0$, and the properties of the H-volume impose that $m_\times\in[0,1]$.
     
-    There are multiple way of proving that $\sum_{A\subseteq\X}m_\times(A)=1$. A direct proof can be done in the case $n=2$, but the notations become quite for any $n>2$. Instead let us use the interpretation of a copula as a multivariate CDF. 
+    There are multiple way of proving that $\sum_{A\subseteq\X}m_\times(A)=1$. A direct proof can be done in the case $n=2$, but the notations become quite for any $n>2$. Instead let us use the interpretation of a copula as a multivariate CDF. This method will be also be used in future proofs.
+    
     Let $\forall i\in\opi 0,\, n\cli,\, F_i$ be a CDF over $[0,\, N_i]$, with, $F_i(j)=\sum_{k=0}^j m_i(a_k^i)$. By Sklar's theorem, $F=C(F_1,\dots, F_n)$ is a multivariate CDF over $[0,\, N_1]\tdt[0,\, N_n]$. Thus it holds that $F([0,\, N_1]\tdt[0,\, N_n])=1$ and:
     \begin{eqnarray*}
         F([0, N_1]\tdt[0, N_n]) &=& F([0,\dots,0])+\\
@@ -482,12 +572,10 @@ With this way of defining the multivariate mass, the choice of arbitrary orders 
         \end{eqnarray*}
     \end{itemize}
     This illustrates that different orders lead to different masses and thus to different credal sets.
-    \begin{figure}[!ht]
-        \centering
-        \includegraphics[width=\linewidth]{Images/M_mass_h_volume.jpg}
-        \caption{H-volume diagram in the case $a_1^1\preceq_1a_2^1$}
-        \label{fig:joint_distrib_arb}
-    \end{figure}
+    
+    \begin{center}
+    \includegraphics[width=\linewidth]{Images/M_mass_h_volume.jpg}\captionof{figure}{H-volume diagram in the case $a_1^1\preceq_1a_2^1$}\label{fig:joint_distrib_arb}
+    \end{center}
 \end{example}
 
 In general, no order exists on the focal sets of belief functions, therefore an order has to be chosen arbitrarily. However, special cases of belief functions exhibit a natural order on their focal sets, for instance p-boxes and possibilities:
@@ -595,7 +683,9 @@ Conversely, no lower probability $\low_C$ obtained using \eqref{eq:copula_on_low
 \end{proof}
 
 \section{Inclusions Between Joint Credal Sets}\label{sec:inclusions_between_methods}
-\subsection{Product Copula}\label{subsection:product_copula}
+Section \ref{sec:methods_for_joining_credal_sets} presented three methods for joining marginal credal sets using a copula. In the general case, there is no reason for the three methods to lead to the same multivariate credal sets. However, for some specific cases on the copulas or on the marginal credal sets, it is possible to find inclusion relationships between the methods. This section explores some of those specific cases. 
+
+\subsection{Using the Product Copula}\label{subsection:product_copula}
 In this section, we will consider the case of the product copula $C_\Pi$, representing independence between variables. Using this copula in the robust approach defined by equation \eqref{eq:robust_set} is referred as the strong product in \cite{kacprzyk_factorisation_2010}. Let us denote $\low_{robust}$ the infimum of $\M_{robust}(C_\Pi, \M_i)$ and $\mathcal{S}$ the set from which $\M_{robust}$ is computed (eq. \eqref{eq:robust_ancestor}).
 For cylindrical sets $(A_1, \dots, A_n)$ of $\X$, it holds that:
 \begin{eqnarray*}
@@ -645,7 +735,7 @@ This means that in the case of the product copula $C_\Pi$ with marginals being b
     \M_{mass}\subseteq\M_{agg}
 \end{eqnarray*}
 
-\subsection{Natural Ordering of Necessity Functions}\label{subsec:necessity_functions}
+\subsection{Using the Natural Ordering of Necessity Functions}\label{subsec:necessity_functions}
 Necessity functions $\mathrm{Nec}$, also called minitive belief functions, are a special type of belief function verify $\mathrm{Nec}(A\cap B) =\min(\mathrm{Nec}(A), \mathrm{Nec}(B))$ for all events $A, B$ in their domain of definition. In the multivariate case, when a belief is only defined on cylindrical sets, then the minitive property becomes:
 \begin{eqnarray}
     &&\forall (A_1\tdt A_n)\subseteq\X, (B_1\tdt B_n)\subseteq\X,\nonumber\\
@@ -653,7 +743,7 @@ Necessity functions $\mathrm{Nec}$, also called minitive belief functions, are a
 \end{eqnarray}
 In \cite{schmelzer_joint_2015}, the author showed that in order to describe the relation between a multivariate belief function and its marginals, in the bivariate case, it is necessary to use a family of sub-copulas (one copula for each tuple of increasing family of events).
 
-\begin{theorem}[Sklar's theorem for belief functions \cite{schmelzer_joint_2015}]\label{theorem:sklar_belief}
+\begin{theorem}[Sklar's Theorem for Belief Functions \cite{schmelzer_joint_2015}]\label{theorem:sklar_belief}
     Let $\mathrm{Bel}:2^{\X_1}\times2^{\X_2}\rightarrow[0,1]$ be a bivariate belief function and let $\mathrm{Bel}_1$ and $\mathrm{Bel}_2$ denote its marginals over $2^{\X_1}$ and $2^{\X_2}$ respectively. Furthermore, let $\mathcal{I}_1$ and $\mathcal{I}_2$ denote increasing families of subsets of $\X_1$ and $\X_2$. Then there exists a unique subcopula $C^{\mathcal{I}_1,\mathcal{I}_2}$ on  $\mathrm{Bel}_1(\mathcal{I}_1)\times \mathrm{Bel}_2(\mathcal{I}_2)$ such that:
     \begin{eqnarray}
         \mathrm{Bel}(L_1, L_2) = C^{\mathcal{I}_1,\mathcal{I}_2}(\mathrm{Bel}_1(L_1), \mathrm{Bel}_2(L_2))
@@ -672,7 +762,7 @@ where $\mathrm{Nec}_1$ and $\mathrm{Nec}_2$ are the marginal necessity functions
 \end{eqnarray}
 
 \begin{proposition}\label{prop:sklar_necessity}
-    Given two marginal necessity functions $\mathrm{Nec}_1, \mathrm{Nec}_2$ and a copula $C$, joining them using the copula $C$ as in \eqref{eq:sklar_on_necessity} or using the bivariate mass function as in \eqref{eq:joint_mass} with the natural inclusion ordering yields the same bivariate belief function.
+    Joining two marginal necessity functions $\mathrm{Nec}_1, \mathrm{Nec}_2$ with a copula $C$ as in \eqref{eq:sklar_on_necessity} or using the bivariate mass function as in \eqref{eq:joint_mass} with the natural inclusion ordering yields the same bivariate belief function.
 \end{proposition}
 
 \begin{proof}
@@ -692,12 +782,26 @@ where $\mathrm{Nec}_1$ and $\mathrm{Nec}_2$ are the marginal necessity functions
     \end{align*}
 \end{proof}
 
+Proposition (\ref{prop:sklar_necessity}) considers two marginals. However, it still holds for $n$ marginals, not covered in \cite{schmelzer_sklars_2015}.
+\begin{proposition}
+   Joining $n$ marginal necessity functions $\mathrm{Nec}_1,~\dots,~\mathrm{Nec}_n$ with a n-copula $C$ as in \eqref{eq:sklar_on_necessity} or using the multivariate variate mass function as in \eqref{eq:joint_mass} with the natural inclusion ordering yields the same multivariate belief function. In other words, for every cylindrical set $(A_1, \dots, A_n)\subseteq\X$, it holds that:
+\begin{eqnarray}
+    \mathrm{Bel}_\times(A_1\tdt A_n) = C\left(\mathrm{Nec}_1(A_1), \dots, \mathrm{Nec}_n(A_n)\right)
+\end{eqnarray}
+\end{proposition}
+
+\begin{proof}
+    The proof is similar to the one of equation \eqref{eq:joint_mass}, but this time computing the mass of $(a_{k_1}^1\tdt a_{k_n}^n)$ using $F([0,k_1]\tdt[0,k_n])$ and noticing that \begin{eqnarray*}
+        \sum_{(a^1_{p_1}\tdt a^n_{p_n})\subseteq(a^1_{k_1}\tdt a^n_{k_n})}m_\times(a^1_{p_1}\tdt a^n_{p_n})=\sum_{p_1=1}^{k_1}\dots\sum_{p_n=1}^{k_n} m_\times(a^1_{p_1}\tdt a^n_{p_n})
+    \end{eqnarray*} because all marginals are necessity functions, and the natural inclusion ordered is used for ranking their focal sets.
+\end{proof}
+
 \begin{proposition}
     Let $m_\times$ be a joint mass obtained using \eqref{eq:joint_mass}. If $m_\times$ verifies
     \begin{align*}
         \sum_{a^1_p\subseteq a_k^1}\sum_{a^2_q\subseteq a_j^2}m_\times(a^1_p, a^2_q) = \sum_{p=1}^k\sum_{q=1}^j m_\times(a^1_p, a^2_q)
     \end{align*}
-    for all marginal focal sets $a^1_k,a^2_j$ then its marginals masses correspond to necessity functions. The reverse implication is immediate if we use the natural inclusion order.
+    for all marginal focal sets $(a^1_k)$ ,$(a^2_j)$ then its marginals masses correspond to necessity functions. The reverse implication is immediate if we use the natural inclusion order.
 \end{proposition}
 \begin{proof}
     Let $m_\times$ be a joint mass obtained using \eqref{eq:joint_mass}, with marginal focal sets $(a^1_k)_{1\leqslant k\leqslant N_1}$, $(a^2_j)_{1\leqslant j\leqslant N_2}$ and marginal masses $m_1,m_2$. 
@@ -745,17 +849,6 @@ where $\mathrm{Nec}_1$ and $\mathrm{Nec}_2$ are the marginal necessity functions
     meaning that for all $p>k+1$, $a^1_p\not\subseteq a^1_{k+1}$ which ends the proof by induction. Because all focal sets form a nested family of sets, $\mathrm{Bel}_1$ is a necessity function. The proof for $\mathrm{Bel}$ is identical. 
 \end{proof}
 
-Proposition \ref{prop:sklar_necessity} holds for $n$ marginals, not covered in \cite{schmelzer_sklars_2015}. For every cylindrical set $(A_1, \dots, A_n)\subseteq\X$:
-\begin{eqnarray}
-    \mathrm{Bel}_\times(A_1\tdt A_n) = C\left(\mathrm{Nec}_1(A_1), \dots, \mathrm{Nec}_n(A_n)\right)
-\end{eqnarray}
-
-\begin{proof}
-    The proof is similar to the one of equation \eqref{eq:joint_mass}, but this time computing the mass of $(a_{k_1}^1\tdt a_{k_n}^n)$ using $F([0,k_1]\tdt[0,k_n])$ and noticing that \begin{eqnarray*}
-        \sum_{(a^1_{p_1}\tdt a^n_{p_n})\subseteq(a^1_{k_1}\tdt a^n_{k_n})}m_\times(a^1_{p_1}\tdt a^n_{p_n})=\sum_{p_1=1}^{k_1}\dots\sum_{p_n=1}^{k_n} m_\times(a^1_{p_1}\tdt a^n_{p_n})
-    \end{eqnarray*} because all marginals are necessity functions, and the natural inclusion ordered is used for ranking their focal sets.
-\end{proof}
-
 As the lower probabilities of $\M_{agg}$ and $\M_{mass}$ coincide on cylindrical sets, the following set equality holds for credal sets $\M_i$ whose lower probabilities are necessity functions:
 \begin{eqnarray}\label{eq:inclusion_necessity}
     \M_{mass}(C, \M_i) \subseteq \M_{agg}(C, \M_i)
@@ -780,34 +873,34 @@ Without further assumptions, there is no inclusion relations between $\M_{robust
     
     For $i\in\{1,2\}$, $\pi_i$ generates a necessity measure $\mathrm{Nec}_i$, a possibility measure $\Pi_i$ and a credal set $\M_i$. Let $P_1$ and $P_2$ be two probabilities respectively included in $\M_1$ and $\M_2$,  whose values are indicated in Table \ref{tab:proba_distrib_1}. 
     
-    \begin{table}[!ht]
-        \centering
-        \begin{tabular}{|c|c|c|}
-            \hline
-            $\X_1$ & $x^1_1$ & $x^1_2$\\
-            \hline\hline
-            $\mathrm{Nec}_1$ & 0 & 0.9\\
-            \hline
-            $P_1$  & 0.1 & 0.9\\
-            \hline
-            $\Pi_1$ & 0.1 & 1\\
-            \hline
-        \end{tabular}
-        \quad
-        \begin{tabular}{|c|c|c|}
-            \hline
-            $\X_2$ & $x^2_1$ & $x^2_2$\\
-            \hline\hline
-            $\mathrm{Nec}_2$ & 0.9 & 0\\
-            \hline
-            $P_2$  & 0.9 & 0.1\\
-            \hline
-            $\Pi_2$ & 1 & 0.1\\
-            \hline
-        \end{tabular}
-        \caption{Probability distributions over $\X_1$ and $\X_2$}
-        \label{tab:proba_distrib_1}
-    \end{table}
+    \begin{center}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        $\X_1$ & $x^1_1$ & $x^1_2$\\
+        \hline\hline
+        $\mathrm{Nec}_1$ & 0 & 0.9\\
+        \hline
+        $P_1$  & 0.1 & 0.9\\
+        \hline
+        $\Pi_1$ & 0.1 & 1\\
+        \hline
+    \end{tabular}
+    \quad
+    \begin{tabular}{|c|c|c|}
+        \hline
+        $\X_2$ & $x^2_1$ & $x^2_2$\\
+        \hline\hline
+        $\mathrm{Nec}_2$ & 0.9 & 0\\
+        \hline
+        $P_2$  & 0.9 & 0.1\\
+        \hline
+        $\Pi_2$ & 1 & 0.1\\
+        \hline
+    \end{tabular}
+    \captionof{table}{Probability distributions over $\X_1$ and $\X_2$}
+    \label{tab:proba_distrib_1}
+    \end{center}
+
     
     We first consider here the Minimum copula $C_M(u,v)=\min(u,v)$. After joining $P_1$ and $P_2$ with $C_M$ to obtain a joint probability $P_\times$, let us compare its value with the value of the bivariate necessity function $C_M(\mathrm{Nec}_1, \mathrm{Nec}_2)$ on the same event $\{x_2\}\times\{y_1\}$.
     \begin{eqnarray*}
@@ -823,18 +916,20 @@ Without further assumptions, there is no inclusion relations between $\M_{robust
     \begin{eqnarray*}
         \mathrm{Bel}_\times(\{x^1_2\}\times\{x^2_1\}) &=& C_L(\mathrm{Nec}_1(\{x^1_2\}), \mathrm{Nec}_2(\{x^2_1\}))\\
         &=& \max(0,~0.9 + 0.9 - 1) = 0.8\\
-        \low(\{x^1_2\}\times\{x^2_1\}) &=& \inf_{P_1\in\M_1, P_2\in\M_2}\{C_L(P_1(\{\X_1\}),~P_2(\{x^2_1\})) - C_L(P_1(\{x^1_1\}),~P_2(\{x^2_1\}))\}\\
+        \low(\{x^1_2\}\times\{x^2_1\}) &=& \inf_{P_1\in\M_1, P_2\in\M_2}\{C_L(P_1(\{\X_1\}),~P_2(\{x^2_1\})) - C_L(P_1(\{x^1_1\}),\\
+        && P_2(\{x^2_1\}))\}\\
         &=& \inf_{P_1\in\M_1, P_2\in\M_2}\{\max(0,~P_1(\X_1) + P_2(\{x^2_1\}) - 1)\\
         && - \max(0,~P_1(\{x^1_1\}) + P_2(\{x^2_1\}) -1)\}\\
         &=& \inf_{P_1\in\M_1, P_2\in\M_2}\{P_2(\{x^2_1\}) - \max(0,~P_1(\{x^1_1\}) + P_2(\{x^2_1\}) - 1 )\}\\
-        &=& \inf_{P_1\in\M_1, P_2\in\M_2}\max(P_2(\{x^2_1\}),~P_2(\{x^2_1\})-P_1(\{x^1_1\}) - P_2(\{x^2_1\}) + 1 )\\
+        &=& \inf_{P_1\in\M_1, P_2\in\M_2}\max(P_2(\{x^2_1\}),\\
+        && P_2(\{x^2_1\})-P_1(\{x^1_1\}) - P_2(\{x^2_1\}) + 1 )\\
         &\geqslant& \min(\inf_{P_2\in\M_2}\{P_2(\{x^2_1\})\},~\inf_{P_1\in\M_1}\{1-P_1(\{x^1_1\})\}) = 0.9
     \end{eqnarray*}
     
     On this event $\low>Nel_\times$ and because the belief function is coherent then $\M_{mass}\not\subseteq\M_{robust}$ and $\M_{agg}\not\subseteq\M_{robust}$.
 \end{example}
 
-\subsection{Natural Ordering of P-boxes}\label{subsec:pboxes}
+\subsection{Using the Natural Ordering of P-boxes}\label{subsec:pboxes}
 P-boxes are special cases of belief functions that resemble the most classical CDFs. They are defined with two CDF $\underline{F},~\overline{F}$ such that $\underline{F}\leqslant\overline{F}$, their focal sets $a_\alpha$ are of the form $a_\alpha=[\overline{F}^{-1}(\alpha), \underline{F}^{-1}(\alpha)]$ with $\alpha\in[0,1]$ \cite{destercke_unifying_2008}, where $F^{-1}$ is the inverse of a CDF (or pseudo-inverse if not properly defined). It it thus possible to define a natural order on the focal sets. Let $a_\alpha$ and $a_\beta$ be two focal sets of a p-box $[\underline{F},~\overline{F}]$, with $(\alpha,\beta)\in[0,1]^2$. The natural order $\preceq$ on the focal sets is defined as follows:
 \begin{align}
     a_\alpha\preceq a_\beta ~\Leftrightarrow~ \overline{F}^{-1}(\alpha)\leqslant\overline{F}^{-1}(\beta) \text{ and } \underline{F}^{-1}(\alpha)\leqslant\underline{F}^{-1}(\beta)~\Leftrightarrow~ \alpha\leqslant\beta\label{eq:order_pbox}
@@ -843,34 +938,32 @@ P-boxes are special cases of belief functions that resemble the most classical C
 As it is the case for necessity functions, it is possible to find cases where the sets $\M_{robust}\not\subseteq \M_{mass}$ or $\M_{agg}\not\subseteq\M_{mass}$.
 \begin{example}\label{ex:pbox}
     Consider the following p-boxes:
-    \begin{table}[!ht]
-        \centering
-        \begin{tabular}{|c|c|c|}
-            \hline
-            $\X_1$ & $x^1_1$ & $x^1_2$\\
-            \hline\hline
-            $\underline{F}_1$ & 0 & 1\\
-            \hline
-            $\overline{F}_1$ & 0.1 & 1\\
-            \hline
-        \end{tabular}
-        \quad
-        \begin{tabular}{|c|c|c|}
-            \hline
-            $\X_2$ & $x^2_1$ & $x^2_2$\\
-            \hline\hline
-            $\underline{F}_2$ & 0.9 & 1\\
-            \hline
-            $\overline{F}_2$ & 1 & 1\\
-            \hline
-        \end{tabular}
-        \caption{P-boxes over $\X_1$ and $\X_2$}
-        \label{tab:example_pbox}
-    \end{table}
+    \begin{center}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        $\X_1$ & $x^1_1$ & $x^1_2$\\
+        \hline\hline
+        $\underline{F}_1$ & 0 & 1\\
+        \hline
+        $\overline{F}_1$ & 0.1 & 1\\
+        \hline
+    \end{tabular}
+    \qquad
+    \begin{tabular}{|c|c|c|}
+        \hline
+        $\X_2$ & $x^2_1$ & $x^2_2$\\
+        \hline\hline
+        $\underline{F}_2$ & 0.9 & 1\\
+        \hline
+        $\overline{F}_2$ & 1 & 1\\
+        \hline
+    \end{tabular}
+    \captionof{table}{P-boxes over $\X_1$ and $\X_2$}\label{tab:example_pbox}
+    \end{center}
     The p-boxes from \ref{tab:example_pbox} lead to the same belief functions as in example \ref{ex:necessity}, thus leading to the same conclusions \ie ${M}_{robust}\not\subseteq\M_{mass}$, $\M_{mass}\not\subseteq\M_{robust}$ and $\M_{agg}\not\subseteq\M_{robust}$.
 \end{example}
 
-As stated previously, p-boxes are very closely related to CDF which can motivate one to apply Sklar's therorem (\ref{theorem:sklar}) to the lower CDF and upper CDF respectively. Given $n$ p-boxes $[\underline{F}_1,~\overline{F}_1],~\dots,~[\underline{F}_n,~\overline{F}_n]$ defined over $\X_1,\dots,\X_n$ and a copula $C$, we can define the lower and upper bounds of a $n$ variate CDF as:
+As stated previously, p-boxes are very closely related to CDF which can motivate one to apply Sklar's theorem (Theorem \ref{theorem:sklar}) to the lower CDF and upper CDF respectively. Given $n$ p-boxes $[\underline{F}_1,~\overline{F}_1],~\dots,~[\underline{F}_n,~\overline{F}_n]$ defined over $\X_1,\dots,\X_n$ and a copula $C$, we can define the lower and upper bounds of a $n$ variate CDF as:
 \begin{align*}
     \underline{F}_\times&=C(\underline{F}_1,\dots, \underline{F}_n)\\
     \overline{F}_\times&=C(\overline{F}_1,\dots, \overline{F}_n)
@@ -878,7 +971,7 @@ As stated previously, p-boxes are very closely related to CDF which can motivate
 Sklar's theorem states that $\underline{F}_\times$ and $\overline{F}_\times$ are both CDF, which means that $[\underline{F}_\times, \overline{F}_\times]$ is a multivariate p-box \cite{pelessoni_bivariate_2016, montes_sklars_2015} over cylindrical sets, defining a credal set $\M$. Clearly, the bounds of $\M_{robust}$ on cumulated events are the same as those of the credal set $\M$ induced by the multivariate p-box $[C(\underline{F}_1,\dots, \underline{F}_n),~C(\overline{F}_1,\dots, \overline{F}_n)]$.
 
 \begin{proposition}\label{prop:convexity_pbox}
-    When considering the natural order on p-boxes \eqref{eq:order_pbox} when joining masses with a copula $C$, then it holds that:
+    When joining masses with a copula $C$ using the natural order on p-boxes \eqref{eq:order_pbox}, it holds that:
     \begin{itemize}
         \item if $C$ is D-convex, then $\M_{mass}\subseteq \M_{agg}$.
         \item if $C$ is D-concave then $\M_{agg}\subseteq\M_{mass}$ 
@@ -988,11 +1081,10 @@ Different models can be used for multiple sources of uncertainty. When some marg
     The proof is similar to the proof of proposition \ref{prop:convexity_pbox} using the fact that for every focal set $a^i_p$ of a possibility distribution, we can still define $\underline{p}_i$ and $\overline{p}_i$ as $\underline{p}_i=1$ and $\overline{p}_i=p$. The rest of the proof is identical.
 \end{proof}
 
-\subsection{Other Orders}
+\subsection{Using Other Orders}
 Instead of considering the natural ordering, or when such an order does not exists, one could consider an arbitrary order between focal sets when defining $\M_{mass}$ as in \eqref{eq:joint_mass}. A few questions arise: is there always an arbitrary order allowing $\M_{robust}\subseteq\M_{mass}$? If such an order exists, is it possible to explicit it in advance, \ie without computing the lower bounds of the credal sets?
 
 It appears that an order allowing $\M_{robust}\subseteq\M_{mass}$ does not always exist. To prove it, let us find an example where no order allows either inclusion.
-
 \begin{example}
 Consider the Clayton copula for $\theta=2$ and $n=2$:
 \begin{eqnarray*}
@@ -1035,8 +1127,7 @@ for $E_1$, and similarly with $P_1$ and $P_2$ reversed for $E_2$. Those values w
 
 The table \ref{tab:beliefs_orders} shows a rounded value of $\mathrm{Bel}^{\preceq_1,\preceq_2}_\times$ for all orders for events $E_1$, $E_2$.
 
-\begin{table}[!ht]
-\centering
+\begin{center}
 \begin{tabular}{|c||c|c|c|}
 \hline
 $\mathrm{Bel}^{\preceq_1,\preceq_2}_\times(\mathbf{E_1})$ & $a^2_3\preceq_2a^2_2\preceq_2a^2_1$ & $a^2_3\preceq_2a^2_1\preceq_2a^2_2$ & $a^2_2\preceq_2a^2_3\preceq_2a^2_1$ \\ \hline\hline
@@ -1086,10 +1177,9 @@ $a^1_1\preceq_1a^1_3\preceq_1a^1_2$ & 0.251 & 0.236 & 0.251 \\ \hline
 $a^1_2\preceq_1a^1_1\preceq_1a^1_3$ & 0.293 & 0.218 & 0.293 \\ \hline
 $a^1_1\preceq_1a^1_2\preceq_1a^1_3$ & 0.293 & 0.218 & 0.293 \\ \hline
 \end{tabular}
-
-\caption{Value of $\mathrm{Bel}^{\preceq_1,\preceq_2}_\times$ for $E_1$ and $E_2$ depending on the arbitrary orders $\preceq_1,~\preceq_2$. Values in bald font represent the minimal value attained by the different belief functions, where $\mathrm{Bel}^{\preceq_1,\preceq_2}_\times(E)=\low(E)$.}
+\captionof{table}{Value of $\mathrm{Bel}^{\preceq_1,\preceq_2}_\times$ for $E_1$ and $E_2$ depending on the arbitrary orders $\preceq_1$, $\preceq_2$. Values in bald font represent the minimal value attained by the different belief functions, where $\mathrm{Bel}^{\preceq_1,\preceq_2}_\times(E)=\low(E)$.}
 \label{tab:beliefs_orders}
-\end{table}
+\end{center}
 
 Answering the question ``if an order allowing $\M_{robust}\subseteq\M_{mass}$ exists, is it possible to explicit it in advance?'' is not as trivial. Indeed the order will be dependent of the copula. We ran simulations where we created different possibility distributions (for $card(\X_1)=card(\X_2)\in\{3,4\}$), sampled the marginal credal sets and joined them with a copula $C$ to get $\inf\M_{robust}$ and compared its values with the one of $\mathrm{Bel}^{\preceq_1,\preceq_2}$.
 \begin{itemize}
@@ -1099,5 +1189,4 @@ The order is thus copula dependent.
 
 We ran simulation for the lower and upper Fréchet-Hoeffding copulas, as well as with the copulas presented in table \ref{tab:familiy_of_copula}. We were only able to find examples where no orders were working for the Ali-Mikail-Haq copula with $\theta>0$, for the Gumbel copula and for Clayton copulas. 
 \end{example}
-
 \pagebreak

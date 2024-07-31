@@ -3,4 +3,44 @@
 \section{Disparity Intervals}
 \section{Ablation Studies}
 \section{Elevation Confidence Intervals}
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{|c||c|c|c|c|}
+    \hline
+        Area & Date for LiDAR & Date of Pléiades & Coupling mode & GT Size (0.5m)\\
+        \hline\hline
+        Bordeaux & 2023-09-15 & 2022-08-04 & Stereo & $6001\times 6001$\\\hline
+        Grenoble & 2021-09-05 & 2020-09-17 & Stereo & $10 001\times 10 001$ \\\hline
+        Jotunheinem & 2019-08-27 & 2019-08-27 & Stereo & \begin{tabular}{@{}c@{}} $7127\times 7298$ and\\ $3912\times2880$\end{tabular} \\\hline
+        Langfjordjokelen & 2018-09-01 & 2018-09-01 & Stereo & $5841\times 3689$\\\hline
+        Monaco & 2021-05-13 & 2020-08-30 & Stereo & $10 001\times 10 001$\\\hline
+        Montpellier & 2021-05-28 & 2021-10-17 & Tri Stereo & $8001\times 8001$\\\hline
+        Paris & 2023-03-03 & 2023-05-31 & Tri stereo & $10 001\times 10 001$\\\hline
+        Peyto & 2016-09-13 & 2016-09-13 & Stereo & $13240\times 17874$\\\hline
+        Pic du Midi & 2021-10-02 & 2021-10-16 & Stereo & $10001 \times 12001$ \\\hline
+        Toulouse & 2022-05-29 & 2022-06-28 & Tri Stereo & $12001\times 8001$\\\hline
+        Yosemite 1 &  \begin{tabular}{@{}c@{}} \tiny{2017-05-02 (snow) +} \\ \tiny{2014-08-27 (LiDAR)}\end{tabular} &  2017-05-01 & Tri stereo & \tiny{$17733\times 16800$ (3m)}\\\hline
+        Yosemite 2 &  \begin{tabular}{@{}c@{}} \tiny{2017-05-02 (snow) +} \\ \tiny{2014-08-27 (LiDAR)}\end{tabular} &  2017-05-02 &  Tri stereo & \tiny{$17733\times 16800$ (3m)}\\ \hline
+    \end{tabular}
+    \caption{Acquisition date of Pléiade stereo or tri-stereo images, and the LiDAR ground truth}
+    \label{tab:dates_pleiades_lidar_hd}
+\end{table}
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{|c||c|c|c|c|}
+    \hline
+        Area & Date for LiDAR & Date of Pléiades & Coupling mode & GT Size (0.5m)\\
+        \hline\hline
+        Bordeaux & 2023-09-15 & 2022-08-04 & Stereo & $6001\times 6001$\\\hline
+        Grenoble & 2021-09-05 & 2020-09-17 & Stereo & $10 001\times 10 001$ \\\hline
+        Monaco & 2021-05-13 & 2020-08-30 & Stereo & $10 001\times 10 001$\\\hline
+        Montpellier & 2021-05-28 & 2021-10-17 & Tri Stereo & $8001\times 8001$\\\hline
+        Paris & 2023-03-03 & 2023-05-31 & Tri stereo & $10 001\times 10 001$\\\hline
+        Pic du Midi & 2021-10-02 & 2021-10-16 & Stereo & $10001 \times 12001$ \\\hline
+        Toulouse & 2022-05-29 & 2022-06-28 & Tri Stereo & $12001\times 8001$\\\hline
+    \end{tabular}
+    \caption{Acquisition date of Pléiade stereo or tri-stereo images, and the LiDAR ground truth}
+    \label{tab:my_label}
+\end{table}
 \pagebreak
