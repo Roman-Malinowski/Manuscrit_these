@@ -50,6 +50,12 @@
 \newcommand{\commanue}[1]{{\color{blue}\footnote{\color{blue}Manue: \textit{#1}}}}
 \newcommand{\comloic}[1]{{\color{orange}\footnote{\color{orange}Loïc: \textit{#1}}}}
 
+% We use colors in equations to help readability.
+% Un-comment next lines if you want just black text.
+%\let\oldtextcolor\textcolor
+%\renewcommand{\textcolor}[2]{\oldtextcolor{black}{#2}}
+
+
 \newcommand{\M}{{\mathfrak{M}}}
 \newcommand{\X}{{\mathcal{X}}}
 \newcommand{\low}{{\underline{P}}}
@@ -57,20 +63,12 @@
 \newcommand{\opi}{{[\![}}
 \newcommand{\cli}{{]\!]}}
 
-
-
-%\newtheorem{theorem}{Theorem}[section]
-%\theoremstyle{definition}
-%\newtheorem{example}{Example}[section]
-%\newtheorem{proposition}{Proposition}[section]
-%\newtheorem{definition}{Definition}[section]
-%\newtheorem{remark}{Remark}[section]
-
+%%%%%%%%%%%%%%%%% Defining the properties of the frames for theorems etc %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mdfsetup{skipabove=\topskip, skipbelow=\topskip}  % Define Skips between the frames and text above and bellow
 
 %% Code taken almost directly from https://ctan.mines-albi.fr/macros/latex/contrib/mdframed/mdframed-example-default.pdf
 %% Theorem environment
-\newcounter{theor}[chapter]
+\newcounter{theor}
 \renewcommand{\thetheor}{\arabic{theor}}
 \newenvironment{theorem}[1][]{%
  \refstepcounter{theor}%
@@ -96,21 +94,22 @@
    }{\end{mdframed}}
  
 %% Definition environment
-\newcounter{theo}[section]
+\newcounter{definition}
+\renewcommand{\thedefinition}{\arabic{definition}}
 \newenvironment{definition}[1][]{%
- \stepcounter{theo}%
+ \refstepcounter{definition}%
   \ifstrempty{#1}%
   {\mdfsetup{%
     frametitle={%
        \tikz[baseline=(current bounding box.east),outer sep=0pt]
         \node[anchor=east,rectangle,fill=blue!20]
-        {\strut Definition~\thesection.\arabic{theo}};}}
+        {\strut Definition~\thedefinition};}}
   }%
   {\mdfsetup{%
      frametitle={%
        \tikz[baseline=(current bounding box.east),outer sep=0pt]
         \node[anchor=east,rectangle,fill=blue!20]
-        {\strut Definition~\thesection.\arabic{theo}:~#1};}}%
+        {\strut Definition~\thedefinition:~#1};}}%
    }%
    \mdfsetup{innertopmargin=10pt,linecolor=blue!20,%
              linewidth=2pt,topline=true,%
@@ -121,16 +120,37 @@
    }{\end{mdframed}}
 
 %% Proposition environment
-\newmdtheoremenv[outerlinewidth=1,%
-                 roundcorner=10pt,%
-                 backgroundcolor=gray!5!white,%
-                 outerlinecolor=black,%
-                 innertopmargin=\topskip,%
-                 splittopskip=\topskip,%
-                ]{proposition}{Proposition}[section]
+\newcounter{proposition}
+\renewcommand{\theproposition}{\arabic{proposition}}
+\newenvironment{proposition}[1][]{%
+ \refstepcounter{proposition}%
+ \mdfsetup{outerlinewidth=1,%
+           roundcorner=10pt,%
+           backgroundcolor=gray!5!white,%
+           outerlinecolor=black,%
+           innertopmargin=\topskip,%
+           splittopskip=\topskip,%
+           }
+ \ifstrempty{#1}%
+ {\begin{mdframed}[]\textbf{Proposition~\theproposition:~}\relax}%
+ {\begin{mdframed}[]\textbf{Proposition~\theproposition:}~\textit{#1}\par\relax}%
+ }{\end{mdframed}}
+
+
 %% Example Environment
-\theoremstyle{definition}  % Boldface title, Roman body
-\newmdtheoremenv[roundcorner=5pt, font=\bfseries]{example}{Example}[section]
+%\theoremstyle{definition}  % Boldface title, Roman body
+%\newmdtheoremenv[roundcorner=5pt, font=\bfseries]{example}{Example}[section]
+% OR
+\newcounter{example}
+\renewcommand{\theexample}{\arabic{example}}
+\newenvironment{example}[1][]{%
+ \refstepcounter{example}%
+ \mdfsetup{roundcorner=5pt,}
+ \ifstrempty{#1}%
+ {\begin{mdframed}[]\textbf{Example~\theexample:}\relax}%
+ {\begin{mdframed}[]\textbf{Example~\theexample:}~\textit{#1}\par\relax}%
+ }{\end{mdframed}}
+
 % Remark Environment
 \newenvironment{remark}{%
    \mdfsetup{hidealllines=true,%
@@ -141,6 +161,8 @@
    \begin{mdframed}[]\textbf{Remark:}\relax%
    }
    {\end{mdframed}}
+   
+   
 % Redefines the proof environment
 \renewenvironment{proof}{%
    \mdfsetup{hidealllines=true,%
@@ -151,6 +173,9 @@
    \begin{mdframed}[]\textit{\textbf{Proof:}}\relax%
    }
    {\qed\end{mdframed}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   
+   
 % From CVPR cvpr.sty
 \makeatletter
 \DeclareRobustCommand\onedot{\futurelet\@let@token\@onedot}
@@ -179,6 +204,7 @@
 \begin{document}
 
 \definecolor{color}{HTML}{F5F5F5}
+\definecolor{ForestGreen}{HTML}{228B22}
 %======================= Page de Garde =================================
 \thispagestyle{empty}
 \include{Misc/title_page}
