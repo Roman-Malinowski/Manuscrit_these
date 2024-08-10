@@ -42,7 +42,7 @@
 
 %=============================== Commands ===================================
 
-\newcommand{\todoroman}[1]{{\color{purple}TODO: \textit{#1}}}
+\newcommand{\todoroman}[1]{{\color{purple}TODO: #1}}
 
 \newcommand{\comseb}[1]{{\color{red}\footnote{\color{red}Seb: \textit{#1}}}}
 \newcommand{\comroman}[1]{{\color{purple}\footnote{\color{purple}Roman: \textit{#1}}}}
@@ -62,7 +62,23 @@
 \newcommand{\tdt}{{\times\dots\times}}
 \newcommand{\opi}{{[\![}}
 \newcommand{\cli}{{]\!]}}
+\newcommand{\Bel}{{\mathrm{Bel}}}
+\newcommand{\Pl}{{\mathrm{Pl}}}
+\newcommand{\Nec}{{\mathrm{Nec}}}
 
+
+\DeclareMathOperator{\CDF}{cdf}
+\tikzset{
+    declare function={
+        f_inf(\x,\m,\s)=1/(1 + exp(-0.07056*((\x-\m-3)/\s)^3 - 1.5976*(\x-\m-3)/\s));
+    }
+}
+
+\tikzset{
+    declare function={
+        f_sup(\x,\m,\s)=1/(1 + exp(-0.07056*((\x-\m+3)/\s)^3 - 1.5976*(\x+3-\m)/\s));
+    }
+}
 %%%%%%%%%%%%%%%%% Defining the properties of the frames for theorems etc %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mdfsetup{skipabove=\topskip, skipbelow=\topskip}  % Define Skips between the frames and text above and bellow
 
@@ -147,7 +163,7 @@
  \refstepcounter{example}%
  \mdfsetup{roundcorner=5pt,}
  \ifstrempty{#1}%
- {\begin{mdframed}[]\textbf{Example~\theexample:}\relax}%
+ {\begin{mdframed}[]\textbf{Example~\theexample:~}\relax}%
  {\begin{mdframed}[]\textbf{Example~\theexample:}~\textit{#1}\par\relax}%
  }{\end{mdframed}}
 
