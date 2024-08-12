@@ -1,7 +1,7 @@
 \chapter{Mathematical Representations of Uncertainty}\label{chap:representation_of_uncertainty}
 
 \section{Introduction}
-This chapter takes some distance from the stereo vision problem presented previously, and instead describe more formally different representations of uncertainty and the tools that can be used to manipulate them. In this thesis, we consider possibility distributions to model uncertainty (sec \ref{sec:possibilities}). In the presence of multiple sources of uncertainty, the question of how to join those sources arises. Using probability distributions, the usual method for joining the uncertainty models is to use copulas (section \ref{sec:copulas}). However, there are multiple ways of joining possibility distributions with a copula, which are presented in sections \ref{sec:robust_method} , \ref{sec:joint_mass} and \ref{sec:aggregation_method}. Those three methods are not equivalent, we thus explore their similarities and differences in section \ref{sec:inclusions_between_methods}. The methods used to join possibility distributions will serve to propagate the uncertainty in chapter \ref{chap:propagating}. 
+This chapter takes some distance from the stereo vision problem presented previously, and instead describe more formally different representations of uncertainty and the tools that can be used to manipulate them. In this thesis, we consider classical probabilities (sec \ref{sec:probabilities}), possibility distributions (sec \ref{sec:possibilities}) and p-boxes (sec \ref{sec:pboxes}) to model uncertainty. We also consider the case where we consider multiple sources of uncertainty simultaneously. In this setting, the dependency between the different sources must be taken into account. We thus present a dependency model called copulas in section \ref{sec:copulas}, and some of its properties. The thorough presentation of those concepts will then be put into relations in chapter \ref{chap:joining_credal_sets}. 
 
 \section{Notations}
 We introduce here a few notations that will be used in the rest of this chapter. \todoroman{A ajouter au fur et à mesure, peut être déplacer au début de la thèse, à côté du glossaire.}
@@ -107,9 +107,9 @@ As highlighted in example \ref{ex:proba_limitations}, uncertainty cannot always 
 \begin{remark}
     At its more generic, IP can be described by sets of acceptable gambles, and by lower and upper expectations \cite{walley_statistical_1991,augustin_introduction_2014}. Although very interesting, we did not use them in our applications and thus do not consider them in this thesis.
 \end{remark}
-\begin{figure}[hb]
+\begin{figure}[ht]
     {\centering
-    \includegraphics[width=\linewidth]{Images/Diagramme_IP_Bel.png}
+    \includegraphics[width=0.8\linewidth]{Images/Diagramme_IP_Bel.png}
     \caption{Diagram representing the relationship between different Imprecise Probabilities models presented throughout section \ref{sec:different_models_of_uncertainty}.}
     \label{fig:diagram_IP}}
 \end{figure}
@@ -249,7 +249,7 @@ $\Bel$ and $\Pl$ are special cases of lower and upper probabilities, and verify 
 Belief functions possess interesting properties making the credal set they induce both coherent and avoiding sure loss, motivating their extensive usage.
 
 \begin{example}[Defining a mass and belief functions]\label{ex:bicycle_pressure}
-    Let us imagine an experiment where you try to estimate the pressure of the tyres of your bike, but your bicycle pump only have gradation every $1$ bar. You are able to do three measurements:
+    Let us imagine an experiment where you try to estimate the pressure of the tyres of your bike, but your bicycle pump only have graduation every $1$ bar. You are able to do three measurements:
     \begin{itemize}
         \item The first measure, the needle seems to be between $4$ and $5$ bar.
         \item The second measure, the needle seems to be between $4.5$ and $6$ bar.
@@ -280,7 +280,6 @@ Belief functions possess interesting properties making the credal set they induc
 \end{example}
 
 \subsection{Possibility Distributions}\label{sec:possibilities}
-\todoroman{Inclure un schéma d'une distribution possibilité avec un $\alpha$-cut? Example ?}
 Another convenient model of uncertainty are possibility distributions. We will see that they induce a particular type of belief functions, and will be used in our applications.
 
 \begin{definition}[Possibility distribution]\label{def:possibility}
@@ -309,6 +308,61 @@ Another notion closely related to possibility distributions is that of \(\alpha\
     \end{align}
 \end{definition}
 
+\begin{example}[Defining a possibility distribution]\label{ex:bicycle_pressure_possibility}
+    Let us imagine the same setting as example \ref{ex:bicycle_pressure}, where we try to estimate the pressure of the tyres of our bike, but our bicycle pump only have graduation every $1$ bar. We are able to do the following measurements:
+    \begin{itemize}
+        \item During the first measurement, the needle seems to be around $4$ bar.
+        \item During the second measurement, the needle seems to be around $5$ bar.
+        \item During the third measurement, the needle seems to be around $4.5$ bar.
+    \end{itemize}
+    Let us say that we trust our measurement with a precision of plus or minus $0.5$ bars. For simplicity, we also only consider pressure values that are integers or half integers. Taking into considerations all the measurements, we can define a possibility distribution $\pi$ as:
+    \begin{itemize}
+        \item The value of $4.5$ being the most possible, $\pi(4.5)=1$.
+        \item Values between $4$ and $5$ bar being mostly possible, we can for instance fix $\pi(4)=\pi(5)=0.8$
+        \item Values $3.5$ and $5.5$ are unlikely but not impossible, we can say that $\pi(3.5)=\pi(5.5)=0.3$
+        \item Other values are impossible, and thus have a possibility of $0$.
+    \end{itemize}
+    The possibility distribution $\pi$ is represented in figure \ref{fig:possibility_distribution}
+    Based on this, we are no able to express the degree of necessity and of possibility for all events. For instance:
+    \begin{itemize}
+        \item The degree of necessity that the pressure lies between $4$ and $5$ bar is $\Nec([4, 5])=1-\sup_{\rho\not\in[4,5]}\pi(\rho)=0.7$
+        \item The degree of necessity that the pressure lies between $3.5$ and $5.5$ bar is $\Nec([3.5,~ 5.5]) = 1-\sup_{\rho\not\in[3.5,5.5]}\pi(\rho) = 1$\comroman{Retour à la ligne avant l'équation?}, meaning that the pressure is necessarily in this range.
+        \item The degree of possibility that the pressure is either $3.5$ or  $5$ is $\Pi (\{3.5,~5\})=\sup_{\rho\in\{3.5,~5\}}\pi(\rho)=0.9$ (mostly possible).
+        \item \etc for every possible event.
+    \end{itemize}
+\end{example}
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[scale=1]
+        \begin{axis}[%
+          xlabel=Pressure $\rho$ (in bar),
+          ylabel=$\pi(\rho)$,
+          xmin=2, xmax=7,
+          ymin=-0.1, ymax=1.1,
+          ytick={0, 0.3, 0.8, 1},
+          yticklabels={$0$, $\alpha=0.3$, 0.8, $1$},
+          ],
+          \node (a) at (2, 0) {$\times$};
+          \node (b) at (2.5, 0) {$\times$};
+          \node (c) at (3, 0) {$\times$};
+          \node (d) at (3.5, 0.3) {$\times$};
+          \node (e) at (4, 0.8) {$\times$};
+          \node (f) at (4.5, 1) {$\times$};
+          \node (g) at (5, 0.8) {$\times$};
+          \node (h) at (5.5, 0.3) {$\times$};
+          \node (i) at (6, 0) {$\times$};
+          \node (j) at (6.5, 0) {$\times$};
+          \node (k) at (7, 0) {$\times$};
+          
+          \draw [thick, dashed, gray] (a.center) -- (b.center) -- (c.center) -- (d.center) -- (e.center) -- (f.center) -- (g.center) -- (h.center) -- (i.center) -- (j.center) -- (k.center) ;
+          \draw [<->, >=latex, ultra thick, blue] (d.east) -- (h.west) node [pos=0.5, above] {$\alpha_\pi$};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Possibility distribution of example \ref{ex:bicycle_pressure_possibility} and one of its $\alpha$-cut in blue}
+    \label{fig:possibility_distribution}
+\end{figure}
+
 \begin{remark}
     If you are familiar with fuzzy sets you may have noticed than possibility distributions strongly resemble to the membership function of a fuzzy set. Links between fuzzy sets and possibility measures have been explored in \cite{zadeh_fuzzy_1999}.
 \end{remark}
@@ -326,7 +380,7 @@ With the way focal sets are defined, they form a nested family of sets with rega
     As such, possibility distribution have been used to model experts opinion  \cite{baudrit_joint_2007}. Following the same philosophy, we will use possibility distributions in chapter \ref{chap:epistemic_uncertainty} to model the uncertainty of a measure of similarity between two image patches.
 \end{remark}
 
-Specifying a probability distribution often comes down to specifying the probability mass function over all atoms of the frame of discernment. In a way, possibility distributions are constructed the same way as we specify the possibility (or the upper bounds) of every atom. The main difference is that the condition ``the sum of all masses must be equal to $1$'' is relaxed into a less constraining condition ``the possibility distribution must be equal to $1$ at least once''. In that respect, it is easier to construct a well defined possibility distribution than it is to construct a well defined probability distribution. However the comparison stops there, as the two models no not represent the same uncertainty at all.
+Specifying a probability distribution often comes down to specifying the probability mass function over all atoms of the frame of discernment. In a way, possibility distributions are constructed the same way, as we specify the possibility (or the upper bounds) of every atom. One important difference is that the condition ``the sum of all masses must be equal to $1$'' is relaxed into a less constraining condition ``the possibility distribution must be equal to $1$ at least once''. In that respect, it is easier to construct a well defined possibility distribution than it is to construct a well defined probability distribution. However the comparison stops there, as the two models no not represent the same uncertainty at all.
 
 \begin{remark}
     Any probability distribution $P$ is a belief function $\Bel$, for which focal sets are only composed of singletons (atoms) and the mass distribution function of $\Bel$ equals the probability mass function of $P$ on atoms. However, a possibility distribution cannot model a probability distribution. Indeed this would impose that its necessity $\Nec$ and plausibility $\Pi$ functions verify:
@@ -338,34 +392,8 @@ Specifying a probability distribution often comes down to specifying the probabi
     Consider this equation for any $x'$ verifying $\pi(x')=1$. This leads to the conclusion that any $x\neq x'$ has a possibility of $0$. We are in a case where it is impossible that a random set or random variable takes any other value than $x'$, which makes it not random. 
 \end{remark}
 
-
-\begin{figure}[!ht]
-    \centering
-    \begin{tikzpicture}[scale=0.7]
-        \begin{axis}[%
-          xlabel=$x$,
-          ylabel=$\pi(x)$,
-          xmin=0, xmax=10,
-          ymin=0, ymax=1.1,
-          ytick={0.3, 1},
-          yticklabels={$\alpha$, $1$},
-          ],
-          \node (a) at (5, 1) {};
-          \node (b) at (1.5, 0.3) {};
-          \node (c) at (8.5, 0.3) {};
-          
-          \draw [ultra thick, dashed, black] (b.center) -- (c.center) node [pos=0.5, above] {$\alpha_\pi$};
-          
-          \addplot [thick, smooth, black](0, 0) -- (5, 1) node[pos=0.6, above left]{$\pi$};
-          \draw [thick, smooth, black] (5, 1) -- (10, 0);
-        \end{axis}
-    \end{tikzpicture}
-    \caption{Possibility distribution and its $\alpha$-cut}
-    \label{fig:possibility_distribution}
-\end{figure}
-
 \subsection{P-boxes}\label{sec:pboxes}
-Another special type of belief function that is commonly used is that of \textit{probability-boxes}, more commonly called p-boxes. Formally, a p-box is a pair of (precise) cumulative distribution functions $[\underline{F}, ~\overline{F}]$ defining lower and upper bounds on all cumulative events:
+Another special type of belief function that is commonly used is that of \textit{probability boxes}, more commonly called p-boxes. Formally, a p-box is a pair of precise cumulative distribution functions $[\underline{F}, ~\overline{F}]$ defining lower and upper bounds on all cumulative events:
 
 \begin{definition}[P-box]\label{def:p-box}
     Let $\X$ be the frame of discernment. A p-box is a pair of CDF $[\underline{F}, ~\overline{F}]$ from $\X$ to $[0, ~1]$ such that:
@@ -376,7 +404,7 @@ Another special type of belief function that is commonly used is that of \textit
 \end{definition}
 
 \begin{remark}
-    A probability distribution can be both determined by specifying its values on every atom or by specifying its values on cumulative events. We saw in section \ref{sec:possibilities} that possibility distributions define bounds on atoms. Because p-boxes define bounds on cumulative events, we could say that a p-box is to cumulative events what a possibility distribution is to atoms. 
+    A probability distribution can be both determined by specifying its values on every atom or by specifying its values on cumulative events. We saw in section \ref{sec:possibilities} that possibility distributions define bounds on atoms. Because p-boxes define bounds on cumulative events, we could say that a p-box is the ``imprecise way'' of defining a probability using cumulative events, and a possibility distribution is the ``imprecise way'' of defining a probability using atoms.
 \end{remark}
 
 The credal set $\M$ induced by a p-box $[\underline{F}, ~\overline{F}]$ is:
@@ -385,24 +413,30 @@ The credal set $\M$ induced by a p-box $[\underline{F}, ~\overline{F}]$ is:
 \end{align}
 
 \begin{definition}[Focal sets of p-boxes]
-    P-boxes are special cases of belief functions. It has been proven in \cite{destercke_unifying_2008} that focal sets of p-boxes have a specific form. Although focal sets shapes are reminiscent of possibilities' $\alpha$-cuts (see figure \todoroman{Inclure figure}), they are a bit more complex to express formally. If $\X=\{x_1, \dots, x_n\}$ with $x_1\leqslant\dots\leqslant x_n$, then focal sets $a$ of $[\underline{F}, ~\overline{F}]$ are given for every $\alpha\in[0,~1]$ by the following expression:
+    P-boxes are special cases of belief functions. It has been proven in \cite{destercke_unifying_2008} that focal sets of p-boxes have a specific form. Although focal sets shapes are reminiscent of possibilities' $\alpha$-cuts (see figure \ref{fig:p-box}), they are a bit more complex to express formally. If $\X=\{x_1, \dots, x_n\}$ with $x_1\leqslant\dots\leqslant x_n$, then focal sets $\alpha_{[\underline{F}, ~\overline{F}]}$ of $[\underline{F}, ~\overline{F}]$ are given for every $\alpha\in[0,~1]$ by the following expression:
     \begin{align}
-        a= [\overline{F}^{-1}(\alpha),~\underline{F}^{-1}(\alpha)]\label{eq:pbox_focal_set}
+        \alpha_{[\underline{F}, ~\overline{F}]}= \opi \overline{F}^{-1}(\alpha),~\underline{F}^{-1}(\alpha)\cli\label{eq:pbox_focal_set}
     \end{align}
-    where $\overline{F}^{-1}$ and $\underline{F}^{-1}$ are the respective pseudo-inverse of $\overline{F}$ and $\underline{F}$ defined for every $\alpha\in[0,1]$ by:
+    where $\opi\cdot,~\cdot\cli$ are intervals of integers, and $\overline{F}^{-1}$, $\underline{F}^{-1}$ are the respective pseudo-inverse of $\overline{F}$ and $\underline{F}$ defined for every $\alpha\in[0,1]$ by:
     \begin{align*}
         \overline{F}^{-1}(\alpha) =& \min \{x_i ~\st ~\overline{F}(x_i)\geqslant \alpha\}\\
         \underline{F}^{-1}(\alpha) =& \min \{x_i ~\st ~\underline{F}(x_i)\geqslant \alpha\}
     \end{align*}
+    
+    Still in \cite{destercke_unifying_2008}), it has been shown that the mass of each focal set $\opi x_i, ~x_j\cli$ equals to :
+    \begin{align}
+        m(\opi x_i, ~x_j\cli) = \min(\overline{F}(x_i), \underline{F}(x_j)) - \max(\overline{F}(x_{i-1}), \underline{F}(x_{j-1}))
+    \end{align}
+    With the convention that $\max(\overline{F}(x_{i-1}), \underline{F}(x_{j-1}))=0$ if $x_{i}$ is the first element and thus $x_{i-1}$ is ill-defined. 
 \end{definition}
 
-Because of their shape, focal sets of p-boxes form a nested family of sets, and can thus be ordered. If $a$ and $b$ are two focal sets of the same p-box $[\underline{F}, ~\overline{F}]$, then they are ordered as follows:
+Because of their shape, focal sets of p-boxes form a lattice on $\X$, and can be ordered. It can be easily seen by looking at figure \ref{fig:p-box}. If $a$ and $b$ are two focal sets of the same p-box $[\underline{F}, ~\overline{F}]$, then they are ordered as follows:
 \begin{align}
     a\leqslant b \Leftrightarrow \min(a)\leqslant\min(b) \text{ and } \max(a)\leqslant \max(b)
 \end{align}
 As $\underline{F}\leqslant\overline{F}$, we are assured that there can't be any case where $\min(a)<\min(b) \text{ and } \max(a)> \max(b)$. We can also define the order on focal sets using the definition of equation \eqref{eq:pbox_focal_set} for every $\alpha,~\beta\in[0,1]^2$:
 \begin{align*}
-    [\overline{F}^{-1}(\alpha), \underline{F}^{-1}(\alpha)] \leqslant [\overline{F}^{-1}(\beta), \underline{F}^{-1}(\beta)] \Leftrightarrow \alpha\leqslant\beta
+    \opi\overline{F}^{-1}(\alpha), ~\underline{F}^{-1}(\alpha)\cli \leqslant \opi\overline{F}^{-1}(\beta), ~\underline{F}^{-1}(\beta)\cli \Leftrightarrow \alpha\leqslant\beta
 \end{align*}
 
 Given the shape of focal sets, there can be at most $2n-1$ in a frame of discernment with $n$ elements. This is more degree of freedom than possibility distributions, but less than general belief functions.
@@ -411,33 +445,40 @@ Given the shape of focal sets, there can be at most $2n-1$ in a frame of discern
     
     Because both $\underline{F}$ and $\overline{F}$ are precise CDF and belong to the credal set $\M([\underline{F}, ~\overline{F}])$, we already know two samples of the credal sets it defines, without having to sample from it.
 \end{remark}
-\todoroman{schema, generalization of possibilities, modifier schéma général des modèles}
-
 
 \begin{figure}[!ht]
     \centering
-    \begin{tikzpicture}[scale=0.7]
+    \begin{tikzpicture}[scale=1]
         \begin{axis}[%
           xlabel=$x$,
           ylabel=$\CDF(x)$,
           %grid=major,
-          domain=0:20,
+          domain=0:15,
           %legend entries={$\underline{F}$, $\overline{F}$},
-          %legend pos=south east
+          legend pos=south east,%
           ],
-          \addplot [thick, smooth, black, samples=80] {f_inf(x,10,2)}node [pos=0.6, below right] {$\underline{F}$};
-          \addplot [very thick, smooth, black, samples=80] {f_sup(x,10,2)}node [pos=0.4, above left] {$\overline{F}$};
-          \draw [ultra thick, dashed, black] (6.5, 0.4) -- (12.5, 0.4) node [pos=0.9, above left] {$C_{[\underline{F},\overline{F}]}^\alpha$};
+            \addplot[dotted, black, samples=16, mark=triangle, mark options={solid}, mark size=3pt] {cdf_erf(x, 1.5, 1.5)} node [pos=0.4, above left] {$\overline{F}$};
+            \addlegendentry{$\overline{F}$}
+            
+            \addplot[dotted, black, samples=16, mark=square, mark options={solid}, mark size=3pt] {cdf_erf(x, 7.5, 1.5)} node [pos=0.6, below right] {$\underline{F}$};
+            \addlegendentry{$\underline{F}$}
+            
+            \addplot[dotted, gray, samples=16, mark=+, mark options={solid, color=gray}, mark size=3pt] {cdf_erf(x, 4.5, 2)};
+            \addlegendentry{$F$}
+            
+            \node (a) at (4, {cdf_erf(4, 1.5, 1.5)}) {};
+            \node (b) at (10, {cdf_erf(10, 7.5, 1.5)}) {};
+            
+            \draw [<->, >=latex, ultra thick, blue] (a.east) -- (b.west) node [pos=0.5, above] {$\alpha_{[\underline{F}, ~\overline{F}]}$};
         \end{axis}
         \end{tikzpicture}
-    \caption{P-box and one of its focal elements $[\underline{x}_i\overline{x}_i]$}
+    \caption{A p-box $[\underline{F}, ~\overline{F}]$, a precise CDF $F$ in its credal set, and one of its focal elements $\alpha_{[\underline{F}, ~\overline{F}]}$ in blue}
     \label{fig:p-box}
 \end{figure}
 
 
 \section{Dependency Models: Copulas}\label{sec:copulas}
-\todoroman{Define also sub copulas. Faire le lien avec ce qui venait avant.}
-In this section, we will present dependency models called copulas, which are mathematical tools used to represent the dependency between multiple random variables. Copulas can represent many types of dependency, ranging from complete monotonicity to complete counter-monotonicity, but can also represent independence between variables. Section \ref{sec:copula_def} will present the mathematical definition of a copula as well as practical families of copulas and how they can model different dependencies. Section \ref{sec:dconvexity} will present a specific property shared by some copulas and a theoretical contribution that will used later in sections \ref{subsec:pboxes} and \ref{subsec:multiple_models}. Finally, we present how to generate multivariate samples from a copula, which will be used in section \ref{sec:montecarlo}.
+During previous sections, we presented different models of uncertainty that will be considered throughout this thesis. When we will aggregate and propagate multiple sources of uncertainty in chapters \ref{chap:joining_credal_sets}, \ref{chap:propagating} and \ref{chap:epistemic_uncertainty}, we will need to take into account the dependency between our uncertain sources. In this section, we will present dependency models called copulas, which are mathematical tools used to represent the dependency between multiple random variables. Copulas can represent many types of dependency, ranging from complete monotonicity to complete counter-monotonicity, including independence between variables. Section \ref{sec:copula_def} will present the mathematical definition of a copula as well as practical families of copulas and how they can model different dependencies. Section \ref{sec:dconvexity} will present a specific property shared by some copulas and a theoretical contribution that will used later in sections \ref{subsec:pboxes} and \ref{subsec:multiple_models}. Finally, we present how to generate multivariate samples from a copula, which will be used in section \ref{sec:montecarlo}.
 
 \subsection{Core Definitions and Examples}\label{sec:copula_def}
 In the following, let $n\in\mathbb{N}^*$ be the number of sources of uncertainty considered (either represented by random variables or random sets). Formally, a copula is a multivariate cumulative distribution function $C:[0,1]^{n}\rightarrow [0,1]$ whose marginals follow uniform distributions on $[0,1]$. It can be interpreted as a joint cumulative distribution of $n$ random variables. For all $i\in\opi 1,n\cli $, we will refer to $u_i\in[0,1]$ as its $i$-th variable (or marginal). A copula verifies a number of properties:
@@ -476,14 +517,18 @@ where $\Pi_{i=1}^n$ is the Cartesian product of $n$ elements, meaning that $(w_1
 
 A central theorem regarding copulas is Sklar's theorem \cite{sklar_fonctions_1959}:
 \begin{theorem}[Sklar's Theorem]\label{theorem:sklar}
-    Let $F:\X_1\tdt\X_n\rightarrow[0,1]$ be a multivariate cumulative distribution function, where $\X_i\subseteq\overline{\mathbb{R}}$. The marginals $F_i$ of $F$ are defined as $\forall i\in\opi 1,n\cli , \forall x\in\X_i, F_i(x) = F( +\infty, \dots,  +\infty, x,  +\infty, \dots, +\infty)$ where $x$ is the $i$-th component of $F$. If all $F_i$ are continuous, then a unique copula $C$ exists on $\X_1\tdt\X_n$ such that:
+    Let $F:\X_1\tdt\X_n\rightarrow[0,1]$ be a multivariate cumulative distribution function, where $\X_i\subseteq\overline{\mathbb{R}}$. The marginals $F_i$ of $F$ are defined as $\forall i\in\opi 1,n\cli , \forall x\in\X_i, F_i(x) = F( +\infty, \dots,  +\infty, x,  +\infty, \dots, +\infty)$ where $x$ is the $i$-th component of $F$. If all $F_i$ are continuous, then a unique copula $C$ exists:
     \begin{eqnarray}
-        \forall (x_1,\dots,x_n)\in \overline{\mathbb{R}}^n, F(x_1,\dots,x_n)=C(F_1(x_1),\dots, F_n(x_n))
+        \forall (x_1,\dots,x_n)\in \overline{\mathbb{R}}^n, F(x_1,\dots,x_n)=C(F_1(x_1),\dots, F_n(x_n))\label{eq:sklar_equality}
     \end{eqnarray}
     If some $F_i$ are not continuous, then $C$ is unique on the product of the ranges of all $F_i$.
     
     The reverse is also true: any copula applied to univariate cumulative distribution functions yields a multivariate cumulative distribution function whose marginals are the univariate CDFs.
 \end{theorem}
+
+\begin{remark}
+    For marginals $F_i$ that are not continuous, then there can exist multiple copula $C$ verifying equation \ref{eq:sklar_equality}. However, if we note $F_i(\X_i)$ the image of $X_i$ through $F_i$, then there exists a unique copula $C$ on the ranges of images $F_1(\X_1)\tdt F_n(\X_n)$. The restriction of a copula a subset of $I^n$ containing $0$ and $1$ is called a sub-copula. Because we work in discrete spaces, we will mostly work with sub-copulas but the difference will be mostly transparent.
+\end{remark}
 
 Copulas are very useful to represent the dependency between multiple sources of uncertainty. As such, they can play a key role in uncertainty propagation problems. 
 
@@ -869,782 +914,4 @@ We do not present the $n$-dimensional general case here as it is a bit more comp
     \item The desired draw is $(x_1,\dots, x_n)=(F^{-1}_1(w_1), \dots, F^{-1}_n(w_n))$ with $F_i^{-1}$, being the quasi-inverse of the $i$-th marginal CDF.
 \end{itemize}
 
-\section{Methods for Joining Credal Sets with Copulas}\label{sec:methods_for_joining_credal_sets}
-\todoroman{Inclure les schema du premier poster qui vulgarisent les méthodes.}
-When working with multiple sources of uncertain information, one must take into account the dependency between the different sources in order to correctly determine the joint model. Section \ref{sec:copulas} introduced copulas, a type of dependency model that we will be using for joining the uncertainty model on images intensities. 
-
-When working with precise probabilities, using a copula $C$ to join univariate Cumulative Distribution Functions (CDF), called marginals, into a mutlivariate CDF is straightforward. When working with marginals modeled by Imprecise Probabilities, joining the models with a copula on the product space is not as trivial. We present here three different approaches to create a multivariate credal set using a copula and imprecise marginals. The first approach in section \ref{sec:robust_method} maintain the classical interpretation found of a copula found in Sklar's theorem, but is hard to compute. The second approach in section \ref{sec:joint_mass} takes some distances with the classical interpretation of a copula, but is easier to compute. Finally a third approach is presented in section \ref{sec:aggregation_method}, which completely let go of Sklar's theorem interpretation, but is very easy to compute. Inclusion relationships between those three approaches are explored in section \ref{sec:inclusions_between_methods}.
-
-We consider here $n\in\mathbb{N}^*$ uncertain variables $(X_i)_{1\leqslant i\leqslant n}$ taking values respectively in an totally ordered finite space $\X_i$. Index $i$ will usually refer to the $i$-th random variable (or random set). We note $\M_i$ the credal set representing the uncertainty of $X_i$, and $C$ a $n$-copula. Focal sets of a belief function will be noted $a^i_k$, where $k$ refers to the $k$-th focal if they are numbered. We also note $\bigsqcup$ the union of disjoint elements. Finally, we must introduce the concept of cylindrical sets which will come in handy for specifying definition domains of various mappings. 
-\begin{definition}[Cylindrical sets]
-    Let $\X_1,~\dots,~\X_n$ be $n$ sets and let $\X$ be the Cartesian product of $\X_1,~\dots,~\X_n$. We call a cylindrical (or cylinder) set $X$ of $\X$ a set which can be written as a Cartesian product of elements of $\X_1,~\dots,~\X_n$, \ie:
-    \begin{equation}
-        X\subseteq\X \text{ is cylindrical} ~\Leftrightarrow~ \exists (X_1,~\dots,~X_n),~\st~X=X_1\tdt X_n \label{eq:cylindrical_sets}
-    \end{equation}
-\end{definition}
-
-\subsection{Point-wise Aggregation}\label{sec:robust_method}
-A first way of creating a joint credal set is to sample a precise marginal for each marginal credal sets $\M_i$ and to use Sklar's theorem with the copula $C$ to create a precise multivariate CDF. The set of all resulting CDFs is thus:
-\begin{eqnarray}\label{eq:robust_ancestor}
-    \mathcal{S}(C,\M_i) = \{F~|~\forall x_i \in \X_i,~ F(x_1,\dots,x_n) = C(F_1(x_1), \dots, F_n(x_n)),~F_i\in\M_i \}
-\end{eqnarray}
-
-This set is not is not guaranteed to be convex \cite{schmelzer_random_2023}. We thus define the joint credal set as the convex hull $\M_{robust}$ of $\mathcal{S}$ (see definition \ref{def:convex_hull}):
-\begin{eqnarray}\label{eq:robust_set}
-    \M_{robust}(C,\M_i) = CH\{\mathcal{S}(C,\M_i)\}
-\end{eqnarray}
-with $F_i$ the cumulative distribution
-
-We refer to this joint credal set as $\M_{robust}(C,\M_i)$ as it contains every element of the marginal credal sets with copula $C$ as their dependency model. We will omit ``$(C,\M_i)$'' when there are no confusion possible to avoid using heavy notations. As we take the convex hull of $\mathcal{S}$, it is interesting to notice that it can contain additional multivariate CDFs that do not possess the copula $C$ as the dependency model of its marginals. This credal set is usually hard to compute for events that are not Cartesian products of marginal cumulative events
-
-\subsection{Copula Applied to Cumulated Mass Functions}\label{sec:joint_mass}
-In this section, we will present another way of creating a joint credal set from multiple marginal ones. Consider the same copula $C$ as before and the same marginal credal sets $\M_i$. Each credal set $\M_i$ is fully determined by a mass distribution function $m_i$, which is strictly positive over its $N_i$ focal sets $a^i_1, \dots, a^i_{N_i}$. As described in \cite{ferson_dependence_2004}, it is possible to use the cumulative mass distribution functions as marginals of the copula to create a joint mass distribution function, granted that there is a complete order defined on the focal sets. Links between copulas and belief functions have been investigated in the continuous case in \cite{schmelzer_joint_2015, schmelzer_multivariate_2019}, the special case of necessity functions in \cite{schmelzer_sklars_2015} and of p-boxes in \cite{schmelzer_random_2023}.
-
-Let suppose, without loss of generality, that the marginal focal sets are numbered according to the order $\preceq_i$: $a^i_1\preceq_ia^i_2\preceq_i\dots\preceq_i a^i_{N_i}$. The idea behind this method is to replace the precise marginal CDFs by cumulative masses, to conserve the philosophy behind Sklar's theorem. We thus first define the joint mass $m_\times$ on the product space of focal sets. Let $a_{k_i}^i$ be the $k_i$-th focal set of $m_i$ according to the chosen order. $m_\times$ is computed as the H-volume of copula $C$ computed over the cumulative marginal masses:
-\begin{eqnarray}\label{eq:joint_mass}
-    m_\times(a^1_{k_1}\tdt a^n_{k_n}) = H_{\sum_{k=0}^{k_1-1}m_1(a^1_k), \dots, \sum_{k=0}^{k_n-1}m_n(a^n_k)}^{\sum_{k=0}^{k_1}m_1(a^1_k), \dots, \sum_{k=0}^{k_n}m_n(a^n_k)}
-\end{eqnarray}
-with the convention that $\forall i,\, a^i_0=\emptyset$, which is not strictly a focal set but allows to deal with the case $k_i=1$ as $m_i(a^i_0)=0$. For sets that are not of the form $a^1_{k_1}\tdt a^n_{k_n}$, the mass $m_\times$ is null.
-\begin{proposition}
-    The function $m_\times$ defined in equation \eqref{eq:joint_mass} is a correctly defined mass distribution function over $\X$. 
-\end{proposition}
-\begin{proof}
-    By definition it holds that $m_\times(\emptyset)=0$, and the properties of the H-volume impose that $m_\times\in[0,1]$.
-    
-    There are multiple way of proving that $\sum_{A\subseteq\X}m_\times(A)=1$. A direct proof can be done in the case $n=2$, but the notations become quite for any $n>2$. Instead let us use the interpretation of a copula as a multivariate CDF. This method will be also be used in future proofs.
-    
-    Let $\forall i\in\opi 0,\, n\cli,\, F_i$ be a CDF over $[0,\, N_i]$, with, $F_i(j)=\sum_{k=0}^j m_i(a_k^i)$. By Sklar's theorem, $F=C(F_1,\dots, F_n)$ is a multivariate CDF over $[0,\, N_1]\tdt[0,\, N_n]$. Thus it holds that $F([0,\, N_1]\tdt[0,\, N_n])=1$ and:
-    \begin{eqnarray*}
-        F([0, N_1]\tdt[0, N_n]) &=& F([0, ~\dots, ~0])+\\
-        &&F\left(\bigsqcup_{k_1=0}^{N_1-1}\dots\bigsqcup_{k_n=0}^{N_n-1}\left(]k_1, k_1+1]\tdt]k_n, k_n+1]\right)\right)\\
-        &=& 0 + \sum_{k_1=0}^{N_1-1}\dots\sum_{k_n=0}^{N_n-1} F(]k_1, k_1+1]\tdt]k_n, k_n+1])\\
-        && \text{(CDF of an union of disjoint elements)}\\
-        &=& \sum_{k_1=0}^{N_1-1}\dots\sum_{k_n=0}^{N_n-1} H_{F_1(k_1), \dots, F_n(k_n)}^{F_1(k_1+1), \dots, F_n(k_n+1)}\\
-        &=& \sum_{k_1=1}^{N_1}\dots\sum_{k_n=1}^{N_n} H_{\sum_{k=0}^{k_1-1}m_1(a^1_k), \dots, \sum_{k=0}^{k_n}m_n(a^n_k)}^{\sum_{k=0}^{k_1}m_1(a^1_k), \dots, \sum_{k=0}^{k_n}m_n(a^n_k)}\\
-        &=& \sum_{(a^1_{k_1}\tdt a^n_{k_n})\subseteq\X}m_\times(a^1_{k_1}\tdt a^n_{k_n})
-    \end{eqnarray*}
-Therefore it holds that:
-\begin{eqnarray}
-    \sum_{A\subseteq\X}m_\times(A)=\sum_{(a^1_{k_1}\tdt a^n_{k_n})\subseteq\X}m_\times(a^1_{k_1}\tdt a^n_{k_n})=1
-\end{eqnarray}
-which proves that $m_\times$ is a mass distribution function.
-\end{proof}
-
-Having defined a mass distribution function on the product space $\X$, we thus define the joint credal set $\M_{mass}$ as: 
-\begin{eqnarray}\label{eq:credal_set_mass}
-    \M_{mass} = \{P~|~\forall A\subseteq\X, P(A)\geqslant \sum_{a\subseteq A}m_\times(A)\}
-\end{eqnarray}
-
-With this way of defining the multivariate mass, the choice of arbitrary orders $\preceq_i$ can have a significant impact on the value of the multivariate mass function. Those order will specifically be ``natural'' orders in sections \ref{subsec:necessity_functions}, \ref{subsec:pboxes} and \ref{subsec:multiple_models}, in the sense where there exists an intuitive total order (inspired by the order on reals). When no natural order exists, the arbitrary choice of the order can greatly impact the output mass or belief functions, as illustrated by the following example.
-\todoroman{Quand j'ai $n$ variables j'utilise des notations du style $a_i^n$ (pas trop le choix). Par contre quand j'ai que 2 variables, ça vaudrait peut être le coup de repasser sur des $a_i$ et $b_i$ pour plus de lisibilité ?}
-\begin{example}\label{ex:joint_mass}
-    Let us present an example in the case $n=2$. Let $m_1$ be a mass distribution function over the power set $2^{\X_1}$ of $\X_1$ with two focal sets $a_1,\, a_2$. Similarly, let $m_2$ be a mass distribution function over the power set $2^\X_2$ with two focal sets $a_1^2,~a_2^2$. Throughout this example we will assume that $a_1^2\preceq_2a_2^2$. We consider the minimum copula $C(u,v)=\min(u,v)$ and that all masses are equal $m_1(a_1^1)=m_1(a_2^1)=m_2(a_1^2)=m_2(a_2^2)=0.5$.
-    If there is no natural order on the focal sets of $m_1$, we have to chose an arbitrary one:
-    \begin{itemize}
-        \item[-] If "$a_1^1\preceq_1a_2^1$" is the arbitrary order (see figure \ref{fig:joint_distrib_arb}), then
-        \begin{eqnarray*}
-            m_\times(a_1^1,~a_1^2) &=& C(m_1(a_1^1),~m_2(a_1^2))\\
-            &=& 0.5\\
-            m_\times(a_2^1,~a_1^2) &=& C(1,~m_2(a_1^2)) - C(m_1(a_1^1),~m_2(a_1^2))\\
-            &=& m_2(a_1^2) - C(m_1(a_1^1),~m_2(a_1^2))\\
-            &=& 0
-        \end{eqnarray*}
-        \item[-] If "$a_2^1\preceq_1a_1^1$" is the arbitrary order, then
-        \begin{eqnarray*}
-            m_\times(a_1^1,~a_1^2) &=& C(1,~m_2(a_1^2)) - C(m_1(a_2^1),~m_2(a_1^2))\\
-            &=& m_2(a_1^2) - C(m_1(a_2^1),~m_2(a_1^2))\\
-            &=& 0\\
-            m_\times(a_2^1,~a_1^2) &=& C(m_1(a_2^1),~m_2(a_1^2))\\
-            &=& 0.5
-        \end{eqnarray*}
-    \end{itemize}
-    This illustrates that different orders lead to different masses and thus to different credal sets.
-    
-    \begin{center}
-    \includegraphics[width=0.8\linewidth]{Images/M_mass_h_volume.png}\captionof{figure}{Joint mass diagram for different orders.}\label{fig:joint_distrib_arb}
-    \end{center}
-\end{example}
-
-\begin{remark}
-    The reason why $\M_{robust}$ is usually different from $\M_{mass}$ is mainly because of the different orders that can exist on focal sets. Consider for instance the minimum copula already presented in example \ref{ex:copulas}:
-    \begin{itemize}
-        \item In the precise setting, the minimum copula associates the highest probabilities to events with similar values (high-high or low-low), and the lowest probabilities to events with opposite values (low-high).
-        \item In the imprecise setting, the concept of high or low values for focal sets does not usually exist. We thus replace it by an order $\preceq$ on focal sets, determining which set is considered ``low'' and which is ``high'' (regardless of the real values actually contained in the set). The minimum copula then associates the highest mass to joint focal sets with similar ``values'' in the sense of the order $\preceq$, and the lowest mass to sets with opposite values in the sense of the order $\preceq$. For instance in the bivariate case, with marginal focal sets $a_1\preceq_1 a_2$ and $b_1\preceq_2 b_2$, using the minimum copula will assign high masses to $a_1\times b_1$ and $a_2\times b_2$ and low masses to $a_1\times b_2$ and $a_2\times b_1$.
-    \end{itemize}
-    Assigning a high mass to sets containing both low and high values at the same time is something that would not occur in the precise case but is possbile in the imprecise case. This explains the differences between credal sets $\M_{mass}$ and $\M_{robust}$. 
-\end{remark}
-
-We saw that $\M_{robust}$ and $\M_{mass}$ can be distinct credal sets. However, because $\M_{robust}$ is difficult to compute, it would be interesting to still use $\M_{mass}$ to approximate it, \ie to verify that $\M_{robust}\subseteq\M_{mass}$ (outer approximation) or $\M_{mass}\subseteq\M_{robust}$ (inner approximation). In example \ref{ex:mass_values}, we show that there is in general no reason for such a relation to exist. Furthermore, if we found an order allowing this relationship, then this order is copula dependent, as changing the copula might break the inclusion. 
-\begin{example}\label{ex:mass_values}
-    Consider the following setting:
-    \begin{itemize}
-        \item We consider two spaces $\X_1=\X_2=\{1,~2,~3\}$
-        \item We consider two (identical) mass distribution functions $m_1$, $m_2$, each respectively possessing two focal sets $\{2\}$ and $\{1,3\}$.
-        \item $m_1(\{2\}) = m_1(\{1,~3\}) = m_2(\{2\})= m_2(\{1,~3\}) = 0.5$
-        \item We want to join the credal sets induced by the mass functions using the minimum copula.
-    \end{itemize}
-    We will compute the bounds of $\M_{mass}$ and $\M_{robust}$ to compare them. The marginals masses being identical and the copula being symmetrical, many results can be obtained by symmetry.
-    
-    Let us first compute the bounds of $\M_{robust}$. Marginal mass $m_1$ imposes that each marginal probability $P$ will verify:
-    \begin{align*}
-        \Bel_1(\{2\}) \leqslant &P(\{2\}) \leqslant \Pl_1(\{2\})\\
-        0.5 = \sum_{a\subseteq\{2\}}m_1(a) \leqslant &P(\{2\}) \leqslant \sum_{a\cap\{2\}\neq\emptyset}m_1(a) = 0.5
-    \end{align*}
-    The same result holds for $\{1,~3\}$. We therefore have:
-    \begin{align*}
-        &P(2)=0.5\\
-        &P(1)+P(3)=0.5
-    \end{align*}
-    And we can compute the same for $m_2$. Looking at those equations, we can deduce that every $P\in\M_{robust}$ verifies:
-    \begin{align*}
-        0 \leqslant ~&P(\{1\},~ \{1\}) ~\leqslant 0.5\\
-        0.5 \leqslant ~&P(\{1, ~2\},~ \{1, ~2\}) ~\leqslant 1
-    \end{align*}
-    
-    Let us now compute the bounds of $\M_{mass}$. Choosing an order between $\{1, ~3\}$ and $\{2\}$ is not intuitive. Suppose that there is a reason which encourages us to chose different orders for the focal sets of $m_1$ and for those of $m_2$, so that $\{1,~3\} \preceq_1 \{2\}$ and $\{2\} \preceq_2 \{1,~3\}$. In this case, it holds that:
-    \begin{align*}
-        m_\times(\{1, ~3\}, \{2\}) =& ~\min(0.5, ~0.5)\\
-        =& ~0.5\\
-        m_\times(\{2\}, \{1, ~3\}) =& ~\min(1, ~1) - \min(0.5, ~1)\\
-        & - \min(1, ~0.5) + \min(0.5, ~0.5)\\
-        =& ~0.5\\
-        m_\times(\{2\}, \{2\}) =& ~0\\
-        m_\times(\{1, ~3\}, \{1, ~3\}) =& ~0
-    \end{align*}
-    Thus every probability $P\in\M_{mass}$ will verify:
-    \begin{align*}
-        0 \leqslant ~&P(\{1\},~ \{1\})~ \leqslant 0\\
-        0 \leqslant ~&P(\{1, ~2\},~ \{1, ~2\})~ \leqslant 1
-    \end{align*}
-    
-    Looking at the bounds of $\M_{mass}$ and $\M_{robust}$ on cumulative event $\{1\}\times\{1\}$, we can see that $\M_{robust}\not\subseteq \M_{mass}$. Looking at the bounds on $\{1,2\}\times\{1,2\}$, we can see that $\M_{mass}\not\subseteq \M_{robust}$.
-    
-    \begin{remark}
-        When computing the join mass $m_\times$, we observed that sets $\{2\}\times\{2\}$ and $\{1, 3\}\times\{1, 3\}$ have a null mass, while sets $\{2\}\times\{1, 3\}$ and $\{1, 3\}\times\{2\}$ have a mass of $0.5$. It goes against the expected behaviour of the minimal copula in the precise case, which associates high probabilities to similar values (such as high-high or low-low values). This behaviour stems from the fact that we purposefully chosen different orders $\preceq_1$ and $\preceq_2$ on focal sets, while we cannot reverse the orders on reals in the precise case.
-        
-        It is legitimate to wonder what would happen if we used the same orders. In that case, it would seem that $\M_{mass}\subset\M_{robust}$. However using the \L ukasiewicz copula, it is possible to keep the same order (where $\{1,~3\} \preceq_1 \{2\}$ and $\{1,~3\} \preceq_2 \{2\}$) while still observing that $\M_{robust}\not\subseteq \M_{mass}$ and $\M_{mass}\not\subseteq \M_{robust}$. Indeed the following bounds for every $P$ in $\M_{robust}$ hold and are reached:
-        \begin{align*}
-            0 \leqslant ~&P(\{1\},~ \{3\})~ \leqslant 0.5\\
-            0 \leqslant ~&P(\{1\}\times\{2\}\cup\{2\}\times\{1\})~ \leqslant 0.5
-        \end{align*}
-        While $P$ in $\M_{mass}$ verifies:
-        \begin{align*}
-            0 \leqslant ~&P(\{1\},~ \{3\})~ \leqslant 0\\
-            0 \leqslant ~&P(\{1\}\times\{2\}\cup\{2\}\times\{1\})~ \leqslant 1
-        \end{align*}
-        Finding the values of those bounds follow the same procedure as before but is a much more tedious process, which is thus not detailed here. \comroman{Est-ce que je devrais inclure les calculs en annexe ?}
-        
-        This means that if we found an order allowing to verify $\M_{robust}\subseteq \M_{mass}$, changing the copula while still keeping the same order might lead to $\M_{robust}\not\subseteq \M_{mass}$.
-    \end{remark}
-\end{example}
-
-We considered until now that an order has to be chosen arbitrarily. However, special cases of belief functions exhibit a natural order on their focal sets, for instance p-boxes and possibilities:
-\begin{itemize}
-     \item Focal sets of possibility distributions form a nested family of sets. The natural order between the focal sets is therefore $a_1\preceq a_2 \Leftrightarrow a_1 \subseteq a_2$.
-    \item Focal sets of p-box are of the shape $a_\alpha = [\overline{F}^{-1}(\alpha),~\underline{F}^{-1}(\alpha)]$ (\cite{destercke_unifying_2008}), with $\alpha\in [0,1]$ and $F^{-1}$ being the inverse of a CDF (or quasi-inverse if the inverse does not exists). Thus the natural order for a p-box is $a_\alpha\preceq a_\beta \Leftrightarrow \alpha\leqslant\beta$
-\end{itemize}
-
-\subsection{Copulas Applied to Belief Functions}\label{sec:aggregation_method}
-Another way of joining credal sets with a copula is by directly applying the copula to their lower envelope $\low_i$ for every event:
-\begin{eqnarray}\label{eq:copula_on_lower_proba}
-    \M_{agg} = \{P~|~\forall A_i\subseteq\X_i, P(A_1,\dots, A_n)\geqslant C(\low_1(A_1), \dots, \low_n(A_n)\}
-\end{eqnarray}
-
-The constraints on this set only occur on cylindrical sets of product space $\X_1\tdt \X_n$ (from equation \ref{eq:cylindrical_sets}), contrary to $\M_{mass}$. We note $\M_{agg}$ this credal set as it uses the copula as an aggregation operator only, without conserving the meaning associated to copulas by Sklar's theorem. In this regard, $\M_{agg}$ has less meaning than $\M_{robust}$ or $\M_{mass}$, but presents the advantage of being easier to compute than those joint credal sets. Figure \ref{fig:meaning_computation} sums up the performances of the different methods in terms of computation cost and meaningfulness.
-
-\begin{figure}[!hb]
-    \centering
-    \begin{tikzpicture}[scale=1]
-        \draw (0, 0) node (a) {};
-        \draw (10, 0) node (b) {};
-        \draw (0, 1.5) node (c) {};
-        \draw (10, 1.5) node (d) {};
-        
-        \draw[->, ultra thick, darkgray] (a) to node[midway, left, inner sep=0.5cm] {} (b);
-        \draw[->, ultra thick, darkgray] (d) to node[midway, left, inner sep=0.5cm] {} (c);
-        
-        \draw [darkgray] (9, -0.5) node (z) {\small Easy to compute};
-        \draw [darkgray] (0, 2) node (z) {\small Meaningful};
-        
-        \draw (9, 0.75) node (z) {$\M_{agg}$};
-        \draw (5.65, 0.75) node (z) {$\M_{mass}$};
-        \draw (2, 0.75) node (z) {$\M_{robust}$};
-    \end{tikzpicture}
-    \caption{Comparing different methods of joining credal sets with a copula.}
-    \label{fig:meaning_computation}
-\end{figure}
-
-In general, applying the copula directly to the lower probabilities as in \eqref{eq:copula_on_lower_proba} does not produce a coherent lower probability that avoid sure loss. For instance, let us consider $\X_1 = \X_2 = \{1, 2\}$, two lower previsions $\low_1$ and $\low_2$ such that $\low_1(\{1\}) = \low_1(\{2\}) = \low_2(\{1\}) = \low_2(\{2\}) = 0.5$. Joining those two lower probabilities using the minimum copula $C(u,v)=\min(u,v)$ gives a mapping $\low$ which is neither coherent nor avoid sure loss (Table \ref{tab:non_coherent_lower}).
-
-\begin{table}[!ht]
-    \centering
-    \begin{tabular}{|c||c|c|}
-        \hline
-        \hspace{0.2cm} $\low$ \hspace{0.2cm} & \hspace{0.2cm} $\{1\}$ \hspace{0.2cm} & \hspace{0.2cm} $\{2\}$ \hspace{0.2cm} \\\hline\hline
-        $\{1\}$ & $0.5$ & $0.5$ \\\hline
-        $\{2\}$ & $0.5$ & $0.5$\\
-        \hline
-        \end{tabular}
-        \caption{$\low = \min(\low_1, \low_2)$}
-        \label{tab:non_coherent_lower}
-\end{table}
-
-In the special case of the product copula $C_\Pi$, the joint lower probability $\low_{C_\Pi}$ induced by \eqref{eq:copula_on_lower_proba} avoids sure loss if its marginals also avoid sure loss. It follows that for all copulas $C$ dominated by the product copula (\ie $C_\Pi\geqslant C$), and for every $\M_i$ avoiding sure loss, $\M_{agg}(C, \M_i)$ is a non empty credal set.
-\begin{proof}
-    For $i\in\{1,\dots,n\}$, let $\low_i$ be a lower probability avoiding sure lost, \ie whose credal set $\M_i$ contains at least one probability distribution $P_i$. Let us define a multivariate probability $P$ on every $(A_1\tdt A_n)\subseteq\X$ as:
-    \begin{eqnarray*}
-        P(A_1\tdt A_n) = P_1(A_1)\tdt P_n(A_n)
-    \end{eqnarray*}
-    Defining $P$ on $(A_1\tdt A_n)\subseteq\X$ is sufficient as those sets contain every atom of $\X$.
-    Because $\forall i, P_i\in\M_i,~P_i\geqslant \low_i$, then:
-    \begin{eqnarray*}
-        P(A_1\tdt A_n) \geqslant \low_1(A_1)\tdt \low_n(A_n) &=& C_\Pi(\low_1(A_1), \dots, \low_n(A_n))\\
-        &=& \low_{C_\Pi}(A_1\tdt A_n)
-    \end{eqnarray*}
-which means $P\in\M_{agg}(C_\Pi, \M_i)$. Therefore $\M_{agg}(C_\Pi, \M_i)$ avoids sure loss if every $\M_i$ avoids sure loss.
-
-Let $C$ be a copula dominated by $C_\Pi$ (\ie $C_\Pi\geqslant C$), and $\low_C$ the lower probability associated with $\M_{agg}(C, \M_i)$. Then it holds that for all $(A_1\tdt A_n)\subseteq\X$:
-\begin{eqnarray*}
-\low_{C_\Pi}(A_1\tdt A_n)&=&C_\Pi(\low_1(A_1), \dots, \low_n(A_n)) \\
-    &\geqslant& C(\low_1(A_1),\dots, \low_n(A_n)) = \low_C(A_1\tdt A_n)
-\end{eqnarray*}
-which implies that $\M_{agg}(C_\Pi, \M_i)\subseteq \M_{agg}(C, \M_i)$.
-\end{proof}
-
-Conversely, no lower probability $\low_C$ obtained using \eqref{eq:copula_on_lower_proba} with a copula $C$ strictly superior to the product copula by is guaranteed to avoid sure loss, it depends on the marginal credal sets $\low_i$.
-
-\begin{proof}
-    Let $C$ be a copula strictly superior to the product. Then there exists $(u_1,\dots,u_n)\in[0,1]^2$ such that:
-    \begin{eqnarray*}
-        C(u_1,\dots, u_n)~>~u_1\dots u_n
-    \end{eqnarray*}
-    Let $\M_i$ be marginals credal sets such that $\low_i$ are \textit{precise} probabilities, and that:
-    \begin{eqnarray*}
-        \forall i,~\exists A_i\in\X_i,~\low_i(A_i)=u_i
-    \end{eqnarray*}
-    Suppose that $\M_{agg}(C, \M_i)$ avoids sure loss, \ie there is a probability $P$ such that $P\geqslant\low_C$. Let $S$ be a collection of disjoint cylindrical sets of $\X$ (defined in equation \eqref{eq:cylindrical_sets}) covering the complementary event $(A_1\tdt A_n)^c$ of $(A_1\tdt A_n)$. $S$ is defined so that $(A_1\tdt A_n)^c=\bigsqcup_{s\in S}s$.
-    Then,
-    \begin{eqnarray*}
-        P(\X) &=& P\left(\left(A_1\tdt A_n\right)\bigsqcup\left(A_1\tdt A_n\right)^c\right)\\
-        &=& P\left(A_1\tdt A_n\right)+P\left((A_1\tdt A_n)^c\right)\\
-        &=& P\left(A_1\tdt A_n\right)+\sum_{(s_1\tdt s_n)\in S}P(s_1\tdt s_n)\\
-        &\geqslant& \low_C\left(A_1\tdt A_n\right)+\sum_{(s_1\tdt s_n)\in S}\low_C(s_1\tdt s_n)\\
-        &>& \low_{C_\Pi}\left(A_1\tdt A_n\right)+\sum_{(s_1\tdt s_n)\in S}\low_{C_\Pi}(s_1\tdt s_n)
-    \end{eqnarray*}
-    Because we chose $\low_i$ so that they are precise probabilities, their product is also a precise probability. Using the fact that summing probabilities of disjoint events is equal to the probability of their union:
-    \begin{eqnarray*}
-        \low_{C_\Pi}\left(A_1\tdt A_n\right)+\sum_{(s_1\tdt s_n)\in S}\low_{C_\Pi}(s_1\tdt s_n) &=& \low_{C_\Pi}\left(A_1\tdt A_n\right)+\\
-        &&\low_{C_\Pi}\left((A_1\tdt A_n)^c\right)\\
-        &=& 1
-    \end{eqnarray*}
-    This means that $P(\X)>1$ which is impossible. Thus $\M_{agg}(C, \M_i)=\emptyset$ and $\M_{agg}(C, \M_i)$ does not avoid sure loss.
-\end{proof}
-
-\section{Inclusions Between Joint Credal Sets}\label{sec:inclusions_between_methods}
-Section \ref{sec:methods_for_joining_credal_sets} presented three methods for joining marginal credal sets using a copula. In the general case, there is no reason for the three methods to lead to the same multivariate credal sets. However, for some specific cases on the copulas or on the marginal credal sets, it is possible to find inclusion relationships between the methods. This section explores some of those specific cases. 
-
-\subsection{Using the Product Copula}\label{subsection:product_copula}
-In this section, we will consider the case of the product copula $C_\Pi$, representing independence between variables. Using this copula in the robust approach defined by equation \eqref{eq:robust_set} is referred as the strong product in \cite{kacprzyk_factorisation_2010}. Let us denote $\low_{robust}$ the infimum of $\M_{robust}(C_\Pi, \M_i)$ and $\mathcal{S}$ the set from which $\M_{robust}$ is computed (eq. \eqref{eq:robust_ancestor}).
-For cylindrical sets $(A_1, \dots, A_n)$ of $\X$, it holds that:
-\begin{eqnarray*}
-    \low_{robust}(A_1\tdt A_n) &=& \inf\{P(A_1\tdt A_n)~|~P\in\mathcal{S}\}\\
-    &=&\inf\{\low_1(A_1)\dots\low_n(A_n)~|~P_i\in\M_i\}\\
-    &=&\inf\{\low_1(A_1)~|~P_1\in\M_1\}\dots\inf\{\low_n(A_n)~|~P_n\in\M_n\}\\
-    &=&\low_1(A_1)\dots\low_n(A_n)
-\end{eqnarray*}
-We can split the infimum of a product as a product of infima because we consider mappings with positive values. As this is equivalent of applying the copula directly to the marginals, $\M_{robust}$ and $\M_{agg}$ have the same bounds on cylindrical events. On other events, the lower probabilities are defined as the infimum of the credal sets, thus all bounds are the same and it holds that:
-\begin{eqnarray}
-    \M_{robust}(C_\Pi, \M_i)\subseteq\M_{agg}(C_\Pi, \M_i)
-\end{eqnarray}
-
-In the case of the product copula $C_\Pi$, the arbitrary orders on the marginal focal sets have no impact on the value of the joint mass $m_\times$ defined in \eqref{eq:joint_mass}. If $a^1_{k_1},\dots,a^n_{k_n}$ is a focal set of $m_1,\dots,m_n$, then $m_\times$ is given by:
-\begin{eqnarray}\label{eq:joint_mass_product}
-    m_\times(a^1_{k_1}\tdt a^n_{k_n}) = m_1(a^1_{k_1})\dots m_n(a^n_{k_n})
-\end{eqnarray}
-
-\begin{proof}
-    Equation \eqref{eq:joint_mass_product} shows that the order on marginal focal sets does not matter in the case of the product copula. We thus show that equation \eqref{eq:joint_mass_product} holds.
-    For simplicity and coherence with the notations of equation \eqref{eq:hvolume}, we will note for all $i\in[0,n]$, $u^i=\sum_{k=0}^{k_i-1}m_i(a_k^i)$, $v^i_k=\sum_{k=0}^{k_i}m_i(a_k^i)$. $\Pi_{i=1}^n\{u_i, v_i\}$ will refer to the Cartesian product $\{u_1, v_1\}\times\{u_2, v_2\}\tdt\{u_n, v_n\}$ and we will note $C_\Pi$ and $H$ as the product copula and its H-volume regardless of their number of marginals. Those notations established, it holds that:
-    \begin{eqnarray*}
-        m_\times(a^1_{k_1}\tdt a^{n}_{k_{n}}) &=& H_{u_1, \dots, u_{n}}^{v_1, \dots, v_{n}}\\
-        &=&\sum_{\substack{(w_1, \dots, w_{n})\in\\\Pi_{i=1}^{n}\{u_i, v_i\}}}(-1)^{|\{k~|~w_k=u_k\}|}C_\Pi(w_1, \dots, w_{n})\\
-        &=&\sum_{\substack{(w_1, \dots, w_{n-1})\in\\\Pi_{i=1}^{n-1}\{u_i, v_i\}}}(-1)^{|\{k~|~w_k=\sum_{k=0}^{k_i-1}m_i(a^i_k)\}|}(w_1 \dots w_{n-1}v_{n})\\
-        && + \sum_{\substack{(w_1, \dots, w_{n-1})\in\\\Pi_{i=1}^{n-1}\{u_i, v_i\}}}(-1)^{|\{k~|~w_k=\sum_{k=0}^{k_i-1}m_i(a^i_k)\}|+1}(w_1 \dots w_{n-1}u_n)\\
-        &=& v_{n}H_{u_1, \dots, u_{n-1}}^{v_1, \dots, v_{n-1}} - u_{n}H_{u_1, \dots, u_{n-1}}^{v_1, \dots, v_{n-1}}\\
-        &=& m_{n}(a^{n}_{k_{n}})H_{u_1, \dots, u_{n-1}}^{v_1, \dots, v_{n-1}}
-    \end{eqnarray*}
-    Doing the same procedure for every variable leads to:
-    \begin{eqnarray*}
-        m_\times(a^1_{k_1}\tdt a^n_{k_n}) = m_1(a^1_{k_1})\dots m_n(a^n_{k_n})
-    \end{eqnarray*}
-    which concludes the proof.
-\end{proof}
-
-The mass $m_\times$ corresponds to the notion of random set independence presented in \cite{couso_survey_2000}. Let $\Bel_\times$ be the belief function associated to $m_\times$, and $\forall i\in[1,n], \Bel_i$ the mass function associated to $m_i$. Then for cylindrical sets $(A_1, \dots, A_n)$ of $\X$, it holds that:
-\begin{eqnarray}
-    \Bel_\times(A_1\tdt A_n) &=& \sum_{(a^1\tdt a^n)\subseteq (A_1, \dots, A_n)}m_\times(a^1\tdt a^n)\nonumber\\
-    &=& \sum_{(a^1\tdt a^n)\subseteq (A_1, \dots, A_n)}m_1(a_1)\dots m_n(a^n)\nonumber\\
-    &=& (\sum_{a^1\subseteq A_1}m_1(a^1))\dots(\sum_{a^n\subseteq A_n}m_n(a^n))\nonumber\\
-    &=& \Bel_1(A_1)\dots \Bel_n(A_n)
-\end{eqnarray}
-
-This means that in the case of the product copula $C_\Pi$ with marginals being belief functions, $\M_{robust},~\M_{mass}$ and $\M_{agg}$ all coincide on cylindrical sets. Thus,
-\begin{eqnarray*}
-    \M_{mass}\subseteq\M_{agg}
-\end{eqnarray*}
-
-\subsection{Using the Natural Ordering of Necessity Functions}\label{subsec:necessity_functions}
-Necessity functions $\Nec$, also called minitive belief functions, are a special type of belief function verify $\Nec(A\cap B) =\min(\Nec(A), \Nec(B))$ for all events $A, B$ in their domain of definition. In the multivariate case, when a belief is only defined on cylindrical sets, then the minitive property becomes:
-\begin{eqnarray}
-    &&\forall (A_1\tdt A_n)\subseteq\X, (B_1\tdt B_n)\subseteq\X,\nonumber\\
-    &&\Nec(A_1\cap B_1,\dots, A_n\cap B_n) = \min_{(S_1,\dots,S_n)\in\Pi_i\{A_i,B_i\}}(\Nec(S_1, \dots, S_n))
-\end{eqnarray}
-In \cite{schmelzer_joint_2015}, the author showed that in order to describe the relation between a multivariate belief function and its marginals, in the bivariate case, it is necessary to use a family of sub-copulas (one copula for each tuple of increasing family of events).
-
-\begin{theorem}[Sklar's Theorem for Belief Functions \cite{schmelzer_joint_2015}]\label{theorem:sklar_belief}
-    Let $\Bel :2^{\X_1}\times2^{\X_2}\rightarrow[0,1]$ be a bivariate belief function and let $\Bel_1$ and $\Bel_2$ denote its marginals over $2^{\X_1}$ and $2^{\X_2}$ respectively. Furthermore, let $\mathcal{I}_1$ and $\mathcal{I}_2$ denote increasing families of subsets of $\X_1$ and $\X_2$. Then there exists a unique subcopula $C^{\mathcal{I}_1,\mathcal{I}_2}$ on  $\Bel_1(\mathcal{I}_1)\times \Bel_2(\mathcal{I}_2)$ such that:
-    \begin{eqnarray}
-        \Bel (L_1, L_2) = C^{\mathcal{I}_1,\mathcal{I}_2}(\Bel_1(L_1), \Bel_2(L_2))
-    \end{eqnarray}
-    for all $L_1\in\mathcal{I}_1,L_2\in\mathcal{I}_2$.
-\end{theorem}
-For the reverse to be true, it is necessary that $\X_1\in\mathcal{I}_1, \X_2\in\mathcal{I}_2$. Example 1 of \cite{schmelzer_joint_2015} illustrate the need of a copula for each increasing family of events.
-
-Necessity functions are completely determined by their focal sets which form an increasing family of events. Thus by applying Sklar's theorem for belief functions (theorem \ref{theorem:sklar_belief}), it holds that joining two necessity functions with a copula $C$ as in \eqref{eq:copula_on_lower_proba} yields a bivariate belief function (which is not necessarily a necessity function):
-\begin{equation}
-    \Bel = C(\Nec_1, \Nec_2)\label{eq:sklar_on_necessity}
-\end{equation}
-where $\Nec_1$ and $\Nec_2$ are the marginal necessity functions. The proof of those results where shown in \cite{schmelzer_joint_2015,schmelzer_sklars_2015}. In the following, we will consider that the focal sets $a^i$ of a necessity functions $\Nec_i$ are already ranked using the natural ordering $\preceq_i$:
-\begin{eqnarray}
-    \forall (k,j)\in[1, N_i]^2,~k\leqslant j ~\Leftrightarrow ~ a^i_k \preceq_i a^i_j ~\Leftrightarrow ~ a^i_k\subseteq a^i_j
-\end{eqnarray}
-
-\begin{proposition}\label{prop:sklar_necessity}
-    Joining two marginal necessity functions $\Nec_1, \Nec_2$ with a copula $C$ as in \eqref{eq:sklar_on_necessity} or using the bivariate mass function as in \eqref{eq:joint_mass} with the natural inclusion ordering yields the same bivariate belief function.
-\end{proposition}
-
-\begin{proof}
-    If we denote by $\Bel_\times$ the belief function defined in \eqref{eq:joint_mass} where the ordering is the inclusion ordering $\preceq_i$ for $i\in[1,2]$. For convenience and with respects to the notations of equation \eqref{eq:hvolume}, we note: $u^i_k=\sum_{j=0}^{k}m_i(a_j^i)$ and consider that $a^i_0=\emptyset$.
-    For all focal elements $a_k^1$ of $\Nec_1$ and $a^2_j$ of $\Nec_2$, it holds that:
-    \begin{eqnarray*}
-        \Bel_\times(a^1_k, a^2_j) &=& \sum_{a^1_p\subseteq a_k^1}\sum_{a^2_q\subseteq a_j^2}m_\times(a^1_p, a^2_q) = \sum_{p=1}^k\sum_{q=1}^j m_\times(a^1_p, a^2_q)\\
-        &=&\sum_{p=1}^k\sum_{q=1}^j (~C(u^1_p, u^2_q) + C(u^1_{p-1}, u^2_{q-1}) \\
-        &&- C(u^1_{p-1}, u^2_{q}) - C(u^1_{p}, u^2_{q-1})~)\\
-        &=&\sum_{p=1}^k\sum_{q=1}^jC(u^1_p, u^2_q) + \sum_{p=0}^{k-1}\sum_{q=0}^{j-1}C(u^1_p, u^2_q) \\
-        &&- \sum_{p=0}^{k-1}\sum_{q=1}^jC(u^1_p, u^2_q) - \sum_{p=1}^k\sum_{q=0}^{j-1}C(u^1_p, u^2_q)\\
-        &=& C(u^1_k, u^2_j) = C\left(\Nec_1(a_k^1), \Nec_2(a_j^2)\right)\\
-    \end{eqnarray*}
-    This is the case for necessity function but not in general where:
-    \begin{align*}
-        \sum_{a^1_p\subseteq a_k^1}\sum_{a^2_q\subseteq a_j^2}m_\times(a^1_p, a^2_q) \neq \sum_{p=1}^k\sum_{q=1}^j m_\times(a^1_p, a^2_q)
-    \end{align*}
-\end{proof}
-
-Proposition (\ref{prop:sklar_necessity}) considers two marginals. However, it still holds for $n$ marginals, not covered in \cite{schmelzer_sklars_2015}.
-\begin{proposition}
-   Joining $n$ marginal necessity functions $\Nec_1,~\dots,~\Nec_n$ with a n-copula $C$ as in \eqref{eq:sklar_on_necessity} or using the multivariate variate mass function as in \eqref{eq:joint_mass} with the natural inclusion ordering yields the same multivariate belief function. In other words, for every cylindrical set $(A_1, \dots, A_n)\subseteq\X$, it holds that:
-\begin{eqnarray}
-    \Bel_\times(A_1\tdt A_n) = C\left(\Nec_1(A_1), \dots, \Nec_n(A_n)\right)
-\end{eqnarray}
-\end{proposition}
-
-\begin{proof}
-    The proof is similar to the one of equation \eqref{eq:joint_mass}, but this time computing the mass of $(a_{k_1}^1\tdt a_{k_n}^n)$ using $F([0,k_1]\tdt[0,k_n])$ and noticing that \begin{eqnarray*}
-        \sum_{(a^1_{p_1}\tdt a^n_{p_n})\subseteq(a^1_{k_1}\tdt a^n_{k_n})}m_\times(a^1_{p_1}\tdt a^n_{p_n})=\sum_{p_1=1}^{k_1}\dots\sum_{p_n=1}^{k_n} m_\times(a^1_{p_1}\tdt a^n_{p_n})
-    \end{eqnarray*} because all marginals are necessity functions, and the natural inclusion ordered is used for ranking their focal sets.
-\end{proof}
-
-\begin{proposition}
-    Let $m_\times$ be a joint mass obtained using \eqref{eq:joint_mass}. If $m_\times$ verifies
-    \begin{align*}
-        \sum_{a^1_p\subseteq a_k^1}\sum_{a^2_q\subseteq a_j^2}m_\times(a^1_p, a^2_q) = \sum_{p=1}^k\sum_{q=1}^j m_\times(a^1_p, a^2_q)
-    \end{align*}
-    for all marginal focal sets $(a^1_k)$ ,$(a^2_j)$ then its marginals masses correspond to necessity functions. The reverse implication is immediate if we use the natural inclusion order.
-\end{proposition}
-\begin{proof}
-    Let $m_\times$ be a joint mass obtained using \eqref{eq:joint_mass}, with marginal focal sets $(a^1_k)_{1\leqslant k\leqslant N_1}$, $(a^2_j)_{1\leqslant j\leqslant N_2}$ and marginal masses $m_1,m_2$. 
-    Let $\Bel_\times$ be its associated belief function verifying
-    \begin{align*}
-        \sum_{a^1_p\subseteq a^1_k}\sum_{a^2_q\subseteq a_j^2}m_\times(a^1_p, a^2_q) = \sum_{p=1}^k\sum_{q=1}^j m_\times(a^1_p, a^2_q)
-    \end{align*}
-    for all marginal focal sets $a^1_k,a^2_j$. It is easy to check that
-    \begin{align*}
-        \sum_{a^2_q\subseteq \X_2}m_\times(a^1_p, a^2_q)=m_1(a^1_p)=\sum_{q=1}^{N_2}m_\times(a^1_p, a^2_q)    
-    \end{align*}
-    (as we sum the H-volume over a complete partition of $[0,1]$). Thus it holds that:
-    \begin{align*}
-        \sum_{p=1}^k m_1(a^1_p) = \Bel_\times(a^1_k,\X_2)=\sum_{a^1_p\subseteq a_k^1}m_1(a^1_p)
-    \end{align*}
-    This result is not sufficient to prove the inclusion of focal sets (there could be a set $a^1_p\subseteq a^1_k,~p>k$ with the same mass value than another set $a^1_{p'}\not\subseteq a^1_k,~p' < k$). Let us show by induction that for all $(k, p)\in\opi1,N_1\cli^2$, $a_1\subset\dots\subset a_k$ and $a_p\not\subseteq a_k$ if $p>k$.
-    For the case $k=1$, it holds that:
-    \begin{align*}
-        \sum_{p=1}^1m_1(a^1_p) &= \sum_{a_p\subseteq a_1}m_1(a^1_p)\\
-        \Leftrightarrow m_1(a^1_1) &= m_1(a^1_1) + \sum_{a^1_p\subset a^1_1}m_1(a^1_p)\\
-        \Leftrightarrow 0 &=\sum_{a_p\subset a_1}m_1(a^1_p)
-    \end{align*}
-    which means that no focal set is a strict subset of $a_1$.
-    Suppose that there is $k\in\opi1,N_1\cli$ such that: $a_1\subset\dots\subset a_k$ and $\forall p>k,~a_p\not\subseteq a_k$. In particular, $a_{k+1}\not\subseteq a_k$. It holds that:
-    \begin{align*}
-        \sum_{p=1}^{k+1}m_1(a^1_p) &= \sum_{a^1_p\subseteq a^1_{k+1}}m_1(a^1_p)\\
-        \Leftrightarrow m_1(a^1_{k+1}) + \sum_{p=1}^{k} m_1(a^1_p) &= \sum_{a^1_p\subseteq a^1_{k+1}}m_1(a^1_p)\\
-        \Leftrightarrow m_1(a^1_{k+1}) + \sum_{a^1_p\subseteq a^1_k} m_1(a^1_p) &= \sum_{a^1_p\subseteq a^1_{k+1}}m_1(a^1_p)\\
-        \implies m_1(a^1_{k+1}) &= \sum_{\substack{a^1_p\subseteq a^1_{k+1} \\ a^1_p\not\subseteq a^1_k}} m_1(a^1_p)\\
-        \implies m_1(a^1_{k+1}) &= m_1(a^1_{k+1}) + \sum_{\substack{a^1_p\subset a^1_{k+1} \\ a^1_p\not\subseteq a^1_k}} m_1(a^1_p)\\
-        \Leftrightarrow 0 &= \sum_{\substack{a^1_p\subset a^1_{k+1} \\ a^1_p\not\subseteq a^1_k}} m_1(a^1_p)
-    \end{align*}
-    Which means that either there is no focal set that is a strict subset of $a^1_{k+1}$, or that they are all included in $a^1_{k}$. The first case is discarded as:
-    \begin{align*}
-        \sum_{a^1_p\subseteq a^1_{k+1}}m_1(a^1_p) &= \sum_{p=1}^{k+1}m_1(a^1_p)\\
-        \Leftrightarrow \sum_{a^1_p\subset a^1_{k+1}}m_1(a^1_p) &= \sum_{p=1}^{k}m_1(a^1_p)>0
-    \end{align*}
-    thus $a_1\subset\dots\subset a_{k+1}$.
-    Finally, it also holds that:
-    \begin{align*}
-        \sum_{a^1_p\subseteq a^1_{k+1}}m_1(a^1_p) &= \sum_{p=1}^{k+1}m_1(a^1_p)\\
-        \implies \sum_{\substack{a^1_p\subseteq a^1_{k+1} \\ p>k+1}} m_1(a^1_p) + \sum_{\substack{a^1_p\subseteq a^1_{k+1} \\ p\leqslant k+1}} m_1(a^1_p) &= \sum_{p=1}^{k+1}m_1(a^1_p)\\
-        \Leftrightarrow \sum_{\substack{a^1_p\subseteq a^1_{k+1} \\ p>k+1}} m_1(a^1_p) &= 0\\
-    \end{align*}
-    meaning that for all $p>k+1$, $a^1_p\not\subseteq a^1_{k+1}$ which ends the proof by induction. Because all focal sets form a nested family of sets, $\Bel_1$ is a necessity function. The proof for $\Bel $ is identical. 
-\end{proof}
-
-As the lower probabilities of $\M_{agg}$ and $\M_{mass}$ coincide on cylindrical sets, the following set equality holds for credal sets $\M_i$ whose lower probabilities are necessity functions:
-\begin{eqnarray}\label{eq:inclusion_necessity}
-    \M_{mass}(C, \M_i) \subseteq \M_{agg}(C, \M_i)
-\end{eqnarray}
-
-Without further assumptions, there is no inclusion relations between $\M_{robust}$ and $\M_{agg}$ or $\M_{mass}$. The following examples present cases where $\inf\M_{robust}<\inf\M_{agg}$ or $\inf\M_{mass}<\inf\M_{robust}$, proving that it is not always possible to get an (inner or outer) approximation of $\M_{robust}$ using $\M_{mass}$ or $\M_{agg}$.
-
-\begin{example}\label{ex:necessity}
-    Let $n=2$. Consider $\X_1=\{x^1_1, x^1_2\}$ and $\X_2=\{x^2_1, x^2_2\}$. Let us define two possibility distribution $\pi_1$ and $\pi_2$ over $\X_1$ and $\X_2$ respectively, such that:
-
-    \begin{eqnarray*}
-    \begin{cases}
-        \pi_1(x^1_1) = 0.1\\
-        \pi_1(x^1_2) = 1
-    \end{cases}
-    \qquad\text{ and }\qquad
-    \begin{cases}
-        \pi_2(x^2_1)=1\\
-        \pi_2(x^2_2)=0.1
-    \end{cases}
-    \end{eqnarray*}
-    
-    For $i\in\{1,2\}$, $\pi_i$ generates a necessity measure $\Nec_i$, a possibility measure $\Pi_i$ and a credal set $\M_i$. Let $P_1$ and $P_2$ be two probabilities respectively included in $\M_1$ and $\M_2$,  whose values are indicated in Table \ref{tab:proba_distrib_1}. 
-    
-    \begin{center}
-    \begin{tabular}{|c|c|c|}
-        \hline
-        $\X_1$ & $x^1_1$ & $x^1_2$\\
-        \hline\hline
-        $\Nec_1$ & 0 & 0.9\\
-        \hline
-        $P_1$  & 0.1 & 0.9\\
-        \hline
-        $\Pi_1$ & 0.1 & 1\\
-        \hline
-    \end{tabular}
-    \quad
-    \begin{tabular}{|c|c|c|}
-        \hline
-        $\X_2$ & $x^2_1$ & $x^2_2$\\
-        \hline\hline
-        $\Nec_2$ & 0.9 & 0\\
-        \hline
-        $P_2$  & 0.9 & 0.1\\
-        \hline
-        $\Pi_2$ & 1 & 0.1\\
-        \hline
-    \end{tabular}
-    \captionof{table}{Probability distributions over $\X_1$ and $\X_2$}
-    \label{tab:proba_distrib_1}
-    \end{center}
-
-    
-    We first consider here the Minimum copula $C_M(u,v)=\min(u,v)$. After joining $P_1$ and $P_2$ with $C_M$ to obtain a joint probability $P_\times$, let us compare its value with the value of the bivariate necessity function $C_M(\Nec_1, \Nec_2)$ on the same event $\{x_2\}\times\{y_1\}$.
-    \begin{eqnarray*}
-        \Bel_\times(\{x^1_2\}\times\{x^2_1\}) &=& C_M\left(\Nec_1(\{x^1_2\}), \Nec_2(\{x^2_1\})\right)\\
-        &=& \min(0.9,~0.9) = 0.9\\
-        P_\times(\{x^1_2\}\times\{x^2_1\}) &=& C_M(P_1(\X_1), P_2(\{x^2_1\})) - C_M(P_1(\{x^1_1\}),P_2(x^2_1))\\
-        &=& \min(1,~0.9) - \min(0.1,~0.9) = 0.8
-    \end{eqnarray*}
-    
-    We have $P_\times\in\M_{robust}, ~P_\times\not\in\M_{mass}$, which proves that ${M}_{robust}\not\subseteq\M_{mass}$.
-    
-    Let us now compare the lower bound of $\underline{P}$ of $\M_{robust}$ with that of $\M_{agg}$ but considering the \L ukasiewicz copula $C_L(u,v)=\max(u+v-1,0)$:
-    \begin{eqnarray*}
-        \Bel_\times(\{x^1_2\}\times\{x^2_1\}) &=& C_L(\Nec_1(\{x^1_2\}), \Nec_2(\{x^2_1\}))\\
-        &=& \max(0,~0.9 + 0.9 - 1) = 0.8\\
-        \low(\{x^1_2\}\times\{x^2_1\}) &=& \inf_{P_1\in\M_1, P_2\in\M_2}\{C_L(P_1(\{\X_1\}),~P_2(\{x^2_1\})) - C_L(P_1(\{x^1_1\}),\\
-        && P_2(\{x^2_1\}))\}\\
-        &=& \inf_{P_1\in\M_1, P_2\in\M_2}\{\max(0,~P_1(\X_1) + P_2(\{x^2_1\}) - 1)\\
-        && - \max(0,~P_1(\{x^1_1\}) + P_2(\{x^2_1\}) -1)\}\\
-        &=& \inf_{P_1\in\M_1, P_2\in\M_2}\{P_2(\{x^2_1\}) - \max(0,~P_1(\{x^1_1\}) + P_2(\{x^2_1\}) - 1 )\}\\
-        &=& \inf_{P_1\in\M_1, P_2\in\M_2}\max(P_2(\{x^2_1\}),\\
-        && P_2(\{x^2_1\})-P_1(\{x^1_1\}) - P_2(\{x^2_1\}) + 1 )\\
-        &\geqslant& \min(\inf_{P_2\in\M_2}\{P_2(\{x^2_1\})\},~\inf_{P_1\in\M_1}\{1-P_1(\{x^1_1\})\}) = 0.9
-    \end{eqnarray*}
-    
-    On this event $\low>Nel_\times$ and because the belief function is coherent then $\M_{mass}\not\subseteq\M_{robust}$ and $\M_{agg}\not\subseteq\M_{robust}$.
-\end{example}
-
-\subsection{Using the Natural Ordering of P-boxes}\label{subsec:pboxes}
-P-boxes are special cases of belief functions that resemble the most classical CDFs. They are defined with two CDF $\underline{F},~\overline{F}$ such that $\underline{F}\leqslant\overline{F}$, their focal sets $a_\alpha$ are of the form $a_\alpha=[\overline{F}^{-1}(\alpha), \underline{F}^{-1}(\alpha)]$ with $\alpha\in[0,1]$ \cite{destercke_unifying_2008}, where $F^{-1}$ is the inverse of a CDF (or pseudo-inverse if not properly defined). It it thus possible to define a natural order on the focal sets. Let $a_\alpha$ and $a_\beta$ be two focal sets of a p-box $[\underline{F},~\overline{F}]$, with $(\alpha,\beta)\in[0,1]^2$. The natural order $\preceq$ on the focal sets is defined as follows:
-\begin{align}
-    a_\alpha\preceq a_\beta ~\Leftrightarrow~ \overline{F}^{-1}(\alpha)\leqslant\overline{F}^{-1}(\beta) \text{ and } \underline{F}^{-1}(\alpha)\leqslant\underline{F}^{-1}(\beta)~\Leftrightarrow~ \alpha\leqslant\beta\label{eq:order_pbox}
-\end{align}
-
-As it is the case for necessity functions, it is possible to find cases where the sets $\M_{robust}\not\subseteq \M_{mass}$ or $\M_{agg}\not\subseteq\M_{mass}$.
-\begin{example}\label{ex:pbox}
-    Consider the following p-boxes:
-    \begin{center}
-    \begin{tabular}{|c|c|c|}
-        \hline
-        $\X_1$ & $x^1_1$ & $x^1_2$\\
-        \hline\hline
-        $\underline{F}_1$ & 0 & 1\\
-        \hline
-        $\overline{F}_1$ & 0.1 & 1\\
-        \hline
-    \end{tabular}
-    \qquad
-    \begin{tabular}{|c|c|c|}
-        \hline
-        $\X_2$ & $x^2_1$ & $x^2_2$\\
-        \hline\hline
-        $\underline{F}_2$ & 0.9 & 1\\
-        \hline
-        $\overline{F}_2$ & 1 & 1\\
-        \hline
-    \end{tabular}
-    \captionof{table}{P-boxes over $\X_1$ and $\X_2$}\label{tab:example_pbox}
-    \end{center}
-    The p-boxes from \ref{tab:example_pbox} lead to the same belief functions as in example \ref{ex:necessity}, thus leading to the same conclusions \ie ${M}_{robust}\not\subseteq\M_{mass}$, $\M_{mass}\not\subseteq\M_{robust}$ and $\M_{agg}\not\subseteq\M_{robust}$.
-\end{example}
-
-As stated previously, p-boxes are very closely related to CDF which can motivate one to apply Sklar's theorem (Theorem \ref{theorem:sklar}) to the lower CDF and upper CDF respectively. Given $n$ p-boxes $[\underline{F}_1,~\overline{F}_1],~\dots,~[\underline{F}_n,~\overline{F}_n]$ defined over $\X_1,\dots,\X_n$ and a copula $C$, we can define the lower and upper bounds of a $n$ variate CDF as:
-\begin{align*}
-    \underline{F}_\times&=C(\underline{F}_1,\dots, \underline{F}_n)\\
-    \overline{F}_\times&=C(\overline{F}_1,\dots, \overline{F}_n)
-\end{align*}
-Sklar's theorem states that $\underline{F}_\times$ and $\overline{F}_\times$ are both CDF, which means that $[\underline{F}_\times, \overline{F}_\times]$ is a multivariate p-box \cite{pelessoni_bivariate_2016, montes_sklars_2015} over cylindrical sets, defining a credal set $\M$. Clearly, the bounds of $\M_{robust}$ on cumulative events are the same as those of the credal set $\M$ induced by the multivariate p-box $[C(\underline{F}_1,\dots, \underline{F}_n),~C(\overline{F}_1,\dots, \overline{F}_n)]$.
-
-\begin{proposition}\label{prop:convexity_pbox}
-    When joining masses with a copula $C$ using the natural order on p-boxes \eqref{eq:order_pbox}, it holds that:
-    \begin{itemize}
-        \item if $C$ is D-convex, then $\M_{mass}\subseteq \M_{agg}$.
-        \item if $C$ is D-concave then $\M_{agg}\subseteq\M_{mass}$ 
-    \end{itemize}
-\end{proposition}
-Figure \ref{fig:copula_convex} illustrates the difference between $\Bel_\times$ and $\underline{P}$ in the case $n=2$.
-\begin{proof}
-    Consider $n$ p-boxes $[\underline{F}_1,~\overline{F}_1],~\dots,~[\underline{F}_n,~\overline{F}_n]$, a D-convex copula $C$ and the natural order on focal sets $(a^i_k)_{1\leqslant k \leqslant N_i}$ of each marginal p-box $[\underline{F}_i,~\overline{F}_i]$. We will denote $m_\times$ the joint mass functions obtained using equations \eqref{eq:joint_mass} and $\Bel_\times$ its associated belief function. We will also refer to $\underline{P}$ as the lower probability associated to $\M_{agg}$ from equation \eqref{eq:copula_on_lower_proba}.
-
-    When considering the natural order on focal sets of a p-box \eqref{eq:order_pbox}, it holds that for every focal set $a^i_p$, the set $\{k~|~a^i_k\subseteq a^i_p\}$ is composed of consecutive integers. In the following, we denote by $\underline{p}$ and $\overline{p}$ the lowest and highest indices of the focal sets included in $a^i_p$. This means that $\{a^i_{\underline{p}}, \dots, a^i_{\overline{p}}\}$ is the set of all focal sets included in $a^i_p$. 
-
-    Let $a^1_{p_1},\dots,a^n_{p_n}$ be focal sets of $m_1,\dots,m_n$. We note $u^i_p=\sum_{k=1}^p m_i(a^i_k)$. It then holds that:
-    \begin{align*}
-        \Bel_\times(a^1_{p_1}, \dots, a^n_{p_n}) &= \sum_{a^1_{k_1}\subseteq a^1_{p_1}}\dots\sum_{a^n_{k_n}\subseteq a^n_{p_n}}m_\times(a^1_{k_1},\dots, a^n_{k_n})\\
-        &= \sum_{k_1=\underline{p}_1}^{\overline{p}_1}\dots\sum_{k_n=\underline{p}_n}^{\overline{p}_n}m_\times(a^1_{k_1},\dots, a^n_{k_n})\\
-        &= \sum_{k_1=\underline{p}_1}^{\overline{p}_1}\dots\sum_{k_n=\underline{p}_n}^{\overline{p}_n}H_{u^1_{k_1-1},\dots,u^n_{k_n-1}}^{u^1_{k_1},\dots,u^n_{k_n}}
-    \end{align*}
-    As the H-volume is computed over a partitioning of $[u^1_{\underline{p}_1-1}, u^1_{\overline{p}_1}]\tdt[u^n_{\underline{p}_n-1} , u^n_{\overline{p}_n}]$, it is possible to greatly simplify the sums. The proof is the same as the proof of \eqref{eq:joint_mass} except that the CDF is computed over $[u^1_{\underline{p}_1-1}, u^1_{\overline{p}_1}]\tdt[u^n_{\underline{p}_n-1} , u^n_{\overline{p}_n}]$ and not $[0,1]^n$. This yields:
-    \begin{align*}
-        \Bel_\times(a^1_{p_1}, \dots, a^n_{p_n}) = H_{u^1_{\underline{p}_1-1},\dots,u^n_{\underline{p}_n-1}}^{u^1_{\overline{p}_1},\dots,u^n_{\overline{p}_n}}
-    \end{align*}
-    On the other hand, it holds that:
-    \begin{align*}
-        \underline{P}(a^1_{p_1}, \dots, a^n_{p_n}) &= C(\Bel_1(a^1_{p_1}),\dots,\Bel_n(a^n_{p_n}))\\
-        &= C(\sum_{k_1=\underline{p}_1}^{\overline{p}_1} m_1(a^1_{k_1}), \dots, \sum_{k_n=\underline{p}_n}^{\overline{p}_n} m_1(a^n_{k_n}))\\
-        &= C(u^1_{\overline{p}_1} - u^1_{\underline{p}_1-1}, \dots, u^n_{\overline{p}_n} - u^n_{\underline{p}_n-1})
-    \end{align*}
-    Using equation \eqref{eq:convex_diff_hvol} yields:
-    \begin{align*}
-        \Bel_\times(a^1_{p_1}, \dots, a^n_{p_n}) \geqslant \underline{P}(a^1_{p_1}, \dots, a^n_{p_n})
-    \end{align*}
-    The inequality is reversed if $C$ is D-concave, which concludes the proof.
-\end{proof}
-
-\begin{figure}[!ht]
-    \centering
-    \begin{tikzpicture}
-        \begin{axis}[%
-            xlabel=$u_1$,
-            ylabel=$u_2$,
-            xmin=0, xmax=1,
-            ymin=0, ymax=1,
-            xtick={0.35, 0.55,  0.9, 1},
-            xticklabels={$u^1_{\overline{p}_1} - u^1_{\underline{p}_1-1}~~$, $u^1_{\underline{p}_1-1}$, $u^1_{\overline{p}_1}$, $1$},
-            ytick={0, 0.3, 0.5,  0.8, 1},
-            yticklabels={$0$, $u^2_{\overline{p}_2} - u^2_{\underline{p}_2-1}$, $u^2_{\underline{p}_2-1}$, $u^2_{\overline{p}_2}$, $1$},
-            xticklabel style={rotate=30},
-            xtick pos=left,
-            ytick pos=left,],
-            
-            \addplot [domain=0:1,samples=40,draw opacity=0.3,color=gray]({x},{1-x});
-            \addplot [domain=0:1,samples=40,draw opacity=0.3,color=gray]({x},{1.2-x}); 
-            \addplot [domain=0:1,samples=40,draw opacity=0.3,color=gray]({x},{1.4-x}); 
-            \addplot [domain=0:1,samples=40,draw opacity=0.3,color=gray]({x},{1.6-x}); 
-            \addplot [domain=0:1,samples=40,draw opacity=0.3,color=gray]({x},{1.8-x});
-
-            \node[rotate=-45, fill=white, rounded corners=2pt, inner sep=1pt] (x) at (0.1, 0.9) {\color{gray}0};
-            \node[rotate=-45, fill=white, rounded corners=2pt, inner sep=1pt] (x) at (0.3, 0.9) {\color{gray}0.2};
-            \node[rotate=-45, fill=white, rounded corners=2pt, inner sep=1pt] (x) at (0.5, 0.9) {\color{gray}0.4};
-            \node[rotate=-45, fill=white, rounded corners=2pt, inner sep=1pt] (x) at (0.7, 0.9) {\color{gray}0.6};
-            \node[rotate=-45, fill=white, rounded corners=2pt, inner sep=1pt] (x) at (0.9, 0.9) {\color{gray}0.8};
-            
-            
-            \node (a) at (0.9, 0.8) {};
-            \node (b) at (0.55, 0.8) {};
-            \node (c) at (0.55, 0.5) {};
-            \node (d) at (0.9, 0.5) {};
-            \draw[ultra thick, black] (c.center) rectangle (a.center) node[pos=0.5]{$\Bel_\times$};
-            
-            \node (e) at (0, 0.8) {};
-            \node (f) at (0, 0.5) {};
-            \node (g) at (0.9, 0) {};
-            \node (h) at (0.55, 0) {};
-            \draw[thick, dashed, black] (e.center) -- (b.center);
-            \draw[thick, dashed, black] (f.center) -- (c.center);
-            \draw[thick, dashed, black] (g.center) -- (d.center);
-            \draw[thick, dashed, black] (h.center) -- (c.center);
-            
-            \node (i) at (0.35, 0.3) {};
-            \node (j) at (0, 0) {};
-            \draw[ultra thick, black] (i.center) rectangle (j.center) node[pos=0.5]{$\underline{P}$};
-            
-            \node (m) at (0.55, 0.45) {};
-            \node (n) at (0.9, 0.45) {};
-            \node (o) at (0.5, 0.8) {};
-            \node (p) at (0.5, 0.5) {};
-            \draw [stealth-stealth, thick, black] (m.center) -- (n.center) node[pos=0.5, below]{$u^1_{\overline{p}_1} - u^1_{\underline{p}_1-1}$};
-            \draw [stealth-stealth, thick, black] (o.center) -- (p.center) node[pos=0.5, left]{$u^2_{\overline{p}_2} - u^2_{\underline{p}_2-1}$};
-        
-        \end{axis}
-    \end{tikzpicture}
-    \caption{Bird view of the \L ukaciewicz 2-copula $C_L$, where the gray lines are the isolines of the copula. $\Bel_\times$ and $\underline{P}$ are represented in the case where the marginals are p-boxes. The thick rectangles represent the bounds on which to compute the H-volume. Numbers $u^i_k$ use the notation of the proof of proposition \ref{prop:convexity_pbox}.}
-    \label{fig:copula_convex}
-\end{figure}
-
-\subsection{Joining Different Types of Models}\label{subsec:multiple_models}
-Different models can be used for multiple sources of uncertainty. When some marginals are modeled using possibility distributions and other by p-boxes, it is still possible to derive results similar as those of sections \ref{subsec:necessity_functions} and \ref{subsec:pboxes} if we use natural orders on the marginal focal sets. 
-\begin{proposition}
-    When joining marginal credal sets induced by a mix of possibility distributions and p-boxes using a copula $C$ the following inclusion hold:
-    \begin{itemize}
-        \item if $C$ is D-convex, then $\M_{mass}\subseteq \M_{agg}$.
-        \item if $C$ is D-concave then $\M_{agg}\subseteq\M_{mass}$ 
-    \end{itemize}
-\end{proposition}
-
-\begin{proof}
-    The proof is similar to the proof of proposition \ref{prop:convexity_pbox} using the fact that for every focal set $a^i_p$ of a possibility distribution, we can still define $\underline{p}_i$ and $\overline{p}_i$ as $\underline{p}_i=1$ and $\overline{p}_i=p$. The rest of the proof is identical.
-\end{proof}
-
-\subsection{Using Other Orders}
-Instead of considering the natural ordering, or when such an order does not exists, one could consider an arbitrary order between focal sets when defining $\M_{mass}$ as in \eqref{eq:joint_mass}. A few questions arise: is there always an arbitrary order allowing $\M_{robust}\subseteq\M_{mass}$? If such an order exists, is it possible to explicit it in advance, \ie without computing the lower bounds of the credal sets?
-
-It appears that an order allowing $\M_{robust}\subseteq\M_{mass}$ does not always exist. To prove it, let us find an example where no order allows either inclusion.
-\begin{example}
-Consider the Clayton copula for $\theta=2$ and $n=2$:
-\begin{eqnarray*}
-    \forall (u_1,u_2)\in\mathbb{R}^2\backslash(0,0), ~C(u_1,u_2)=\frac{u_1u_2}{\sqrt{{u_1}^2+{u_2}^2-{u_2}^2{u_2}^2}}
-\end{eqnarray*}
-and $C(0,0)=0$ by continuity (we simplified the expression of the copula given in table \ref{tab:familiy_of_copula}). Let us consider $\X_1=\{x^1_1,\, x^1_2,\, x^1_3\}$, $\X_2=\{x^2_1,\, x^2_2,\, x^2_3\}$ and two possibility distributions $\pi_1$, $\pi_2$ over $\X_1$ and $\X_2$ respectively:
-\begin{eqnarray*}
-    \pi_1(x^1_1)=\pi_2(x^2_1)=0.2 \qquad \pi_1(x^1_2)=\pi_2(x^2_2)=1 \qquad \pi_1(x^1_3)=\pi_2(x^2_3)=0.7 
-\end{eqnarray*}
-and the marginal credal sets $\M(\pi_1)$, $\M(\pi_2)$ they induce. We note the focal sets as $a^1_1=\{x^1_2\},~a^1_2=\{x^1_2,\, x^1_3\},~a^1_3=\{x^1_1,\,x^1_2,\,x^1_3\}$ and $a^2_1=\{x^2_2\},~a^2_2=\{x^2_2,\, x^2_3\},~a^2_3=\{x^2_1,\, x^2_2,\, x^2_3\}$. By joining $\M(\pi_1)$ and $\M(\pi_2)$ using $C$, we can obtain the lower probability $\low$ of $\M_{robust}$ using equation \eqref{eq:robust_set}, and a total of 6 belief functions $\Bel^{\preceq_1,\preceq_2}_\times$ using equation \eqref{eq:joint_mass} depending on the orders $\preceq_1, \preceq_2$ used to join the marginal masses. For instance if $\preceq_1$ is such that $a^1_3\preceq_1 a^1_1 \preceq_1 a^1_2$ and $\preceq_2$ such that $a^2_1 \preceq_2 a^2_2 \preceq_2 a^2_3$, then the bivariate mass $m_\times$ would be defined as follows:
-\begin{eqnarray*}
-    m_\times(a^1_3\times a^2_1) &=& C(m_1(a^1_3), m_2(a^2_1))\\
-    m_\times(a^1_1\times a^2_1) &=& C(m_1(a^1_3)+m_1(a^1_1), m_2(a^2_1)) - C(m_1(a^1_3), m_2(a^2_1))\\
-    m_\times(a^1_3\times a^2_2) &=& C(m_1(a^1_3), m_2(a^2_1) + m_2(a^2_2)) - C(m_2(a^1_3), m_2(a^2_1))\\
-    &\dots&
-\end{eqnarray*}
-
-If we consider the two events $E_1=\{x^1_2\}\times\{x^2_2,~x^2_3\}$ and $E_2=\{x^1_2,~x^1_3\}\times\{x^2_2\}$, it is possible to show that $\low(E_1)=\low(E_2)\approx0.131$ (by symmetry of the problem) which is obtained for:
-\begin{align*}
-    &P_1(x^1_1)=0, \qquad&P_1(x^1_2)=0.3, \qquad&P_1(x^1_3)=0.7,\\
-    &P_2(x^2_1)=0.2, \qquad&P_2(x^2_2)=0.3, \qquad&P_2(x^2_3)=0.5
-\end{align*}
-for $E_1$, and similarly with $P_1$ and $P_2$ reversed for $E_2$. Those values were estimated by running simulations, but their exact value can be computed by solving an optimization problem as $C$ is differentiable (although it is a bit tedious to compute). Then for all orders $\preceq_1,~\preceq_2$ on the focal sets of $\pi_1$ and $\pi_2$ it holds:
-
- \begin{align*}
-    \begin{cases}
-        \begin{split}
-            \Bel_\times^{\preceq_1,\preceq_2}(E_1) \leqslant& \low(E_1)\\
-            \Bel_\times^{\preceq_1,\preceq_2}(E_2) >& \low(E_2)
-        \end{split}
-    \end{cases}
-    \qquad\text{ or }\qquad
-    \begin{cases}
-        \begin{split}
-            \Bel_\times^{\preceq_1,\preceq_2}(E_1) >& \low(E_1)\\
-            \Bel_\times^{\preceq_1,\preceq_2}(E_2) \leqslant& \low(E_2)
-        \end{split}
-    \end{cases}
-\end{align*}
-
-The table \ref{tab:beliefs_orders} shows a rounded value of $\Bel^{\preceq_1,\preceq_2}_\times$ for all orders for events $E_1$, $E_2$.
-
-\begin{center}
-\begin{tabular}{|c||c|c|c|}
-\hline
-$\Bel^{\preceq_1,\preceq_2}_\times(\mathbf{E_1})$ & $a^2_3\preceq_2a^2_2\preceq_2a^2_1$ & $a^2_3\preceq_2a^2_1\preceq_2a^2_2$ & $a^2_2\preceq_2a^2_3\preceq_2a^2_1$ \\ \hline\hline
-$a^1_3\preceq_1a^1_2\preceq_1a^1_1$ & 0.296 & 0.296 & 0.224 \\ \hline
-$a^1_3\preceq_1a^1_1\preceq_1a^1_2$ & 0.254 & 0.254 & 0.240 \\ \hline
-$a^1_2\preceq_1a^1_3\preceq_1a^1_1$ & 0.296 & 0.296 & 0.224 \\ \hline
-$a^1_1\preceq_1a^1_3\preceq_1a^1_2$ & \textbf{0.131} & \textbf{0.131} & 0.279 \\ \hline
-$a^1_2\preceq_1a^1_1\preceq_1a^1_3$ & 0.291 & 0.291 & 0.216 \\ \hline
-$a^1_1\preceq_1a^1_2\preceq_1a^1_3$ & \textbf{0.131} & \textbf{0.131} & 0.279 \\ \hline
-\end{tabular}
-
-\vspace{0.5cm}
-
-\begin{tabular}{|c||c|c|c|}
-\hline
-$\Bel^{\preceq_1,\preceq_2}_\times(\mathbf{E_1})$ & $a^2_1\preceq_2a^2_3\preceq_2a^2_2$ & $a^2_2\preceq_2a^2_1\preceq_2a^2_3$ & $a^2_1\preceq_2a^2_2\preceq_2a^2_3$ \\ \hline\hline
-$a^1_3\preceq_1a^1_2\preceq_1a^1_1$ & 0.259 & 0.180 & 0.180 \\ \hline
-$a^1_3\preceq_1a^1_1\preceq_1a^1_2$ & 0.208 & 0.270 & 0.270 \\ \hline
-$a^1_2\preceq_1a^1_3\preceq_1a^1_1$ & 0.259 & 0.180 & 0.180 \\ \hline
-$a^1_1\preceq_1a^1_3\preceq_1a^1_2$ & 0.251 & 0.293 & 0.293 \\ \hline
-$a^1_2\preceq_1a^1_1\preceq_1a^1_3$ & 0.236 & 0.218 & 0.218 \\ \hline
-$a^1_1\preceq_1a^1_2\preceq_1a^1_3$ & 0.251 & 0.293 & 0.293 \\ \hline
-\end{tabular}
-
-\vspace{1cm}
-
-\begin{tabular}{|c||c|c|c|}
-\hline
-$\Bel^{\preceq_1,\preceq_2}_\times(\mathbf{E_2})$ & $a^2_3\preceq_2a^2_2\preceq_2a^2_1$ & $a^2_3\preceq_2a^2_1\preceq_2a^2_2$ & $a^2_2\preceq_2a^2_3\preceq_2a^2_1$ \\ \hline\hline
-$a^1_3\preceq_2a^1_2\preceq_2a^1_1$ & 0.296 & 0.254 & 0.296 \\ \hline
-$a^1_3\preceq_1a^1_1\preceq_1a^1_2$ & 0.296 & 0.254 & 0.296 \\ \hline
-$a^1_2\preceq_1a^1_3\preceq_1a^1_1$ & 0.224 & 0.240 & 0.224 \\ \hline
-$a^1_1\preceq_1a^1_3\preceq_1a^1_2$ & 0.259 & 0.208 & 0.259 \\ \hline
-$a^1_2\preceq_1a^1_1\preceq_1a^1_3$ & 0.180 & 0.270 & 0.180 \\ \hline
-$a^1_1\preceq_1a^1_2\preceq_1a^1_3$ & 0.180 & 0.270 & 0.180 \\ \hline
-\end{tabular}
-
-\vspace{0.5cm}
-
-\begin{tabular}{|c||c|c|c|}
-\hline
-$\Bel^{\preceq_1,\preceq_2}_\times(\mathbf{E_2})$ & $a^2_1\preceq_2a^2_3\preceq_2a^2_2$ & $a^2_2\preceq_2a^2_1\preceq_2a^2_3$ & $a^2_1\preceq_2a^2_2\preceq_2a^2_3$ \\ \hline\hline
-$a^1_3\preceq_2a^1_2\preceq_2a^1_1$ & \textbf{0.131} & 0.291 & \textbf{0.131} \\ \hline
-$a^1_3\preceq_1a^1_1\preceq_1a^1_2$ & \textbf{0.131} & 0.291 & \textbf{0.131} \\ \hline
-$a^1_2\preceq_1a^1_3\preceq_1a^1_1$ & 0.279 & 0.216 & 0.279 \\ \hline
-$a^1_1\preceq_1a^1_3\preceq_1a^1_2$ & 0.251 & 0.236 & 0.251 \\ \hline
-$a^1_2\preceq_1a^1_1\preceq_1a^1_3$ & 0.293 & 0.218 & 0.293 \\ \hline
-$a^1_1\preceq_1a^1_2\preceq_1a^1_3$ & 0.293 & 0.218 & 0.293 \\ \hline
-\end{tabular}
-\captionof{table}{Value of $\Bel^{\preceq_1,\preceq_2}_\times$ for $E_1$ and $E_2$ depending on the arbitrary orders $\preceq_1$, $\preceq_2$. Values in bald font represent the minimal value attained by the different belief functions, where $\Bel^{\preceq_1,\preceq_2}_\times(E)=\low(E)$.}
-\label{tab:beliefs_orders}
-\end{center}
-
-Answering the question ``if an order allowing $\M_{robust}\subseteq\M_{mass}$ exists, is it possible to explicit it in advance?'' is not as trivial. Indeed the order will be dependent of the copula. We ran simulations where we created different possibility distributions (for $card(\X_1)=card(\X_2)\in\{3,4\}$), sampled the marginal credal sets and joined them with a copula $C$ to get $\inf\M_{robust}$ and compared its values with the one of $\Bel^{\preceq_1,\preceq_2}$.
-\begin{itemize}
-	\item When running the simulation with the lower Fréchet–Hoeffding copula $C(u,v)=\max(0,u+v-1)$, we observe that a specific couple of order always works: $\preceq_1:~a^1_3\preceq_1a^1_2\preceq_1a^1_1$ and $\preceq_2~a^2_3\preceq_2a^2_2\preceq_2a^2_1$, while other orders do not permit the inclusion $\M_{robust}\subseteq\M_{mass}$ all the time.
-\end{itemize}
-The order is thus copula dependent.
-
-We ran simulation for the lower and upper Fréchet-Hoeffding copulas, as well as with the copulas presented in table \ref{tab:familiy_of_copula}. We were only able to find examples where no orders were working for the Ali-Mikail-Haq copula with $\theta>0$, for the Gumbel copula and for Clayton copulas. 
-\end{example}
 \pagebreak

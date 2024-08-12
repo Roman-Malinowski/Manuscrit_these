@@ -70,15 +70,10 @@
 \DeclareMathOperator{\CDF}{cdf}
 \tikzset{
     declare function={
-        f_inf(\x,\m,\s)=1/(1 + exp(-0.07056*((\x-\m-3)/\s)^3 - 1.5976*(\x-\m-3)/\s));
+        cdf_erf(\x,\m,\s)=1/(1 + exp(-0.07056*((\x-\m-3)/\s)^3 - 1.5976*(\x-\m-3)/\s));
     }
 }
 
-\tikzset{
-    declare function={
-        f_sup(\x,\m,\s)=1/(1 + exp(-0.07056*((\x-\m+3)/\s)^3 - 1.5976*(\x+3-\m)/\s));
-    }
-}
 %%%%%%%%%%%%%%%%% Defining the properties of the frames for theorems etc %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mdfsetup{skipabove=\topskip, skipbelow=\topskip}  % Define Skips between the frames and text above and bellow
 
@@ -248,11 +243,13 @@
 
 \input{Chapters/2_mathematical_representation_of_uncertainty}
 
-\input{Chapters/3_propragating_the_uncertainty_to_stereo_images}
+\input{Chapters/3_joining_credal_sets_using_copulas}
 
-\input{Chapters/4_epistemic_uncertainty_in_stereo_matching}
+\input{Chapters/4_propragating_the_uncertainty_to_stereo_images}
 
-\input{Chapters/5_results}
+\input{Chapters/5_epistemic_uncertainty_in_stereo_matching}
+
+\input{Chapters/6_results}
 
 \input{Chapters/Conclusion}
 
