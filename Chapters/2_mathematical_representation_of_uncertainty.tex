@@ -1,7 +1,7 @@
 \chapter{Mathematical Representations of Uncertainty}\label{chap:representation_of_uncertainty}
 
 \section{Introduction}
-This chapter takes some distance from the stereo vision problem presented previously, and instead describe more formally different representations of uncertainty and the tools that can be used to manipulate them. In this thesis, we consider classical probabilities (sec \ref{sec:probabilities}), possibility distributions (sec \ref{sec:possibilities}) and p-boxes (sec \ref{sec:pboxes}) to model uncertainty. We also consider the case where we consider multiple sources of uncertainty simultaneously. In this setting, the dependency between the different sources must be taken into account. We thus present a dependency model called copulas in section \ref{sec:copulas}, and some of its properties. The thorough presentation of those concepts will then be put into relations in chapter \ref{chap:joining_credal_sets}. 
+This chapter takes some distance from the stereo vision problem presented previously, and instead describe more formally different representations of uncertainty and the tools that can be used to manipulate them. In this thesis, we consider classical probabilities (section \ref{sec:probabilities}), possibility distributions (section \ref{sec:possibilities}) and p-boxes (secction \ref{sec:pboxes}) to model uncertainty. We also consider the case where we consider multiple sources of uncertainty simultaneously. In this setting, the dependency between the different sources must be taken into account. We thus present a dependency model called copulas in section \ref{sec:copulas}, and some of its properties. The thorough presentation of those concepts will then be put into relations in chapter \ref{chap:joining_credal_sets}. 
 
 \section{Notations}
 We introduce here a few notations that will be used in the rest of this chapter. \todoroman{A ajouter au fur et à mesure, peut être déplacer au début de la thèse, à côté du glossaire.}
@@ -26,8 +26,9 @@ This list is not exhaustive. Additionally, those different models can sometimes 
 At the end of the day, choosing one model over another is not always straightforward. It requires to be aware of the type of uncertainty faced, of the strengths and limitations of each model, of the tools available to manipulate the models \etc When it comes to less common models cited above, it fundamentally requires to be aware of the existence of such models, which is not always the case for non-specialists. During this thesis, we tried to promote less common models, especially possibility distributions. We did so by presenting real life cases where they could be used while improving uncertainty modeling in the field of stereo-photogrammetry (see chapters \ref{chap:propagating} and \ref{chap:epistemic_uncertainty}). \comroman{Je pense que cette remarque devrait plutôt se retrouver dans l'intro de la thèse, car elle s'éloigne de ce qui suit. Peut être même que les deux paragraphes pourraient être déplacés dans l'intro}
 
 \subsection{Probabilities}\label{sec:probabilities}
-Probability measures are a classical framework to represent uncertainty. There are fitted to represent stochastic uncertainty, \ie uncertainty regarding events that can get a different result each time we run an experiment or acquire a measure (typically, noise on a sensor). We remind here basic definitions regarding probability distributions.
+Probability measures are a classical framework to represent uncertainty. There are multiple ways of interpreting them, mainly with a \textit{frequentist} approach, or a \textit{Bayesian} approach. From a frequentist point of view, probabilities are well fitted to represent stochastic uncertainty, \ie uncertainty regarding events that can get a different result each time we run an experiment or acquire a measure (typically, noise on a sensor). From a \textit{Bayesian} point of view, probabilities represent a state of knowledge or degree of belief, and can be updated with additional information. This leads to the notion of prior and posterior probability that will not be considered in this thesis.
 
+We remind here basic definitions regarding probability distributions.
 \begin{definition}[Probability Space]\label{def:probability_space}
     We call a probability space $(\X,~\mathcal{A},~P)$ a tuple where:
     \begin{itemize}
@@ -99,6 +100,10 @@ As stated previously, probability measures are fitted to represent stochastic un
         P(Y=0)=P(X=1)+P(X=3)=\frac{2}{3},\qquad P(Y=1)=P(X=2) = \frac{1}{3}
     \end{equation*}
     Which is clearly not the density of an uniform distribution. By supposing we have no preferences on the values of a variable, we actually deduced preferences on the values of another variable. One should use an uniform distribution only when they are certain that all values are equiprobable. This is because uniform distributions are well suited for representing statements like ``all values have the same likelyhood'' but not for statements like ``I have no information over the values, and thus no preference''. Indeed, a probability distribution actually contains a lot of information about a random variable, which is not suited to represent epistemic uncertainty.
+    
+    \begin{remark}
+        From a Bayesian point of view, a probability can also represent a degree of belief, allowing them to represent epistemic uncertainty and not only stochastic uncertainty, in theory. However, it does not solve the expressiveness problem raised by this example. Bayesians are still reasoning with probabilities, which make no difference between ``I have no preference between these events'' and ``these events are equiprobable''. Even though they can update their prior with additional information, this would not fix the problem presented here. In the absence of additional information, basing a decision on the prior would lead to debatable conclusions.
+    \end{remark}
 \end{example}
 
 \subsection{Imprecise Probabilities}\label{sec:imprecise_probabilities}
@@ -142,7 +147,7 @@ Conversely, we can define lower and upper bounds from a set of probabilities $\M
 \end{align*}
 
 Although, it is not required, we usually assume credal sets verify additional properties expressed as follows:
-\begin{definition}[Coherence and Avoiding sure loss]
+\begin{definition}[Coherence and Avoiding sure loss]\label{def:coherence_sure_loss}
     A credal set $\M$ is said to avoid sure loss if it contains at least one probability measure, \ie if
     \begin{equation}
         \M \neq \emptyset\label{eq:avoid_sure_loss}
@@ -195,7 +200,7 @@ When constructing credal sets, it is common to possess a non convex set of proba
 \subsection{Belief Functions}\label{sec:belief_functions}
 A special case of imprecise probabilities are belief functions, which we will detail in this section. First, we will introduce a key concept that goes along belief functions: mass distribution functions. We will then derive belief functions from it.
 
-\begin{definition}[Mass distribution function]
+\begin{definition}[Mass distribution function]\label{def:mass_distribution_function}
     Let $\X$ be a frame of discernment and $2^\X$ its power set. A mass distribution function (or basic probability assignment \cite{shafer_mathematical_1976}) is a function $m:2^\X\rightarrow[0,1]$ \st:
     \begin{align}
         m(\emptyset) =& 0\label{eq:mass_emptyset}\\
