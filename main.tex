@@ -1,9 +1,13 @@
 %========================= Classe du Document ==========================
 \documentclass[a4paper,fleqn,12pt,openright]{report}
 %============================= Packages ================================
-\usepackage[T1]{fontenc}
-\usepackage[hidelinks]{hyperref} % Cick on citations
+
+\usepackage[english,french]{babel}
 \usepackage[utf8]{inputenc}
+\usepackage{ae,lmodern} % Vectorial font
+\usepackage[T1]{fontenc}  % Zotero must export bib.tex in Western instead of UTF to avoid problem for \THORN characters
+
+\usepackage[hidelinks]{hyperref} % Cick on citations
 \usepackage[skip=10pt, indent=20pt]{parskip}  % Paragraph spacing
 \usepackage{setspace} % Line spacing
 \usepackage[hypcap=false]{caption} % When using hypcap=false, hyperref will link to the caption and not the float environment. This is because using \captionof outside a float env, it generates warnings
@@ -200,6 +204,9 @@
 \def\wrt{w.r.t\onedot} \def\dof{d.o.f\onedot}
 \def\iid{i.i.d\onedot} \def\wolog{w.l.o.g\onedot}
 \def\etal{\emph{et al}\onedot}
+\def\vs{\emph{vs}\onedot}
+
+\def\blankpage{\newpage\null\thispagestyle{empty}\newpage}
 
 \makeatother
 
