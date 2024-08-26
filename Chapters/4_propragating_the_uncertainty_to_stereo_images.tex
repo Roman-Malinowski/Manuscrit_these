@@ -1,10 +1,10 @@
 \chapter{Propagating the Uncertainty of Stereo Images through a Cost Function}\label{chap:propagating}
 \todoroman{Mettre du contexte avec les objectifs, les hypothèses}
 \todoroman{Loïc se demande à juste titre si le Chapitre 4 et 5 doivent bien se suivre ou s'ils doivent être vus comme deux applications différentes. A y réfléchir et à trancher.}
-This chapter details the work conducted on the propagation of uncertainty from images into the cost curves of dense matching problems. We consider a simple model of uncertainty on the input images, a dependency model between the uncertain intensities of the images, and estimate the resulting uncertainty on the output cost curves. This chapter takes up work and data already published \cite{malinowski_copulas_2022, malinowski_uncertainty_2023, malinowski_robust_2024}.
+This chapter details the work conducted on the propagation of uncertainty from images into the cost curves of dense matching problems. We consider a simple model of uncertainty on the input images, a dependency model between the uncertain intensities of the images, and estimate the resulting uncertainty on the output cost curves. This chapter takes up work and data already published \cite{malinowski_copulas_2022, malinowski_uncertainty_2023}.
 
 \section{Hypothesis for Uncertainty in Stereo Matching}\label{sec:sources_of_uncertainty}
-\todoroman{Faire référence à une section 'Sources of Uncertainty' présentées dans l'intro/Chap 1 de la thèse. }
+\todoroman{Faire référence à une section 'Sources of Uncertainty' présentées dans l'intro/Chap 1 de la thèse.}
 \todoroman{Points à aborder: Atmospheric correction, vibration, resolution of a pixel, discretization.
 CO3D mission will not have the epipolar line correction problem that is encountered with pleiades images.
 Epipolar line rectification for Pléiades is a problem that is not dealt here.}
@@ -27,6 +27,10 @@ We consider the Sum of Absolute Differences (SAD) as our cost function, defined 
     \mathrm{SAD}(W_L, W_R) = \sum_{(p_i, q_i)\in (W_L, W_R)}|I_L(p_i) - I_R(q_i)|\label{eq:SAD}
 \end{align}
 where $p_i$ and $q_i$ are pixels at the same position $i$ in their patch. For convenience purposes, we will refer to the Absolute Difference as AD. This cost function is not ideal compared to more complex state-of-the-art cost function (\cite{zbontar_stereo_2016}, \cite{laga_survey_2022}), but it is preferred here to focus on simplicity and to ease didactic explanations regarding uncertainty propagation. An illustration of the SAD cost function can be found in Figure \ref{fig:SAD}. Furthermore, we will not consider in this chapter the use of Semi Global Matching (or similar regularization methods), as it necessitates many operations due to its recursive formulation and thus greatly increases complexity for the uncertainty propagation. We diverge from state-of-the-art methods to keep explanations as simple as possible, however the modeling of uncertainty for more advanced cost functions and SGM methods will be considered in chapter \ref{chap:epistemic_uncertainty}.
+
+\begin{remark}
+    Although the SAD is not the best performing cost function for dense matching, it is both fast and easily parallelizable. It is often use for comparison in cost-based stereo algorithms \cite{hirschmuller_evaluation_2007, zbontar_stereo_2016} Propagating its uncertainty can thus be interesting as a first quick estimation of similarity. Moreover, the SAD is used in other applications, such as motion estimation or image/video compression for instance \cite{richardson_h264_2006}. The reach of this is thus not limited to stereo matching. 
+\end{remark}
 
 An ideal cost function would generate a cost curve with a unique minimum corresponding to the correct disparity. In practice, such a function is hard to determine. There is no guarantee that the minimum is unique, nor that it corresponds to the correct disparity. 
 

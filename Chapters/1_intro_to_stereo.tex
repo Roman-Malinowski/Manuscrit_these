@@ -43,15 +43,15 @@ In order to produce a worldwide \acrshort{dsm} with $1$m resolution by 2025, the
 
 One a side note, when an image is acquired both in panchromatic and RGB mode, it is possible to leverage the high resolution of the panchromatic image to improve that of the color image. This fusion technique is called \textit{pansharpening} \cite{loncan_hyperspectral_2015}. We use this technique for clarity in figures and other illustrations of this thesis. It is important to remember that the processed images are the panchromatic images, and not the pansharpened ones which are only used for the final visualization.
 
-\section{Sensors and Georegistration}
+\section{Sensors and Geolocation}\label{sec:sensors_rpc}
 Different types of sensors can be used to acquire satellite images. Below is detailed a (non-exhaustive) list of sensors of interest \cite{cnes_imagerie_2008}
 
 \textbf{CCD matrix sensor}. CDD are classical sensors used, for instance, in current digital cameras. They possess multiple advantages, such as good geometrical quality as all pixels are acquired simultaneously, or the possibility to perform many acquisitions with various angles possible. However, CCD sensors with small pixel sizes are technologically difficult to built. Augmenting the number of pixels complicates the shutter function, and requires more radiometric calibration as one pixel equals one sensor. It is also more complex to acquire long segments of an image. CO3D satellites will use this technology.
 
 \textbf{Push-broom sensor}. Those image sensors are only composed of a single cell row, acquiring simultaneously radiometric information alongside a line perpendicular to the direction of the satellite. As only one line of cells is needed, push-broom sensors are simple systems which can capture images continuously, while guarantying good geometrical quality along the rows of the images. A variation of those sensors are TDI sensors (Time Delay Integration). Those sensors function as a push-broom except that each row has the ability to transfer its photon charges to the next row. This allows to capture signals over a longer period of time,  thus reducing the signal-to-noise ratio. Harder to produce, TDI sensors also require a precise control of the satellite so that observed objects stay within a column of the TDI sensor. They are used in Pléiades satellites for instance.
 
-\todoroman{Parler de l'incertitude des RPC, peut être dans une autre partie ? Et dire dans le scope of this PhD qu'on regarde pas cette incertitude. Regarder "Developement and Implementation of Rational Polynomial Coefficient Algorithms for Georeferencing Cartosat-1 Data", et "Metric Information Extraction from Spot Images and the Role of Polynomial Mapping Functions" de Baltsavias et Stallmann}
-A crucial part of satellite imagery is the ability to perform georeferencement, or georegistratation, of every pixel, \ie, locate their coordinates in an Earth system of coordinates such as latitude and longitude. Physical models possess high localisation accuracy, but are sensor-specific and are computationally complex. For stereo reconstruction,  generalized sensor models are preferred. Specifically, we will focus on \acrfull{rpc} \cite{grodecki_ikonos_2001} used by the \acrshort{co3d} and Pléiades satellites. \acrshort{rpc} models are provided alongside images. Sometimes called Rational Function Models \cite{tao_comprehensive_2001}, \acrshort{rpc} are functions allowing to transform a pixel's ground location $(X,Y,Z)$ into its image coordinates $(row, col)$. \acrshort{rpc} encode the line of sight of the satellite, \ie the line joining the center of the sensor's cell to the ground and going through the optical center of the sensor. To improve numerical stability and minimize computation errors, the image coordinates and ground coordinates are normalized between $-1$ and $1$, using their scale factors $SF$ and mean values:
+\todoroman{Regarder "Developement and Implementation of Rational Polynomial Coefficient Algorithms for Georeferencing Cartosat-1 Data", et "Metric Information Extraction from Spot Images and the Role of Polynomial Mapping Functions" de Baltsavias et Stallmann}
+A crucial part of satellite imagery is the ability to perform georeferencement, or georegistratation, of every pixel, \ie, locate their coordinates in an Earth system of coordinates such as latitude and longitude. Physical models possess high geolocation accuracy, but are sensor-specific and are computationally complex. For stereo reconstruction,  generalized sensor models are preferred. Specifically, we will focus on \acrfull{rpc} \cite{grodecki_ikonos_2001} used by the \acrshort{co3d} and Pléiades satellites, and provided alongside images. Sometimes called Polynomial Mapping Functions \cite{baltsavias_metric_1992} or Rational Function Models \cite{tao_comprehensive_2001}, \acrshort{rpc} are functions allowing to transform a pixel's ground location $(X,Y,Z)$ into its image coordinates $(row, col)$. \acrshort{rpc} encode lines of sight of the satellite, \ie the line joining the center of the sensor's cell to the ground and going through the optical center of the sensor. To improve numerical stability and minimize computation errors, the image coordinates and ground coordinates are normalized between $-1$ and $1$, using their scale factors $SF$ and mean values:
 \begin{eqnarray*}
     SF_X &=& \max(X_\mathrm{max}-\overline{X},~\overline{X}-X_\mathrm{min})\\
     \Tilde{X}&=&\frac{X-\overline{X}}{SF_X}
@@ -67,7 +67,7 @@ The same processed is applied to $Y,Z,row$ and $col$. To avoid heavy notation in
 
 Formally, \acrshort{rpc} are defined as rational fractions of polynomials:  
 \begin{eqnarray*}
-    \mathrm{RPC}:\mathbb{R}^3 &\rightarrow&\mathbb{R}^2\\
+    \RPC:\mathbb{R}^3 &\rightarrow&\mathbb{R}^2\\
     (X,Y,Z) 	&\mapsto& \left(\frac{Num_{row}(X,Y,Z)}{Den_{row}(X,Y,Z)}, \frac{Num_{col}(X,Y,Z)}{Den_{col}(X,Y,Z)}\right)\\
     &\mapsto&(row,col)
 \end{eqnarray*}
@@ -81,32 +81,143 @@ where $Num_{row},~Den_{row},~Num_{col}$ and $Den_{col}$ are the numerators and d
 \end{eqnarray*}
 $Den_{row},~Num_{col}$ and $Den_{col}$ respectively possess different coefficients $a_{ijk}$. The order or indexing of $a_{ijk}$ may differ in the literature. For instance, they can be numbered from $0$ to $19$ or $1$ to $20$, and do not refer to the same indeterminate. \acrshort{rpc} are computed using reference ground control points.
 
-In stereophotogrammetry or ortho-rectification, it is useful to use the inverse \acrshort{rpc} model. As \acrshort{rpc} encode lines of sight, the use of an additional elevation model is required to obtain the point coordinates from images coordinates. It can be a geoid modelling the Earth's surface, or a \acrshort{dsm} with higher resolution. Knowing the true elevation $Z$ of a pixel, we define the inverse model as:
+It has been showed in \cite{baltsavias_metric_1992} that RPC are well suited to be used for ortho-rectification and stereophotogrammetry, as they possess good accuracy and are computationally fast. For stereo photogrammetry, it is ofter required to use the inverse \acrshort{rpc} model. As \acrshort{rpc} encode a line of sight given an image coordinate, the use of an additional elevation coordinate is required to move from the image space to the object space (\ie to go from a 2D space to a 3D space). It can be a geoid modelling the Earth's surface, or a \acrshort{dsm} with higher resolution. Knowing the true elevation $Z$ of a pixel, we define the inverse model as:
 \begin{eqnarray*}
-    \mathrm{RPC}^{-1}:\mathbb{R}^3 &\rightarrow&\mathbb{R}^3\\
+    \RPC^{-1}:\mathbb{R}^3 &\rightarrow&\mathbb{R}^3\\
     (row, col, Z) 	&\mapsto& (X,Y,Z)
 \end{eqnarray*}
 
 An illustration on how RPC are used in stereo-photogrammetry is presented in figure \ref{fig:RPC}.
 
-\section{Principle of Stereophotogrammetry}
-This section dives more into details onto the inner workings of stereophotogrammetry. Photogrammetry is the science of deducing information from photographic images. A sub domain of photogrammetry is stereophotogrammetry, which specifically consists in deducing 3D information from multiple photographic images. Although multiple stereophotogrammetry setups can be achieved, for instance using structured light \cite{scharstein_high-accuracy_2003} or different wavelength \cite{geng_rainbow_1996}, we focus here on the pipelines designed for processing satellite images, which are used and studied in this thesis \cite{franchis_automatic_2014, shean_automated_2016, rupnik_micmac_2017, michel_new_2020}\comroman{MICMAC est plus généraliste (et complexe) que juste des images satellite}. For more in-depth details on every step of those pipelines, see chapter \ref{sec:classical_stero_pipeline}. \todoroman{Regarder "Metric Evaluation Pipeline for 3D Modeling of Urban Scenes" pour des comparaisons}
+\section{Structure of the Stereophotogrammetry Pipeline}\label{sec:classical_stero_pipeline}
+This section dives more into details of the inner workings of stereophotogrammetry, and presents the stereo pipeline mainly considered in this thesis. Photogrammetry is the science of deducing information from photographic images. A sub domain of photogrammetry is stereophotogrammetry, which specifically consists in deducing 3D information from multiple photographic images. Although multiple stereophotogrammetry setups can be achieved, for instance using structured light \cite{scharstein_high-accuracy_2003} or different wavelength \cite{geng_rainbow_1996}, we focus here on the pipelines designed for processing satellite images, which are used and studied in this thesis. 
 
-The main idea of stereophotogrammetry for satellite images and other 3D pipelines is to identify the parallax of objects between multiple images, and to deduce the distance between the object and the sensors from this displacement. When expressed in pixels, the displacement is called disparity. To determine this disparity, the images must first be corrected from atmospheric effects (small clouds, aerosols, \etc) to go from top-of-the-atmosphere radiance to the actual light that illuminates the Earth surface \cite{hagolle_maja_2017}, called reflectance \comloic{je ne sais pas à quel point c'est vrai dans le cas de CO3D. Les acquisitions sont synchrones et le B/H petit. Je serai supris que en TOA les résultats soient très différents mais peut être. En tout cas je n'ai pas en tête de travaux qui le montrent.}. Many stereo setups align their cameras in such a way that objects only move horizontally between images \cite{geiger_are_2012, scharstein_high-resolution_2014, keselman_intel_2017}. This allows to restrict the search space for pixel matches to a single row instead of the whole image. In a way, most people's eyes also present this alignment. When operating satellites, it is more complex to ensure that the sensors disposition will stay consistent, thus requiring some pre-processing step to rectify images and ensuring that the displacement of an object only occurs horizontally. Then matching pixels are determined by computing their disparity. This step is called stereo matching. Usually the depth $z$ of a pixel is computed using the following formula:
+The main idea of stereophotogrammetry for satellite images and other 3D pipelines is to identify the parallax of objects between multiple images, and to deduce the distance between the object and the sensors from this displacement. When expressed in pixels, the displacement is called disparity. To determine this disparity, the images must first be corrected from atmospheric effects (small clouds, aerosols, \etc) to go from top-of-the-atmosphere radiance to the actual light that illuminates the Earth surface \cite{hagolle_maja_2017}, called reflectance \comloic{je ne sais pas à quel point c'est vrai dans le cas de CO3D. Les acquisitions sont synchrones et le B/H petit. Je serai supris que en TOA les résultats soient très différents mais peut être. En tout cas je n'ai pas en tête de travaux qui le montrent.}. Many stereo setups align their cameras in such a way that objects only move horizontally between images \cite{geiger_are_2012, scharstein_high-resolution_2014, keselman_intel_2017}. This allows to restrict the search space for pixel matches to a single row instead of the whole image. In a way, most people's eyes also present this alignment. When operating satellites, it is more complex to ensure that the sensors disposition will stay consistent, thus requiring some pre-processing step to rectify images and ensuring that the displacement of an object only occurs horizontally (see section \ref{sec:epipolar_geometry}). Then matching pixels are determined by computing their disparity in a step called stereo matching presented in section \ref{sec:stereo_matching}. The 3D coordinates of the corresponding object are determined by computing the intersection between matching pixels' lines of sight (or best approximation if they do not strictly intersect). This results in a point cloud, where each point correspond to a match of two pixels. The point cloud can be processed to remove outliers, and is then projected into a regular grid to obtain the desired \acrshort{dsm}. The following section dives more into details for the specific case of the CARS stereo pipeline.
+
+\subsection{Structure of the Stereo Pipeline}
+Several stereo pipelines processing satellite images exist in the literature. We can think of NASA's \textit{ASP} \cite{shean_automated_2016}, IGN's \textit{MicMac} \cite{rupnik_micmac_2017}, Centre Borelli's \textit{s2p} \cite{franchis_automatic_2014}, DLR's \textit{CATENA} \cite{kraus_fully_2013}, Ohio State University's \textit{RSP} and \textit{SETSM} \cite{qin_rpc_2016, noh_surface_2017}\todoroman{Regarder "Metric Evaluation Pipeline for 3D Modeling of Urban Scenes" pour des comparaisons}. All those pipelines roughly possess the same structure, \ie pre-processing, images resampling in a convenient geometry for pixel matching, dense matching, triangulation and rasterization. Variations in those pipelines concern the different preprocessing steps (bundle adjustment, histogram equalization), the type of geometry used, the dense matching algorithms available \etc We will focus on the CARS pipeline used in this thesis, developed by CNES \cite{michel_new_2020}. A schematic of the different steps of the pipeline are presented in figure \ref{fig:cars_pipeline}.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{Images/Chap_1/CARS_pipeline_detailed.png}
+    \caption{Different steps of the CARS pipeline}
+    \label{fig:cars_pipeline}
+\end{figure}
+
+\subsection{Resampling in Epipolar Geometry}\label{sec:epipolar_geometry}
+The first step of the CARS pipeline is to resample the stereo acquisitions into a convenient geometry to carry out the dense matching. This geometry is the epipolar geometry \cite{cnes_imagerie_2008} \todoroman{Prendre la définition p128 de cnes imagerie}, which is constructed so that each line of an image follow the movement of the satellite, \ie the objects move only horizontally between the reference and secondary stereo images. This will greatly facilitates the dense matching as the search space for a match is only limited to a one dimensional space instead of a two dimensional space around the pixel. A first approximation of the epipolar geometry can be computed using the respective geolocation models of both images $\RPC_1$ and $\RPC_2$. Indeed, given the altitude $Z$ of the object represented by pixel $(row_1, ~col_1)$ in the reference image, then we can deduce its ground location $(X, ~Y, ~Z)$ using $\RPC_1^{-1}$. The position in the secondary image of those coordinates can then be retrieved using $\RPC_2$. In short, we found the secondary coordinates $(row_2,~col_2)$ of a pixel $(row_1,~col_1)$ in the reference image given an elevation $Z$: 
 \begin{equation}
-    z=\frac{Bf}{d}
+    (row_2,~col_2) = \RPC_2\circ\RPC_1^{-1}(row_1, ~col_1, ~Z)\label{eq:epipolar_transfer}
 \end{equation}
-where $B$ is the baseline between cameras, $f$ is the focal length of the cameras, and $d$ is the disparity of a pixel. This formula can be found using optical geometry \cite{bolles_epipolar-plane_1987}, and illustrate the fact that pixels closer to the camera present a bigger position shift in between images. In the case of satellite imagery, this relation cannot be used as such \comloic{tu n'expliques pas vraiment cette phrase}. Disparity is used to select the two line of sights joining the object to the cameras, and the object's 3D coordinates are determined by computing lines of sight intersection (or best approximation if they do not strictly intersect). This results in a point cloud, where each point correspond to a match of two pixels. The point cloud can be processed to remove outliers, and is then projected into a regular grid to obtain the desired \acrshort{dsm}.
+By varying the altitude in the range of considered elevations $[Z_{min},~Z_{max}]$, $\RPC_2\circ\RPC_1^{-1}$ provides a characterization of the parallax between images. The lines described by $\RPC_2\circ\RPC_1^{-1}$ are thus the epipolar curves for the reference image. Similarly, $\RPC_1\circ\RPC_2^{-1}$ provides the epipolar curves for the secondary. The range of considered elevations $[Z_{min},~Z_{max}]$ can be determined with a low resolution digital elevation model. This is not constraining as a geoid of the Earth can be used, and there also exists open models such as the NASA's SRTM \cite{farr_shuttle_2007} ($30$m and $90$m of resolution between $-56\degree$ and $60\degree$ of latitude), or ESA's Copernicus DEM ($30$m and $90$m of resolution worldwide). 
 
-\todoroman{Inclure un schema de TOA radiance?}
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{Images/Chap_1/epipolar_lines.png}
+    \caption{Computation of an epipolar line for a pixel using small height variations}
+    \label{fig:epipolar_lines}
+\end{figure}
 
-Epipolar geometry p128 \cite{cnes_imagerie_2008}
+Captors using a pinhole camera model have a perfectly define epipolar geometry, modeled by an affine transform \cite{hartley_multiple_2004}. This not true for push-broom sensors \cite{morgan_epipolar_2004}, but other models exist allowing to compute such a geometry \cite{oh_piecewise_2010, de_franchis_stereo-rectification_2014, koh_unified_2016, michel_new_2020}. In the CARS pipeline, equation \eqref{eq:epipolar_transfer} is evaluated with an elevation $Z$ extracted from the low resolution elevation model, and for small variations of altitude $Z\pm\delta$. Those three points allow to compute the direction of epipolar lines for every pixel of both images as in figure \ref{fig:epipolar_lines}. This method generates what is called an epipolar grid $g_{e1}$ joining every epipolar coordinate $(row_e, ~col_e)$ to its position in the reference image $(row_1, ~col_1)$:
+\begin{align}
+    g_{e1}(row_e, ~col_e) = (row_1, ~col_1)
+\end{align}
+A similar grid $g_{e2}$ is determined for the secondary image, which is actually computed jointly with $g_{e1}$. Those grids also use the low resolution elevation model to determine which altitude corresponds to a null disparity. After the dense matching step, a disparity of $0$ would mean that the object has the same altitude than that of the low resolution elevation model. For more details on the way epipolar grids are computed, we refer to \cite{michel_new_2020}. Using those grids, it is possible to resample the reference and secondary images in their respective epipolar geometry. 
 
-\section{Classical Stereo Pipeline}\label{sec:classical_stero_pipeline}
-\subsection{Resampling in Epipolar Geometry}
-SIFT computation, sparse matching, rectification grid
+Because the geolocation models have a limited precision, there might be a misalignment left in the epipolar grids. To correct this error, a set of SIFT points \cite{lowe_distinctive_2004} is computed between the reference and secondary epipolar images. For every match, the difference between their rows is computed. The secondary epipolar grid is then corrected so that row differences are null on average. Once aligned epipolar grids have been obtained, stereo images can been resampled in epipolar geometry one last time so that 
 
-\subsection{Stereo Matching}
+\begin{remark}
+    By computing the disparity for the set of SIFT points, it is possible to estimate the range of disparities to be considered in the dense matching step for a relatively low computation cost. It is also possible to get an approximation of the elevations of each SIFT match, by converting their disparity into height using the $B/H$ ratio as presented in section \ref{sec:stereo_matching}. A low resolution elevation model can then be derived from it, thus removing the need of an external model such as SRTM or Copernicus DEM.
+\end{remark} 
+
+\subsection{Stereo Matching}\label{sec:stereo_matching}
+Dense matching can be performed once epipolar images have been computed. As stereo matching is an important problem is computer vision, multiple algorithms have been proposed to compute a dense disparity match. Dense matching algorithms can be broadly classified into two categories: classical approaches following the steps outlined by Scharstein \etal \cite{scharstein_taxonomy_2001}, and deep-learning based methods.
+
+\begin{remark}
+	In the domain of stereo matching, the reference image is often refered to as the \textit{left} image, and the secondary image is the \textit{right} image.
+\end{remark}
+
+Classical approaches usually encompass the following steps: matching cost computation, cost aggregation, disparity computation, and disparity refinement. The cost computation can be described as follows: given a range of considered disparity, the cost of matching every pixel of the reference image to every pixel in of the secondary image in the disparity range is stored in an array of data called cost volume. The matching cost is evaluated using a cost function, which is a mapping $f$ from subsets of the left and right images to $\mathbb{R}$. Example \ref{ex:cost_functions} provides different examples of cost functions.
+
+\begin{example}\label{ex:cost_functions}
+	Simple examples of cost functions include the Sum of Absolute Differences (SAD), the Zero Normalized Crossed Correlation (ZNCC)  \cite{hannah_computer_1994}, the CENSUS transform \cite{zabih_non-parametric_1994} and MC-CNN \cite{zbontar_stereo_2016}.
+	
+	Given to windows $W_L$ and $W_R$ from the left and right images, the SAD cost function is defined as follows:
+	\begin{equation}
+		f_{SAD}(W_L, W_R)  = \sum_i\sum_j | W_L(i,j) - W_R(i,j) |
+	\end{equation}
+	Low $f_{SAD}$ values indicate that the windows are similar, while high values indicate noticeable differences. A $f_{SAD}$ value of $0$ indicates that the windows are identical. This cost function is probably the simplest cost function one could imagine, and will be used to detail in chapter \ref{chap:propagating} to didactically illustrate how uncertainty models can be propagated throughout a cost function. However, this cost function is not usually used in stereo matching algorithms as more efficient cost functions have been proposed since. It can be a fast and easy way to have a first estimate of similarities between multiple patches. The SAD can also be used for motion estimation and image/video compression \cite{richardson_h264_2006}
+	
+	The ZNCC cost function is defined as the correlation coefficient between both images:
+	\begin{equation}
+		f_{ZNCC}(W_L, W_R)  = \sum_i\sum_j \frac{(W_L(i,j)  - \tilde{W}_L) (W_R(i,j)  - \tilde{W}_R) }{\sigma_L\sigma_R}
+	\end{equation}
+	where $\tilde{W}$ refers to the mean value of a window, and $\sigma$ its standard deviation. Negatively correlated windows would present a ZNCC value of $-1$ and positively correlated windows present a ZNCC value of $1$. Contrary to the SAD cost function, matching windows will be indicated by a high value of the ZNCC. It is thus not \textit{strictly} a cost function but rather a similarity function. It is not a problem, as multiplying $f_{ZNCC}$ by $-1$ will transform it into a cost function.  
+	
+	The CENSUS cost function needs a bit more detailing. For a squared window $W$ with a side of $2n+1$ pixels, we first compare the value of each pixel of the window with the center pixel. This gives a binary string where $1$ indicates that the value of the pixel is superior to that of the center pixel. For instance if we consider the two $3\times3$ following windows $W_L, W_R$:
+	$$
+    \begin{bmatrix}
+        155 & 133 & 97 \\
+        80 & 110 & 132 \\
+        100 & 102 & 120
+    \end{bmatrix}
+    \qquad
+    \begin{bmatrix}
+        175 & 153 & 133 \\
+        100 & 130 & 152 \\
+        120 & 135 & 125
+    \end{bmatrix}
+	$$
+	Then comparing each of their pixel to the center of the windows will yield the following binary strings (expressed here as matrices):
+	$$
+    \begin{bmatrix}
+        1 & 1 & 0 \\
+        0 &  & 1 \\
+        0 & 0 & 1
+    \end{bmatrix}
+    \qquad
+    \begin{bmatrix}
+        1 & 1 & 1 \\
+        0 &  & 1 \\
+        0 & 1 & 0
+    \end{bmatrix}
+	$$
+	The cost function $f_{CENSUS}$ is finally obtained by taking the Hamming distance (\ie the number of different bits between those two strings:
+	\begin{equation*}
+		f_{CENSUS}(W_L, W_R) = 3
+	\end{equation*}
+	
+	The CENSUS cost function compares relative intensity variations, it is thus less sensitive to variations of intensities between images, such as a change of exposure for instance. Similarly to the SAD, two similar patches will tend to have a low low  
+	
+	The MC-CNN cost function \cite{zbontar_stereo_2016} is using a convolutional neural network architecture to measure the similarity between patches. It was train on $11\times 11$ patches from stereo images from the Kitti \cite{geiger_vision_2013, menze_object_2015} and Middlebury \cite{scharstein_taxonomy_2001,scharstein_high-accuracy_2003,hirschmuller_evaluation_2007,scharstein_learning_2007,scharstein_high-resolution_2014} datasets. They first trained their network to compute a vector of features for each patch. They then trained a second network to compute the similarity measure between both feature vectors. They also proposed a so-called ``fast'' architecture, which directly computes the cosinus between both vectors, thus by-passing the need of a second network for similarity. As ZNCC, MC-CNN is a similarity measure, but can easily be converted into a cost function. Although it has been trained on stereo images of autonomous cars (Kitti) and stereo images of toys (Middlebury), it generalizes well to our satellite images.
+\end{example}
+	
+Using the chosen cost function $f$, a cost volume $C_V$ is then evaluated by measuring the cost of matching every patch in the left image to every pixel in the right image in the given disparity range. The cost volume as thus three dimensions, namely rows, columns and disparity:
+\begin{equation*}
+    C_V(row, ~col, ~d) = f(W_L(row, ~col), W_R(row, ~col+d))
+\end{equation*}
+where $W_L(row, ~col)$ is a window centered on the pixel at $(row, ~col)$ in the left image, and $W_R(row, ~col+d)$ is a window centered on the pixel at $(row, ~col+d)$ in the right image. We usually add some padding to the images to avoid problems near borders where $col+d$ would not be defined.
+
+The usage of windows allows to take into consideration the surrounding of pixels to better measure their similarity. However, window based approaches also present the disadvantage of struggling to correctly identify matches near object borders \cite{hirschmuller_real-time_2002}. This is usually called an adherence effect, represented in figure \ref{fig:adherence_window}. In this figure, there are three objects represented with three different colors. Centered pixels of both windows do not match, contrary to the rest of the windows which are exactly the same. Sliding the right window in both directions would lead to higher matching costs, as the windows would be even more dissimilar. This illustrates the fact that matching windows do not necessarily mean that the center pixels constitute a match. Other work have been proposing to use a spatial weighting \cite{kuk-jin_yoon_locally_2005}, segmentation \cite{hutchison_segmentation-based_2007}, windows with different \cite{ke_zhang_cross-based_2009, buades_reliable_2015} to answer to this problem. 
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{Images/Chap_1/Adherence_window.png}
+	\caption{Adherence problem when comparing two patches between epipolar images}
+	\label{fig:adherence_window}
+\end{figure}
+
+Conversely, deep-learning approaches, while capable of delivering robust results (as reviewed in \cite{laga_survey_2022}), often face generalization challenges, particularly when applied to imagery different from their training datasets, such as satellite images \cite{mari_disparity_2022}. Given the difficulty in obtaining ground truth data for diverse landscapes, our focus remains on classical methods to develop a robust and generalizable approach for generating confidence intervals.
+
+
+When working with pinhole camera models, the depth $z$ of a pixel is computed using the following formula:
+\begin{equation}
+	z=\frac{Bf}{d}\label{eq:z_bfd}
+\end{equation}
+where $B$ is the baseline between cameras, $f$ is the focal length of the camera, and $d$ is the disparity of a pixel. This formula can be found using optical geometry \cite{bolles_epipolar-plane_1987}, and illustrate the fact that pixels closer to the camera present a bigger position shift in between images. In the case of satellite imagery, the pinhole camera model is not valid and we instead use other geometrical models (see section \ref{sec:sensors_rpc}). Equation \eqref{eq:z_bfd} thus cannot be used as such to provide accurate results.
+\begin{remark}
+	 Equation \eqref{eq:z_bfd}, although not used to determine the DSM, still prodides an estimation of the height which can for instance used to determine the height of SIFT matches during the epipolar resampling step. Equation \eqref{eq:z_bfd} also defines an important quantity, the $B/z$ ratio, usually called $B/H$. This ratio is used to indicate the disposition of satellites during the stereo acquisitions. A $B/H$ ratio near $0$ indicates a narrow angle between satellites, which will result in a DSM with few occluded areas but with low precision (an error of one disparity results in a larger height error). Conversely, a higher $B/H$ ratio indicates a large angle between satellites, resulting in a DSM with more occluded areas but with higher precision. In the case where one acquisition is made at Nadir, the $B/H$ ratio equals the tangent of the angle formed between satellites views. For information purposes, the CO3D mission will provide acquisition with a $B/H$ ratio between $0.2$ and $0.3$. \todoroman{Mettre le B/H sur le schéma des RPC ?}
+\end{remark}
+
 Optical demonstration for disparity to height
 Taxonomy. Cost functions. SGM. Deep learning methods
 
@@ -115,7 +226,7 @@ Different cost functions have been proposed to better identify the correct match
 It is common to add a subpixel refinement step, where a non-integer disparity is interpolated around the minimum of the cost curve \cite{haller_real-time_2010}. This suggests it is assumed the algorithm can attain a significant level of precision, which is debatable. 
 
 
-\todoroman{Expliciter comment CENSUS est calculée,les valeurs prises par MCCNN et le fonctionnement de SGM}. 
+\todoroman{Expliciter le fonctionnement de SGM}. 
 
 \subsection{Triangulation}
 RPC models. Line of sight intersection
@@ -139,7 +250,7 @@ Although uncertainty can be complex and expensive to compute, characterizing and
 \section{Uncertainty in Stereophotogrammetry}\label{sec:previous_work_stereo_uncertainty}
 \todoroman{Sources d'incertitudes : acquisition des images et bruit sur le capteur. Précision du model RPC. Incertitude issue des différentes traitement (rééchantillonage, stereo matching). Intersection des lignes de visée. Rasterization.}
 \subsection{Previous work}
-The quality of \acrshort{dsm} obtained using stereophotogrammetry can greatly vary depending on the quality/resolution of the images used, the precision of the georegistration, the performances of the stereo matching algorithm \etc. Reducing the magnitude of errors, or evaluating the uncertainty \textit{a posteriori} has been investigated in multiple work.
+The quality of \acrshort{dsm} obtained using stereophotogrammetry can greatly vary depending on the quality/resolution of the images used, the precision of the geolocation, the performances of the stereo matching algorithm \etc. Reducing the magnitude of errors, or evaluating the uncertainty \textit{a posteriori} has been investigated in multiple work.
 Uncertainty on \acrshort{dsm} has been mainly evaluate using a single confidence interval over the whole DSM \cite{hugonnet_uncertainty_2022, deschamps-berger_apport_2021, wang_robust_2015}, \cite{oksanen_digital_2006} \cite{panagiotakis_validation_2018}. Intervals are computed based on a set of reference points, either extracted from a better resolution \acrshort{dsm}, or ground truth data. \todoroman{Reprendre le papier où ils samplent depuis leur prorpre DSM}. Fusing \acrshort{dsm} to get better accuracy \cite{qin_uncertainty-guided_2022}
 \cite{hu_quantitative_2012,poggi_confidence_2021}
 Deep uncertainty for disparity?
@@ -149,13 +260,13 @@ The ASP pipeline can take as inputs camera standard deviation of position uncert
 \subsection{Uncertainty in the CARS pipeline}
 In this thesis, we focused on quantifying the uncertainty alongside the creation process of \acrshort{dsm}. We thus differ in this regard from previous work, which produces a single confidence intervals from the final produced DSM. Multiple sources of uncertainty influence the production of a DSM, which we will know detail.
 
-First, the images contain noise from the captor, and some atmospheric effects may appear on the acquisitions. For push-broom sensors, satellite movements can have a big impact on the final images. For instance, vibration of the satellite that are not taken into account in the geometric model can lead to biases on the localisation of the different rows of the image. Those biases will themselves be propagated to the final DSM. Those are the main uncertainties associated with the input data.
+First, the images contain noise from the captor, and some atmospheric effects may appear on the acquisitions. For push-broom sensors, satellite movements can have a big impact on the final images. For instance, vibration of the satellite that are not taken into account in the geometric model can lead to biases on the geolocation of the different rows of the image. Those biases will themselves be propagated to the final DSM. Those are the main uncertainties associated with the input data.
 
-Other errors occur when processing this data. First, different resampling occur in order to convert stereo images from captor geometry to epipolar geometry. Those resampling introduce errors if the input and target resolutions do not respect Shanon criteria \cite{delon_small_2007} \todoroman{mettre les formules? affiner la phrase}. Moreover, the sparse matches used to refine the epipolar grid heavily depend on the performances of the SIFT algorithm used to obtain them. In similar terrain, for instance on glaciers where many homogeneous region are present, some false matches can be observed. This leads to wrong epipolar lines, and those errors will themselves be propagated in the following steps of the pipeline. Those errors are usually minor, compared to those occuring in the dense stereomatching step.
+Other errors occur when processing this data. First, different resampling occur in order to convert stereo images from captor geometry to epipolar geometry. Those resampling introduce errors if the input and target resolutions do not respect Shanon criteria \cite{delon_small_2007} \todoroman{mettre les formules? affiner la phrase}. Moreover, the sparse matches used to refine the epipolar grid heavily depend on the performances of the SIFT algorithm used to obtain them. In similar terrain, for instance on glaciers where many homogeneous region are present, some false matches can be observed. This leads to wrong epipolar lines, and those errors will themselves be propagated in the following steps of the pipeline. Those errors are usually minor, compared to those occurring in the dense stereo matching step.
 
-Dense stereomatching is a complex task, for which many different algorithms exist, each potentially presenting different performances. Using a window-based correlator with SGM regularization usually persents good performances in areas without height discontinuities. This can become a problem in urban areas, where the presence of high buildings represents an additional challenge for the correlator. Because the correlator compares windows ($5\times5$ using the CENSUS cost function or $11\times11$ using MC-CNN) and not single pixels, this naturally creates an adherence effect near building borders. SGM regularization also penalizes disparity changes, thus reinforcing the adherence effect. Other processes, such as filtering or sub-pixel refinement, improve the quality of the disparity map but require specific car for handling their induced uncertainty. The dense matching step is crucial as previous errors usually have a smaller impact on the final product than the errors potentially occurring in stereo-matching. For instance, a bias in the epipolar grid typically leads to a shift of one row between the epipolar images. This leads to typical errors of around $1$ disparity. In comparison, the correlator can produce errors with a magnitude of the whole disparity research interval, sometimes reaching values near $100$ disparities. Considering those orders of magnitude, estimating and quantifying the uncertainty of the stereo-matching process is crucial to control the uncertainty on the output DSM. 
+Dense stereo matching is a complex task, for which many different algorithms exist, each potentially presenting different performances. Using a window-based correlator with SGM regularization usually presents good performances in areas without height discontinuities. This can become a problem in urban areas, where the presence of high buildings represents an additional challenge for the correlator. Because the correlator compares windows ($5\times5$ using the CENSUS cost function or $11\times11$ using MC-CNN) and not single pixels, this naturally creates an adherence effect near building borders. Note that in \cite{okutomi_stereo_1994}, authors have been trying to adapt the window shape to reduce the uncertainty of stereo matching, but this method requires to iteratively compute costs on different windows, which can become quite expensive. SGM regularization also penalizes disparity changes, thus reinforcing the adherence effect. Other processes, such as filtering or sub-pixel refinement, improve the quality of the disparity map but require specific car for handling their induced uncertainty. The dense matching step is crucial as previous errors usually have a smaller impact on the final product than the errors potentially occurring in stereo-matching. For instance, a bias in the epipolar grid typically leads to a shift of one row between the epipolar images. This leads to typical errors of around $1$ disparity. In comparison, the correlator can produce errors with a magnitude of the whole disparity research interval, sometimes reaching values near $100$ disparities. Considering those orders of magnitude, estimating and quantifying the uncertainty of the stereo-matching process is crucial to control the uncertainty on the output DSM. 
 
-Once the disparity has been estimated, 3D points can be triangulated by intersecting RPC lines from each matched pixel. However, their is no guarantee that the 3D lines do indeed intersect. If they indeed do not intersect, the 3D point is determined as the point minimizing its squared distances to both lines of sight. An alternative is to modify the localisation line from the secondary image so as it intersects the line from the reference image. In both cases, the localization of the 3D point is not exact. This uncertainty stems from the fact that we determine the 3D coordinates of the point from a match between two pixels that do not point exactly to the same object. Additionally, RPC models attempt to represent real lines of sight with polynomial coefficient, which is not exact and possess its own accuracy. The method used for coefficients calibration and the frequency of calibration also bring their share of uncertainty.
+Once the disparity has been estimated, 3D points can be triangulated by intersecting RPC lines from each matched pixel. However, their is no guarantee that the 3D lines do indeed intersect. If they indeed do not intersect, the 3D point is determined as the point minimizing its squared distances to both lines of sight. An alternative is to modify the geolocation line from the secondary image so as it intersects the line from the reference image. In both cases, the localization of the 3D point is not exact. This uncertainty stems from the fact that we determine the 3D coordinates of the point from a match between two pixels that do not point exactly to the same object. Additionally, RPC models attempt to represent real lines of sight with polynomial coefficient, which is not exact and possess its own accuracy. The method used for coefficients calibration and the frequency of calibration also bring their share of uncertainty.
 
 The final part of the stereo pipeline is to rasterize the point cloud onto a regular grid, thus yielding the DSM. When characterizing the uncertainty on the final result, we must first agree on what the DSM is supposed to represent. It is common to consider that each pixel's value should represent the average height over the cell. However, providing the maximum or minimal height might be more adapted to some scenarios: for instance if the DSM is used to prepare very low altitude flights (for drones \etc), the maximum height is more relevant as one would want to avoid any foliage or power line. In this thesis, we will consider that the DSM represents the (weighted) average height. The weights considered will be computed with a Gaussian whose variable is the distance to the center of the cell. Other weights can be considered, most notably the \textit{inverse distance weighting} (IDW), which produces very similar results in our applications. We now specified the projection method. Depending of the resolution of input images and the desired output resolution of the DSM, the density of points per DSM cell will vary. In our applications, the input and output resolutions are identical as we typically desire to produce a DSM at $50$cm resolution from $50$cm panchromatic images. This means that there is on average one $3D$ point per DSM cell. For occluded regions, or when we discarded stereo matches that seemed wrong, there might be no point directly in the output cell. In this case, the value of the DSM cell will be completely determined by the value of points in neighbouring cells, even if their distance is high and the averaging weights are small. Interpreting the final DSM as the average height on each cell is thus debatable, as the average is computed on a limited number of points, and sometimes not even belonging to the considered cell.  Note that if there is no points around in a given radius, the cell will be left empty. 
 
