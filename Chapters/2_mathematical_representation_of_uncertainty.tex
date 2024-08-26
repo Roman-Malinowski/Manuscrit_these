@@ -10,12 +10,12 @@ We introduce here a few notations that will be used in the rest of this chapter.
     \item We will often present theorems or results with $n$ different variables, spaces, or Cartesian products of $n$ elements. Notations therefore quickly become quite heavy. We try our best to make them clear and readable, which is why we often use the contraction ``$\dots$'' to imply that we are enumerating all variables. For instance, if we apply a function $f$ to four variables $x_1, x_2, x_3, x_4$, we will write $f(x_1, \dots, x_4)$.
     \item When working with $n$ variables, the index $i$ will usually be used to refer to the $i$-th variable (or one of its attribute), and will be appended as a subscript when possible, otherwise as a superscript. For instance, if $x\in\mathbb{R}^n$, then $x_i$ will refer to the $i$-th component of $x$. If $m_\times\in\mathbb{R}^n$, then $m_\times^i$ will refer to $i$-th component of $m_\times$.
     \item $\opi\cdot,\cdot\cli$ refers to an interval of integers. For instance $\opi1,~4\cli=\{1,~2,~3,~4\}$. 
-    \item CDF will refer to Cumulative Distribution Function, \ie if $X$ is random variable in $\mathbb{R}$ and $P$ its associated probability, then the CDF of $X$ is $F(x)=P(X\leqslant x)$.
+    \item CDF will refer to Cumulative Distribution Function\commanue{Tu n'as pas une section acronymes?}, \ie if $X$ is random variable in $\mathbb{R}$ and $P$ its associated probability, then the CDF of $X$ is $F(x)=P(X\leqslant x)$.
     \item The power set of a set $\X$ is noted $2^\X$. It corresponds to the set of all sets included in $\X$. In the discrete case, if the cardinal of $\X$ is $n$, then the cardinal of the power set is $2^n$, thus the notation.
 \end{itemize}
 
 \section{Different Models to Represent Uncertainty}\label{sec:different_models_of_uncertainty}
-Assessing the reliability of an engineering system requires to quantify the uncertainty of the input parameters or of the system itself, using models of uncertainty. Modelling the uncertainty can be done in various ways, depending on the type of uncertainty considered and the available measures or \textit{a priori} regarding the uncertain sources. Most common models are probability distributions, which have been studied extensively. When using those models, we know -or suppose- that the information we try to estimate is of stochastic (or random) nature, and that we are able to precisely describe its structure using a probability distribution. However, there are many cases where such assumptions cannot be made: for instance when data is insufficient to determine the correct probability distribution, or when the uncertainty is not random but epistemic. In those cases, we can use other models such as:
+Assessing the reliability of an engineering system requires to quantify the uncertainty of the input parameters or of the system itself, using models of uncertainty. Modelling the uncertainty can be done in various ways, depending on the type of uncertainty considered and the available measures or \textit{a priori} regarding the uncertain sources. Most common models are probability distributions, which have been studied extensively. When using those models, we know -or suppose- that the information we try to estimate is of stochastic (or random) nature, and that we are able to precisely describe its structure using a probability distribution. However, there are many cases where such assumptions cannot be made: for instance when data is insufficient to determine the correct probability distribution, or when the uncertainty is not random but epistemic. In those cases, we can use other models such as\commanue{Ce serait top de prendre le même exemple et de montrer comment l'incertitude est modélisé différemment, si c'est possible}:
 \begin{itemize}
     \item fuzzy sets \cite{zadeh_fuzzy_1999} when trying to estimate the degree of truth of a statement such as ``This person is tall''
     \item intervals \cite{jaulin_applied_2001}, where no preferences are given inside a specific range of possible values
@@ -23,7 +23,7 @@ Assessing the reliability of an engineering system requires to quantify the unce
 \end{itemize}
 This list is not exhaustive. Additionally, those different models can sometimes be equivalent. Choosing to use one or another depends on the nature of the problem and of the available data. In this chapter, we will mainly consider probability distributions (section \ref{sec:probabilities}) and imprecise probabilities (section \ref{sec:imprecise_probabilities}). Two specific cases of imprecise probabilities will be detailed, namely possibility distributions in section \ref{sec:possibilities} and p-boxes in section \ref{sec:pboxes}.
 
-At the end of the day, choosing one model over another is not always straightforward. It requires to be aware of the type of uncertainty faced, of the strengths and limitations of each model, of the tools available to manipulate the models \etc When it comes to less common models cited above, it fundamentally requires to be aware of the existence of such models, which is not always the case for non-specialists. During this thesis, we tried to promote less common models, especially possibility distributions. We did so by presenting real life cases where they could be used while improving uncertainty modeling in the field of stereo-photogrammetry (see chapters \ref{chap:propagating} and \ref{chap:epistemic_uncertainty}). \comroman{Je pense que cette remarque devrait plutôt se retrouver dans l'intro de la thèse, car elle s'éloigne de ce qui suit. Peut être même que les deux paragraphes pourraient être déplacés dans l'intro}
+At the end of the day, choosing one model over another is not always straightforward. It requires to be aware of the type of uncertainty faced, of the strengths and limitations of each model, of the tools available to manipulate the models \etc When it comes to less common models cited above, it fundamentally requires to be aware of the existence of such models, which is not always the case for non-specialists. During this thesis, we tried to promote less common models, especially possibility distributions. We did so by presenting real life cases where they could be used while improving uncertainty modeling in the field of stereo-photogrammetry (see chapters \ref{chap:propagating} and \ref{chap:epistemic_uncertainty}). \comroman{Je pense que cette remarque devrait plutôt se retrouver dans l'intro de la thèse, car elle s'éloigne de ce qui suit. Peut être même que les deux paragraphes pourraient être déplacés dans l'intro}\commanue{Oui tu peux mettre cela dans l'intro, ce sera mieux. Après la remarque est très bien}
 
 \subsection{Probabilities}\label{sec:probabilities}
 Probability measures are a classical framework to represent uncertainty. There are multiple ways of interpreting them, mainly with a \textit{frequentist} approach, or a \textit{Bayesian} approach. From a frequentist point of view, probabilities are well fitted to represent stochastic uncertainty, \ie uncertainty regarding events that can get a different result each time we run an experiment or acquire a measure (typically, noise on a sensor). From a \textit{Bayesian} point of view, probabilities represent a state of knowledge or degree of belief, and can be updated with additional information. This leads to the notion of prior and posterior probability that will not be considered in this thesis.
@@ -45,7 +45,7 @@ We remind here basic definitions regarding probability distributions.
 \end{definition}
 
 \begin{definition}[Random Variable]
-    A random variable $X$ is a measurable function from $\X$ to a measurable space (which is often $\mathbb{R}$ or a subset of $\mathbb{R}$). We can then measure the probability that $X$ takes a value in $E\subseteq\mathbb{R}$:
+    A random variable $X$ is a measurable function from $\X$ to a measurable space (which is often $\mathbb{R}$ or a subset of $\mathbb{R}$). We can then measure the probability that $X$ takes a value in $E\subseteq\mathbb{R}$\commanue{Pourquoi E est inclus dans R. Ton sous-ensemble E ne devrait pas inclus dans un espace mesurable noté la lettre que tu veux}:
     \begin{align*}
         P(E) = P(\{x\in\X~|~X(x)\in E\})
     \end{align*}
@@ -66,11 +66,11 @@ Other useful concepts regarding probability distributions are cumulative distrib
     \begin{equation*}
         P(x_1\leqslant X \leqslant x_2) = \int_{x_1}^{x_2}f(x)dx
     \end{equation*}
-    In the discrete case, the density is also called \textit{probability mass function}, and is defined as:
+    In the discrete case, the density is also called \textit{probability mass function}, and is defined as \commanue{Alors wikipedia me donne un signe $=$ et pas $\leqslant$ mais je regarde peut-être pas le bon truc}:
     \begin{equation*}
         f(x_1) = P(X \leqslant x_1)
     \end{equation*}
-    In the continuous case, the density $f$ is also the derivative of the CDF of $X$.
+    In the continuous case, the density $f$ is also the derivative of the CDF of $X$\commanue{Je mettrais la remarque avant la partie discrète}.
 \end{definition}
 %For instance, the uniform distribution on the interval $[1,100]$ has a density function $f(x)=\frac{1}{100-1}$ if $x\in[1,100]$ and $0$ elsewhere. Its CDF is thus $0$ if $x<1$, $\frac{x}{100-1}$ if $x\in[1,100]$ and $1$ elsewhere. The concept of a CDF for multiple variables will be explored in section \ref{sec:copulas}.
 
@@ -99,7 +99,7 @@ As stated previously, probability measures are fitted to represent stochastic un
     \begin{equation*}
         P(Y=0)=P(X=1)+P(X=3)=\frac{2}{3},\qquad P(Y=1)=P(X=2) = \frac{1}{3}
     \end{equation*}
-    Which is clearly not the density of an uniform distribution. By supposing we have no preferences on the values of a variable, we actually deduced preferences on the values of another variable. One should use an uniform distribution only when they are certain that all values are equiprobable. This is because uniform distributions are well suited for representing statements like ``all values have the same likelyhood'' but not for statements like ``I have no information over the values, and thus no preference''. Indeed, a probability distribution actually contains a lot of information about a random variable, which is not suited to represent epistemic uncertainty.
+    Which is clearly not the density of an uniform distribution. By supposing we have no preferences on the values of a variable, we actually deduced preferences on the values of another variable. One should use an uniform distribution only when they are certain that all values are equiprobable. This is because uniform distributions are well suited for representing statements like ``all values have the same likelyhood'' but not for statements like ``I have no information over the values, and thus no preference''. Indeed, a probability distribution actually contains a lot of information about a random variable, which is not suited to represent epistemic uncertainty.\commanue{J'aime bien l'exemple il faudrait peut-être juste ajouter des mots de liaison pour bien distinguer les différents raisonnements entre eux.}
     
     \begin{remark}
         From a Bayesian point of view, a probability can also represent a degree of belief, allowing them to represent epistemic uncertainty and not only stochastic uncertainty, in theory. However, it does not solve the expressiveness problem raised by this example. Bayesians are still reasoning with probabilities, which make no difference between ``I have no preference between these events'' and ``these events are equiprobable''. Even though they can update their prior with additional information, this would not fix the problem presented here. In the absence of additional information, basing a decision on the prior would lead to debatable conclusions.
@@ -107,7 +107,7 @@ As stated previously, probability measures are fitted to represent stochastic un
 \end{example}
 
 \subsection{Imprecise Probabilities}\label{sec:imprecise_probabilities}
-As highlighted in example \ref{ex:proba_limitations}, uncertainty cannot always be correctly modeled by probabilities, especially in a context where data is sparse. To overcome this problem, a generalization of probabilities have been introduced, called \textit{imprecise probabilities}. Imprecise probabilities (sometimes abbreviated IP) provide a general framework for working with both aleatoric and epistemic uncertainty with the concept of lower and upper probabilities. Lower and upper probabilities are quite  generic and flexible, and can be derived in more specific models. Here is a brief scope of the relevant tools it compasses: the special case of \textit{belief functions}, themselves containing specific sub-categories such as possibility distributions \ref{sec:possibilities} and probability boxes \ref{sec:pboxes} \etc It also contains probabilities presented in section \ref{sec:probabilities}, which we will call \textit{precise} probabilities by opposition to \textit{imprecise} probabilities. Figure \ref{fig:diagram_IP} sums up the relationship and specificity of each imprecise model.
+As highlighted in example \ref{ex:proba_limitations}, uncertainty cannot always be correctly modeled by probabilities, especially in a context where data is sparse. To overcome this problem, a generalization of probabilities have been introduced, called \textit{imprecise probabilities}. Imprecise probabilities (sometimes abbreviated IP) provide a general framework for working with both aleatoric and epistemic uncertainty with the concept of lower and upper probabilities. Lower and upper probabilities are quite  generic and flexible, and can be derived in more specific models. Here is a brief scope of the relevant tools it compasses: the special case of \textit{belief functions}, themselves containing specific sub-categories such as possibility distributions \ref{sec:possibilities} and probability boxes \ref{sec:pboxes} \etc\commanue{Je mettrais pas le etc} It also contains probabilities presented in section \ref{sec:probabilities}, which we will call \textit{precise} probabilities by opposition to \textit{imprecise} probabilities. Figure \ref{fig:diagram_IP} sums up the relationship and specificity of each imprecise model.
 
 \begin{remark}
     At its more generic, IP can be described by sets of acceptable gambles, and by lower and upper expectations \cite{walley_statistical_1991,augustin_introduction_2014}. Although very interesting, we did not use them in our applications and thus do not consider them in this thesis.
@@ -117,7 +117,7 @@ As highlighted in example \ref{ex:proba_limitations}, uncertainty cannot always 
     \includegraphics[width=0.8\linewidth]{Images/Chap_2/Diagramme_IP_Bel.png}
     \caption{Diagram representing the relationship between different Imprecise Probabilities models presented throughout section \ref{sec:different_models_of_uncertainty}.}
     \label{fig:diagram_IP}}
-\end{figure}
+\end{figure}\commanue{La figure est bien pour voir les liens après je ne sais pas s'il faut garder les éléments en gris clair, c'est un peu déroutant pour le lecteur qui découvre les éléments}
 
 As stated previously, a core concept of imprecise probabilities are lower and upper probabilities. Similarly to precise probabilities, a lower probability $\low$ and an upper probability $\overline{P}$ are mappings from a $\sigma$-algebra $\mathcal{A}$ to $[0, 1]$. However, while a probability $P$ gives a single measure of uncertainty for every event, lower and upper probabilities provide two bounds for every event, allowing them to express more complex uncertainty structures.
 
@@ -153,7 +153,7 @@ Although, it is not required, we usually assume credal sets verify additional pr
         \M \neq \emptyset\label{eq:avoid_sure_loss}
     \end{equation}
     
-    A credal set $\M$ is said to be \textit{coherent} if its lower bounds an all events are attained by a probability measure, \ie if:
+    A credal set $\M$ is said to be \textit{coherent} if its lower bounds an all events are attained by a probability measure, \ie if \commanue{C'est pas low(A) = P(A) dans l'équation et la phrase ne mentione upper bounds, j'ai l'impression qu'il te manque un bout ou c'est mon anglais qui est nul}:
     \begin{equation}
         \forall A\in\mathcal{A}, \exists P, P'\in\M~\st~\low(A)=A \text{ and } \overline{P}(A)=P'(A) 
     \end{equation}
@@ -194,14 +194,14 @@ When constructing credal sets, it is common to possess a non convex set of proba
     \end{align*}
     We can use equation \eqref{eq:lower_proba_complement} for computing the bounds of remaining events.
     
-    Here, the credal set is the largest credal set possible as its bounds are always $0$ and $1$ for events that are not $\emptyset$ or $\{1,2,3\}$. We say that it is the vacuous credal set, as it does not encode any information. It however solves the problem of a contradicting probability when evaluating the value of the card and its parity.
+    Here, the credal set is the largest credal set possible as its bounds are always $0$ and $1$ for events that are not $\emptyset$ or $\{1,2,3\}$. We say that it is the vacuous credal set, as it does not encode any information. It however solves the problem of a contradicting probability when evaluating the value of the card and its parity.\commanue{J'aime bien le fait de présneter l'exemple. Après j'ai des difficultés à comprendre les deux dernières phrases.}
 \end{example}
 
 \subsection{Belief Functions}\label{sec:belief_functions}
 A special case of imprecise probabilities are belief functions, which we will detail in this section. First, we will introduce a key concept that goes along belief functions: mass distribution functions. We will then derive belief functions from it.
 
 \begin{definition}[Mass distribution function]\label{def:mass_distribution_function}
-    Let $\X$ be a frame of discernment and $2^\X$ its power set. A mass distribution function (or basic probability assignment \cite{shafer_mathematical_1976}) is a function $m:2^\X\rightarrow[0,1]$ \st:
+    Let $\X$ be a frame of discernment\commanue{alrs X à la base c'est set of possible outcomes et là tu donnes un autre nom c'est pour la même chose ou il y a une subtilité. J'aime pas les variables qui changent surtout quand je suis pas à l'aise dans le domaine} and $2^\X$ its power set. A mass distribution function (or basic probability assignment \cite{shafer_mathematical_1976}) is a function $m:2^\X\rightarrow[0,1]$ \st:
     \begin{align}
         m(\emptyset) =& 0\label{eq:mass_emptyset}\\
         \sum_{a\subseteq\X}m(a) =& 1\label{eq:mass_whole_set}
@@ -212,7 +212,7 @@ There are multiple ways of interpreting $m(a)$, presented bellow so as to be mor
 \begin{itemize}
     \item If we consider a random set $X$, then $m(a)$ encodes the probability mass that $X$ takes $a$ as its set value.
     \item If $X$ is a random variable, then $m(a)$ encodes the available evidence that the numerical value of $X$ is \textit{exactly} in $a$, without any preferences for the values within $a$. This mean there could also be another evidence that $X$ is in $a'\subset a$, encoded with $m(a')$, and which could be either lower or higher than $m(a)$ depending on the amount of evidence available. Example \ref{ex:bicycle_pressure} illustrates this with a toy scenario. 
-    \item Another interpretation of $m(a)$ is to link it to probability masses (definition \ref{def:density}). If we suppose there exists an unknown underlying probability measure $P$ for $X$, $m(a)$ measures the probability mass that is assigned to $a$, but that can move freely to every point of $a$ without any preference. In other words, with more information, we could distribute $m(a)$ to every elements of $a$, and doing this for all $a$ would lead to a precise probability mass distribution.
+    \item Another interpretation of $m(a)$ is to link it to probability masses (definition \ref{def:density})\commanue{C'est bizarre de dire anaother car le premier parle déjà du lien entre m(a) et probability mass. Peut-être dire precise probability mass pour que ce soit plus clair}. If we suppose there exists an unknown underlying probability measure $P$ for $X$, $m(a)$ measures the probability mass that is assigned to $a$, but that can move freely to every point of $a$ without any preference. In other words, with more information, we could distribute $m(a)$ to every elements of $a$, and doing this for all $a$ would lead to a precise probability mass distribution.
 \end{itemize}
 
 \begin{remark}
@@ -221,7 +221,7 @@ There are multiple ways of interpreting $m(a)$, presented bellow so as to be mor
 \end{remark}
 
 \begin{definition}[Focal set]\label{def:focal_set}
-    Let $\X$ be a frame of discernment, $2^\X$ its power set, and $m:2^\X\rightarrow[0,1]$ a mass distribution function. A set $a\subseteq\X$ is called a focal set of $m$ if and only if:
+    Let $\X$ be a frame of discernment\commanue{Même remarque que précédemment sur X}, $2^\X$ its power set, and $m:2^\X\rightarrow[0,1]$ a mass distribution function. A set $a\subseteq\X$ is called a focal set of $m$ if and only if:
     \begin{align}
         m(a)>0\label{eq:focal_set}
     \end{align}
@@ -241,7 +241,7 @@ Focal sets thus represent sets of the frame of discernment for which we have evi
         \Pl(A)=\sum_{\substack{a\\a\cap A\neq\emptyset}} m(a)
     \end{align*}
 \end{definition}
-We can interpret $\Bel(A)$ as the amount of evidence that fully support $A$, and $\Pl(A)$ as the amount of evidence that is consistent (or does not contradicts) with $A$.
+We can interpret $\Bel(A)$ as the amount of evidence that fully support $A$, and $\Pl(A)$ as the amount of evidence that is consistent (or does not contradict) with $A$.
 
 $\Bel$ and $\Pl$ are special cases of lower and upper probabilities, and verify \eqref{eq:lower_proba_complement} as for all events $A$ it holds:
 \begin{align*}
@@ -253,7 +253,7 @@ $\Bel$ and $\Pl$ are special cases of lower and upper probabilities, and verify 
 
 Belief functions possess interesting properties making the credal set they induce both coherent and avoiding sure loss, motivating their extensive usage.
 
-\begin{example}[Defining a mass and belief functions]\label{ex:bicycle_pressure}
+\begin{example}[Defining mass and belief\commanue{manque plausibility} functions]\label{ex:bicycle_pressure}
     Let us imagine an experiment where you try to estimate the pressure of the tyres of your bike, but your bicycle pump only have graduation every $1$ bar. You are able to do three measurements:
     \begin{itemize}
         \item The first measure, the needle seems to be between $4$ and $5$ bar.
@@ -304,8 +304,8 @@ Another notion closely related to possibility distributions is that of \(\alpha\
     An \(\alpha\)-cut is thus the set of all elements of $\X$ whose possibility level is more that $\alpha$.
 \end{definition}
 
-\begin{definition}[Necessity and Plausibility]
-    It has been proven in \cite{dubois_when_1992} that a possibility distribution defines a specific type of plausibility functions called \textit{possibility} function and noted \(\Pi\). It also defines a specific belief function by duality called \textit{necessity} function and noted \(\Nec\), as well as a credal set $\M(\pi)$. They are defined as:
+\begin{definition}[Necessity and Plausibility\commanue{c'est pas possibility? Plausibility c'est déjà défini au-dessus}]
+    It has been proven in \cite{dubois_when_1992} that a possibility distribution defines a specific type of plausibility functions called \textit{possibility} function and noted \(\Pi\). It also defines a specific belief function by duality called \textit{necessity} function and noted \(\Nec\), as well as a credal set $\M(\pi)$. They are defined as\commanue{Tu veux pas direct mettre possiblity et necessity dans la définition du credal set}:
     \begin{align}
         &\Pi(A) = \sup_{x\in A}\pi(x)\\
         &\Nec(A)=1-\sup_{x\in A^c}\pi(x)\label{eq:bel_pl}\\
@@ -385,7 +385,7 @@ With the way focal sets are defined, they form a nested family of sets with rega
     As such, possibility distribution have been used to model experts opinion  \cite{baudrit_joint_2007}. Following the same philosophy, we will use possibility distributions in chapter \ref{chap:epistemic_uncertainty} to model the uncertainty of a measure of similarity between two image patches.
 \end{remark}
 
-Specifying a probability distribution often comes down to specifying the probability mass function over all atoms of the frame of discernment. In a way, possibility distributions are constructed the same way, as we specify the possibility (or the upper bounds) of every atom. One important difference is that the condition ``the sum of all masses must be equal to $1$'' is relaxed into a less constraining condition ``the possibility distribution must be equal to $1$ at least once''. In that respect, it is easier to construct a well defined possibility distribution than it is to construct a well defined probability distribution. However the comparison stops there, as the two models no not represent the same uncertainty at all.
+Specifying a probability distribution often comes down to specifying the probability mass function over all atoms of the frame of discernment. In a way, possibility distributions are constructed the same way, as we specify the possibility (or the upper bounds) of every atom. One important difference is that the condition ``the sum of all masses must be equal to $1$'' is relaxed into a less constraining condition ``the possibility distribution must be equal to $1$ at least once''. In that respect, it is easier to construct a well defined possibility distribution than it is to construct a well defined probability distribution. However the comparison stops there, as the two models does not represent the same uncertainty at all.
 
 \begin{remark}
     Any probability distribution $P$ is a belief function $\Bel$, for which focal sets are only composed of singletons (atoms) and the mass distribution function of $\Bel$ equals the probability mass function of $P$ on atoms. However, a possibility distribution cannot model a probability distribution. Indeed this would impose that its necessity $\Nec$ and plausibility $\Pi$ functions verify:
@@ -425,7 +425,7 @@ The credal set $\M$ induced by a p-box $[\underline{F}, ~\overline{F}]$ is:
     where $\opi\cdot,~\cdot\cli$ are intervals of integers, and $\overline{F}^{-1}$, $\underline{F}^{-1}$ are the respective pseudo-inverse of $\overline{F}$ and $\underline{F}$ defined for every $\alpha\in[0,1]$ by:
     \begin{align*}
         \overline{F}^{-1}(\alpha) =& \min \{x_i ~\st ~\overline{F}(x_i)\geqslant \alpha\}\\
-        \underline{F}^{-1}(\alpha) =& \min \{x_i ~\st ~\underline{F}(x_i)\geqslant \alpha\}
+        \underline{F}^{-1}(\alpha) =& \min \{x_i ~\st ~\underline{F}(x_i)\geqslant \alpha\}\commanue{c'est pas un max?}
     \end{align*}
     
     Still in \cite{destercke_unifying_2008}), it has been shown that the mass of each focal set $\opi x_i, ~x_j\cli$ equals to :
@@ -439,7 +439,7 @@ Because of their shape, focal sets of p-boxes form a lattice on $\X$, and can be
 \begin{align}
     a\leqslant b \Leftrightarrow \min(a)\leqslant\min(b) \text{ and } \max(a)\leqslant \max(b)
 \end{align}
-As $\underline{F}\leqslant\overline{F}$, we are assured that there can't be any case where $\min(a)<\min(b) \text{ and } \max(a)> \max(b)$. We can also define the order on focal sets using the definition of equation \eqref{eq:pbox_focal_set} for every $\alpha,~\beta\in[0,1]^2$:
+As $\underline{F}\leqslant\overline{F}$, we are assured that there can't be any case where $\min(a)<\min(b) \text{ and } \max(a)> \max(b)$\commanue{Tu t'es pas trompé de signe pour le min ?}. We can also define the order on focal sets using the definition of equation \eqref{eq:pbox_focal_set} for every $\alpha,~\beta\in[0,1]^2$:
 \begin{align*}
     \opi\overline{F}^{-1}(\alpha), ~\underline{F}^{-1}(\alpha)\cli \leqslant \opi\overline{F}^{-1}(\beta), ~\underline{F}^{-1}(\beta)\cli \Leftrightarrow \alpha\leqslant\beta
 \end{align*}
@@ -486,7 +486,7 @@ Given the shape of focal sets, there can be at most $2n-1$ in a frame of discern
 During previous sections, we presented different models of uncertainty that will be considered throughout this thesis. When we will aggregate and propagate multiple sources of uncertainty in chapters \ref{chap:joining_credal_sets}, \ref{chap:propagating} and \ref{chap:epistemic_uncertainty}, we will need to take into account the dependency between our uncertain sources. In this section, we will present dependency models called copulas, which are mathematical tools used to represent the dependency between multiple random variables. Copulas can represent many types of dependency, ranging from complete monotonicity to complete counter-monotonicity, including independence between variables. Section \ref{sec:copula_def} will present the mathematical definition of a copula as well as practical families of copulas and how they can model different dependencies. Section \ref{sec:dconvexity} will present a specific property shared by some copulas and a theoretical contribution that will used later in sections \ref{subsec:pboxes} and \ref{subsec:multiple_models}. Finally, we present how to generate multivariate samples from a copula, which will be used in section \ref{sec:montecarlo}.
 
 \subsection{Core Definitions and Examples}\label{sec:copula_def}
-In the following, let $n\in\mathbb{N}^*$ be the number of sources of uncertainty considered (either represented by random variables or random sets). Formally, a copula is a multivariate cumulative distribution function $C:[0,1]^{n}\rightarrow [0,1]$ whose marginals follow uniform distributions on $[0,1]$. It can be interpreted as a joint cumulative distribution of $n$ random variables. For all $i\in\opi 1,n\cli $, we will refer to $u_i\in[0,1]$ as its $i$-th variable (or marginal). A copula verifies a number of properties:
+In the following, let $n\in\mathbb{N}^*$ be the number of sources of uncertainty considered (either represented by random variables or random sets). Formally, a copula is a multivariate cumulative distribution function $C:[0,1]^{n}\rightarrow [0,1]$ whose marginals follow uniform distributions on $[0,1]$\commanue{Peut-être mettre la définition d'une copule dans une case définition pour que cela ressorte bien}. It can be interpreted as a joint cumulative distribution of $n$ random variables. For all $i\in\opi 1,n\cli $, we will refer to $u_i\in[0,1]$ as its $i$-th variable (or marginal). A copula verifies a number of properties:
 \begin{align}
     &\text{if }\exists j\in\opi 1,n\cli  \text{ \st }~u_j=0, \text{ then }C(u_1,\dots,u_j,\dots,u_n)=0\label{eq:zero_copula}\\
     &\forall i\in\opi 1,n\cli ,~C(1,1,\dots,1,u_i,1,\dots,1)=u_i\label{eq:copula_ones}\\
@@ -569,23 +569,23 @@ Copulas are very useful to represent the dependency between multiple sources of 
     Example \ref{ex:copulas} presents numerical applications of this example with different copulas.
 \end{example}
 
-It follows from \eqref{eq:cop_hvolume} that a copula is a component-wise increasing mapping. All copulas are actually dominating and dominated by two bounds (called lower and upper Fréchet–Hoeffding):
+It follows from \eqref{eq:cop_hvolume} that a copula is a component-wise increasing mapping. All copulas are actually dominating and dominated by two bounds (called lower and upper Fréchet–Hoeffding bounds):
 \begin{align}
     &\forall u_i \in [0,1]^n,\nonumber\\
     &\max(0, 1-n+\sum_{i=1}^n u_i) \leqslant C(u_1,\dots,u_n) \leqslant \min(u_1, \dots, u_n)
 \end{align}
 The upper bound is a copula, usually called the Minimum copula $C_M$. It is used to model co-monotonic variables, \ie variables where high values occur at the same time (or similarly, where low values tend to occur simultaneously). Co-monotony implies a maximal covariance between variables.
 
-The lower bound is a copula only in the case $n=2$, called the \L ukasiewicz copula $C_L$. It is used to model counter-monotonic variables, \ie variables with a perfect negative dependence between them. This explain why the lower bound is not a copula in dimensions higher that $2$. Indeed, if $X$ has a perfect negative dependence with $Y$ and $Z$, then $Y$ and $Z$ cannot share a perfect negative dependence. However, for every $u_1,\dots,u_n$, there always exists a copula $C$ attaining the lower bound:
+The lower bound is a copula only in the case $n=2$, called the \L ukasiewicz copula $C_L$\commanue{Peut-être mettre la formule car tu mets celle pour plus de 2 dimensions}. It is used to model counter-monotonic variables, \ie variables with a perfect negative dependence between them. This explain why the lower bound is not a copula in dimensions higher that $2$ \commanue{Peut-être à reformuler, il existe toujours un copula qui atteint la borne inf mais aux dimensions supérieures c'est plus le même. Là on a l'impression que la borne inf ne peut pas être atteinte avec une copule}. Indeed, if $X$ has a perfect negative dependence with $Y$ and $Z$, then $Y$ and $Z$ cannot share a perfect negative dependence. However, for every $u_1,\dots,u_n$, there always exists a copula $C$ attaining the lower bound:
 \begin{eqnarray*}
     \forall (u_1,\dots,u_n)\in[0,1]^n,~\exists C \text{ \st }~C(u_1,\dots,u_n) = \max(0, 1-n+\sum_{i=1}^n u_i)
 \end{eqnarray*}
  
-Independence between variables is modeled by the product copula $C_\Pi$:
+Independence between variables is modeled by the product copula $C_\Pi$\commanue{je mettrais des $\times$ dans la formule ou la symbole produit}:
 \begin{equation*}
     C_\Pi(u_1, \dots, u_n)=u_1\dots u_n
 \end{equation*}
-which will be used later in subsection \ref{subsection:product_copula}. Graphical representations of the product copula and of the lower and upper Fréchet–Hoeffding bounds are represented in figure \ref{fig:copulas}. Example \ref{ex:copulas} presents a setting where the Product, Minimum and \L ukasiewicz copulas are used to model dependency between random variables.
+which will be used later in subsection \ref{subsection:product_copula}. Graphical representations of the product copula and of the lower and upper Fréchet–Hoeffding bounds are represented in figure \ref{fig:copulas}\commanue{Dans la figure c'est en dimension 2 donc c'est Product, Minimum and \L ukasiewicz copulas. En tout cas c'est ce qui est indiqué}. Example \ref{ex:copulas} presents a setting where the Product, Minimum and \L ukasiewicz copulas are used to model dependency between random variables.
 
 \begin{example}[Different copulas for different dependencies]\label{ex:copulas}
     Let us try to illustrate how different copulas can represent different dependencies. 
@@ -603,7 +603,7 @@ which will be used later in subsection \ref{subsection:product_copula}. Graphica
     \end{eqnarray*}
     
     \begin{itemize}
-        \item Suppose that the dealer is not cheating and that the two coin throws are independent. In that case, the product copula $C_\Pi(u,v)=u\cdot v$ must be used to represent the independence between variables.
+        \item Suppose that the dealer is not cheating and that the two coin throws are independent. In that case, the product copula $C_\Pi(u,v)=u\cdot v$ \commanue{perso je trouve le symbole $\times$ plus lisible} must be used to represent the independence between variables.
         Using results from the previous example, it holds that:
         \begin{align*}
             P(1,1) =& H_{F_1(1), F_2(1)}^{F_1(0), F_2(0)} = 1\cdot1 - 0.5\cdot1 - 1\cdot0.5 + 0.5\cdot0.5\\
@@ -641,7 +641,7 @@ which will be used later in subsection \ref{subsection:product_copula}. Graphica
 	Those three cases indicate how copulas can represent very different dependency structures from the same marginals. It also intuitiates the fact that the \L ukasiewicz copula only allows values that are ``opposite'', whereas the Minimum copula only allows values that are similar. In those examples, the dependency is so important that knowing the result of one coin throw determines the result of the second, which is therefore modeled by extreme copulas, \ie the upper and lower Fréchet-Hoeffding bounds.  We will see in the following that there are other families of copula that allow less ``extreme'' dependencies.
 \end{example}
 
-To complete this overview of copulas, let us present other copulas that can be generated using a single parameter $\theta$ in the case $n=2$. Such famous families of copulas are presented in table \ref{tab:familiy_of_copula}. Those families are quite common in the literature, but this list is not exhaustive.
+To complete this overview of copulas, let us present other copulas that can be generated using a single parameter $\theta$ in the case $n=2$. Such famous families of copulas are presented in table \ref{tab:familiy_of_copula}. Those families are quite common in the literature, but this list is not exhaustive.\commanue{Peut-être ajouter une colonne où tu expliques leur intérêt}
 
 Another important family of copulas is the family of Gaussian copulas. Each Gaussian copula is generated with a correlation matrix $R\in[-1,1]^{(n,n)}$:
 \begin{align}
