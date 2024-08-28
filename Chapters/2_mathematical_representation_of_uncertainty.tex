@@ -747,7 +747,7 @@ Another important family of copulas is the family of Gaussian copulas. Each Gaus
     \end{tabular}
     \caption{Examples of families of copulas in the case $n=2$ which can be generated using a parameter \( \theta \). D-convexity/concavity is detailed in section \ref{sec:dconvexity}}
     \label{tab:familiy_of_copula}
-\end{table}}
+\end{table}}\commanue{alors la notation $0\leqslant\theta$ c'est pas la plus lisible disons qu'on a plutôt tendance à mettre $\theta\geqslant 0$ }
 
 \begin{remark}
 	As a copula is also a multivariate CDF, one can imagine an ``imprecise'' copula similarly to what can be done with univariate probability distribution (see section \ref{sec:imprecise_probabilities}). Imprecise copula allow to model partially known dependencies, but can be hard to manipulate at times, as for instance the lower and upper bounds of an imprecise copula are not necessarily copulas themselves. In this thesis, we will not consider imprecise copulas.
@@ -771,7 +771,7 @@ This section will investigate a property shared by some copulas called direction
     \begin{description}
         \item[Ali-Mikhail-Haq copula] This copula is two times differentiable, and its second order partial derivative is
         $$\frac{\partial^2 C}{\partial {u_1}^2}=u_2(1-\theta(1-u_2))\frac{-2\theta(1-u_2)}{(1-\theta(1-u_1)(1-u_2))^3}$$
-        Thus the Ali-Mikhail-Haq copula is D-convex for $\theta\in[-1,0]$ and D-concave for $\theta\in[0,1)$
+        Thus the Ali-Mikhail-Haq copula is D-convex for $\theta\in[-1,0]$ and D-concave for $\theta\in[0,1)$.\commanue{Peut-être ajouter quelque part, la copule est convexe si et seulement si sa dérivée seconde est à valeurs positives ou nulles. }
         \item[Clayton copula] This copula is not always differentiable on all of its domain, depending on the value retained in the maximum function. It is however continuous as it is the maximum of two continuous function. For convenience, we work with $(u_1, u_2)$ in $\mathbb{I}^2$, where $\mathbb{I}$ is the open unit interval (the closed unit interval is then covered by continuity). Let $u_2\in\mathbb{I}$. We split the possible range $\mathbb{I}$ of $u_1$ in two:
     \begin{itemize}
         \item the first domain $\mathcal{D}_1^{\theta,u_2}$ is where $u_1^{-\theta}+u_2^{-\theta}-1\leqslant0$, and thus $C(u_1, u_2)=0$. Here, $\frac{\partial^2 C}{\partial {u_1}^2}=0$ and the copula is both D-convex and D-concave.
@@ -836,7 +836,7 @@ The rest of this section will present different results regarding D-convex and D
     \begin{eqnarray*}
         C(u_1,\dots, u_n) &=& C((1-u_1)\cdot0+u_1\cdot 1, u_2, \dots, u_n)\\
         &\leqslant& (1-u_1)C(0, u_2,\dots, u_n)+u_1C(1, u_2, \dots, u_n)\\
-        &=& u_1C(1, u_2,\dots, u_n)
+        &=& u_1C(1, u_2,\dots, u_n)\commanue{alors moi je laisserais le symbole $\leqslant$ et pas $=$}
     \end{eqnarray*}
     Doing the same for $u_2,\dots,u_n$ yields:
     \begin{eqnarray*}
@@ -918,6 +918,6 @@ We do not present the $n$-dimensional general case here as it is a bit more comp
     \item Set $w_k=\Phi(v_k)$ where $\Phi$ is the univariate normal cumulative distribution function
     \item The desired draw is $(x_1,\dots, x_n)=(F^{-1}_1(w_1), \dots, F^{-1}_n(w_n))$ with $F_i^{-1}$, being the quasi-inverse of the $i$-th marginal CDF.
 \end{itemize}
-
+\commanue{Alors il manque une conclusion un truc, là ça termine un peu de manière abrupte, transition donc ;)}
 \pagebreak
 \blankpage
