@@ -1,31 +1,29 @@
 \chapter{Introduction to Stereophotogrammetry}
-\todoroman{TODO: Prendre le lecteur par la main, lui expliquer ce qu'il va lire et pourquoi dans cet ordre là \etc. Biblio sur la photogrammetry, l'utilité des DSM, la description des pipelines de photogrammetry, uncertainty dans les DSM.}
-
-\todoroman{Mettre plus d'exemples, ou mieux le détailler}
-
+\todoroman{Peut être les premieres sections de ce chapitre seront déplacées dans l'intro, histoire de se concentrer sur la photogrammetry en détail.}
 \section{Digital Surface Models}
 \todoroman{Utiliser les slides de formation CARS pour montrer les différentes méthodes pour faire de la 3D, mettre des exmples de LiDAR ou faire un schéma ?}
+
 \commanue{Il faudrait aussi montrer des résultats, en gros c'est quoi en fait un modèle 3D. Après parmi tous les exemples d'utilisation de la 3D que tu donnes tu peux en détailler un un peu plus. Celui que tu préfères.}
 Knowing the Earth's topography is crucial for modern geosciences. As such, \acrfull{dsm}, which are a representation of a surface's elevation on a regular grid, appear as a natural solution in many \acrfull{gis}. Indeed, they can easily be handled and provide georeferenced information regarding the topography of an area. \acrshort{dsm} find usage in various contexts for a wide range of applications. In \acrfull{eo} for instance, \acrshort{dsm} are used to monitor changes in vegetation \cite{sadeghi_canopy_2016}, melting rates of glaciers \cite{berthier_glacier_2014, rieg_pleiades_2018}, volcanos \cite{ganci_data_2022}, snow or water resources \cite{marti_mapping_2016, yamazaki_merit_2019} \etc Similarly, \acrshort{dsm} are employed for catastrophe management, to predict the potential damage caused by earthquakes or floods \cite{jenkins_physics-based_2023} \dots \acrshort{dsm} are also crucial for ortho-rectifying image, \ie geometrically correcting the effects of distortions between the sensor and the terrain. This process creates a planimetric image with a consistent scale in all parts of the image. It allows images to be easily used in GIS or as background for maps. In urban settings, high resolution \acrshort{dsm} can help drone navigation for Defense applications, or more broadly for urban planning \cite{velazco_3d_2012}.
 
-Nowadays, \acrshort{dsm} are mostly generated from laser scanning with LiDAR sensors, radar interferometry or stereophotogrammetry \cite{youssefi_cars_2020}. Air-borne laser scanning results in \acrfull{vhr} models, but the swath width and cost of acquisition campaigns do not allow to periodically cover the globe\commanue{Pour le LIDAR tu peux citer le Liadr HD de l'IGN: durée de la campagne et données déjà disponible pour montrer que rien que pour avoir la France cela prend beaucoup de temps.}. Space-borne \acrshort{lidar} is mostly used for atmospheric measurements, or discrete measurements \cite{fouladinejad_history_2019} \todoroman{Et parler de ICESAT-2}. Space-borne radar interferometry remains widely used, and has allowed to create a worldwide digital model of emerged surfaces of the Earth at $30$m and $90$m resolution with the SRTM mission \cite{farr_shuttle_2007}\commanue{Tu peux aussi citer le DEM Copernicus https://spacedata.copernicus.eu/collections/copernicus-digital-elevation-model il faudrait détailler comment il est réalisé. Le SRTM c'est la classe car c'est via la navette Endeavour. Pour revenir au DEM copernicus, il est réalisé à partir de Tandem-X qui est un SAR qui permet de réaliser des DEM jusqu'à 10 à 12m. En fonction du temps tu peux détailler un peu le principe d'acquisitions}. To obtain coarser resolutions\commanue{Donne des ordres de grandeurs qu'on vise par rapport aux autres technos}, it is possible to leverage the technological advancement of optical sensors in orbit to create sub-meter \acrshort{dsm} using stereophotogrammetry with relatively low cost\commanue{Peut-être détailler pourquoi c'est plus low cost}. However, this process is more complex than laser measurements as it deduces height from the principle of parallax. Stereophotogrammetry pipelines usually consists in multiple processing steps with intermediary products (see \ref{sec:classical_stero_pipeline}), with different methods, parameterization and post-processes available for each step (\eg matching, filtering \etc). This broad range of solutions allow to adapt our processes to the type of images and terrain observed, but it sometimes makes it difficult to determine the configuration producing the best quality DSM, or to single out a general good-working configuration. 
+Nowadays, \acrshort{dsm} are mostly generated from laser scanning with LiDAR sensors, radar interferometry or stereophotogrammetry \cite{youssefi_cars_2020}. Air-borne laser scanning results in \acrfull{vhr} models, but the swath width and cost of acquisition campaigns do not allow to periodically cover the globe\commanue{Pour le LIDAR tu peux citer le Liadr HD de l'IGN: durée de la campagne et données déjà disponible pour montrer que rien que pour avoir la France cela prend beaucoup de temps.}. Space-borne \acrshort{lidar} is mostly used for atmospheric measurements, or discrete measurements \cite{fouladinejad_history_2019}. For instance, NASA's ICESat-2 \cite{jasinski_atlasicesat-2_2020} measures elevation of seas and glaciers using 6 lasers taking measurements along track, which is not adapted for reconstructing high-accuracy DSM. Space-borne radar interferometry remains widely used, and has allowed to create a worldwide digital model of emerged surfaces of the Earth at $30$m and $90$m resolution with the SRTM mission \cite{farr_shuttle_2007}\commanue{Tu peux aussi citer le DEM Copernicus https://spacedata.copernicus.eu/collections/copernicus-digital-elevation-model il faudrait détailler comment il est réalisé. Le SRTM c'est la classe car c'est via la navette Endeavour. Pour revenir au DEM copernicus, il est réalisé à partir de Tandem-X qui est un SAR qui permet de réaliser des DEM jusqu'à 10 à 12m. En fonction du temps tu peux détailler un peu le principe d'acquisitions}. To obtain coarser resolutions\commanue{Donne des ordres de grandeurs qu'on vise par rapport aux autres technos}, it is possible to leverage the technological advancement of optical sensors in orbit to create sub-meter \acrshort{dsm} using stereophotogrammetry with relatively low cost\commanue{Peut-être détailler pourquoi c'est plus low cost}. However, this process is more complex than laser measurements as it deduces height from the principle of parallax. Stereophotogrammetry pipelines usually consists in multiple processing steps with intermediary products (see \ref{sec:classical_stero_pipeline}), with different methods, parameterization and post-processes available for each step (\eg matching, filtering \etc). This broad range of solutions allow to adapt our processes to the type of images and terrain observed, but it sometimes makes it difficult to determine the configuration producing the best quality DSM, or to single out a general good-working configuration. 
 
 This thesis focuses on \acrshort{dsm} obtained from stereophotogrammetry, however we will use \acrshort{dsm} obtained from air-borne LiDAR acquisitions as references to validate our results, considering their high resolutions.
 
 \todoroman{Schema de \acrshort{dsm} par avion LiDAR, satellite interfero et stereo}
-\section{CO3D mission and Pléiades Satellites}
-The following paragraphs detail satellites characteristics relevant to stereophotogrammetry. It is important to notice that although the sensor used greatly determines the resolution of the final \acrshort{dsm}, it is not the only factor at stake here. The altitude and positions of the satellites are also crucial for the resolution, and can be characterized by the \acrfull{b/h} \todoroman{Schema de \acrshort{dsm} par stereo avec le ratio B/H}. This ratio is computed by dividing the distance separating the stereo acquisitions by the altitude of the satellite. It indicates the angle formed between the line of sights originating from the satellites towards an object of the scene. A high \acrshort{b/h} allows for high elevation accuracy, but possesses more occluded regions (for instance a narrow street between two high buildings), and conversely for a low B/H \cite{delon_small_2007}.
+\section{CO3D mission and Pléiades Satellites}\label{sec:co3d}
+The following paragraphs detail satellites characteristics relevant to stereophotogrammetry. It is important to notice that although the sensor used greatly determines the resolution of the final \acrshort{dsm}, it is not the only factor at stake here. The altitude and positions of the satellites are also crucial for the resolution, and can be characterized by the \acrfull{b/h} ratio, as in figure \ref{fig:RPC}. This ratio is computed by dividing the distance separating the stereo acquisitions by the altitude of the satellite. It indicates the angle formed between the line of sights originating from the satellites towards an object of the scene. A high \acrshort{b/h} allows for high elevation accuracy, but possesses more occluded regions (for instance a narrow street between two high buildings), and conversely for a low B/H \cite{delon_small_2007}.
 
 The main source of images used in this thesis comes from Pléiades images. The Pléiades constellation developed by Airbus is composed of two identical satellites, 1A and 1B. The satellites were launched in 2011 and 2012 in an heliosynchronous orbit at $690$km, for both civilian and defense usages. They provide panchromatic images at a resolution of $70$cm (resampled at $50$cm), and RGB-NIR images at a resolution of $2$m, with a $20$km swath (\url{https://dinamis.data-terra.org/pleiades/}). Their high agility and revisit rate allow them to capture stereo and tri-stereo images for any location on the globe, ideal to produce \acrshort{dsm} with high accuracy\commanue{Il y a même un mode vidéo où tu prends plus d'une dizaine images}. The \acrshort{b/h} ratio for stereo acquisitions can vary between $0.1$ and $0.4$. However, stereo acquisitions is not the only objective of this mission, even though the demand for those products is increasing \cite{berthier_glacier_2014, poli_radiometric_2015, rieg_pleiades_2018, loghin_potential_2020}. The acquisition of stereo images is thus provided on command, which can conflict with other usages of the satellite, and can become costly when trying to cover large areas \commanue{Tu peux mentionner que c'ets un satellite dual donc militaire et civil et que les militaires ont la priorité. Après tu peux aussi dire que Pléiades est utilisé lors de l'activation de la chartre https://disasterscharter.org/fr/web/guest/home. Alors on a pas déclenché la chartre mais pour le glissment de terrain dans le sud-est Pléiades avait pris de stéréo}.  
 \begin{figure}
     \centering
-    \begin{subfigure}{0.5\linewidth}
+    \begin{subfigure}[t]{0.5\linewidth}
         \centering
         \includegraphics[height=6cm]{Images/Chap_1/Paris_003.jpeg}
         \caption{$14/10/2017$ $11:03:003$}
         \label{fig:Pleiade_over_Paris_a}
     \end{subfigure}\hfill
-    \begin{subfigure}{0.5\linewidth}
+    \begin{subfigure}[t]{0.5\linewidth}
         \centering
         \includegraphics[height=6cm]{Images/Chap_1/Paris_403.jpeg}
         \caption{$14/10/2017$ $11:03:403$}
@@ -36,7 +34,7 @@ The main source of images used in this thesis comes from Pléiades images. The P
 \end{figure}
 
 In order to produce a worldwide \acrshort{dsm} with $1$m resolution by 2025, the \acrfull{cnes} is launching the \acrfull{co3d} mission \cite{melet_co3d_2020}. Composed of two pairs of low-cost satellites equipped with \acrshort{vhr} optical sensors, the mission will produce image in the \acrshort{rgb} and \acrshort{nir} spectrum at $0.5$m of resolution \cite{lebegue_co3d_2020}. The pairing of satellites allows for \textit{almost} simultaneous stereo image acquisition, cutting short the transient object problem (\ie objects moving/disappearing between stereo images). Different acquisition schemes can also be used, such as the video mode, or even the `diamond' geometry acquisition, which acquires a quadri-stereo over a couple of days. Depending on the relief of the terrain observed, the \acrshort{b/h} ratio will be between $0.2$ and $0.3$\commanue{Détaille un peu dans les paysages naturels, les satellites s'éloignent pour augmenter le B/H et dans les zones urbaines ils se rapprochent pour limiter les occlusions}. In parallel with image quality specifications, the CO3D products need to abide to a height accuracy of $1$m on low slopes \comloic{à vérifier je crois que c'est 1m en relatif à CE90. En absolu je ne sais plus}. Another requirement, which is particularly relevant in the context of this thesis, is the production of a performance map supporting the output \acrshort{dsm}. Investigating sources and propagation of the uncertainty inside a 3D stereo pipeline can be beneficial for this performance map requirement. 
-
+\todoroman{Dire qu'on est partis du besoin utilisateur pour faire notre méthode et pas l'inverse.}
 \todoroman{Parler de Maxar avec les Worldview ?}
 
 \todoroman{Schema de la mission CO3D. Type of sensor, push-broom vs raster for CO3D. Pour info c'est une matrice de Bayer}
@@ -63,7 +61,7 @@ The same processed is applied to $Y,Z,row$ and $col$. To avoid heavy notation in
 \begin{figure}
     \centering
     \includegraphics[width=0.8\linewidth]{Images/Chap_1/RPC.png}
-    \caption{Triangulation of the position of a point using RPC models\todoroman{Mettre les maisons en transoarent sur l'image?}}
+    \caption{Triangulation of the position of a point using RPC models}
     \label{fig:RPC}
 \end{figure}
 
@@ -98,7 +96,7 @@ The main idea of stereophotogrammetry for satellite images and other 3D pipeline
 
 \subsection{Structure of the Stereo Pipeline}
 Several stereo pipelines processing satellite images exist in the literature. We can think of NASA's \textit{ASP} \cite{shean_automated_2016}, IGN's \textit{MicMac} \cite{rupnik_micmac_2017}, Centre Borelli's \textit{s2p} \cite{franchis_automatic_2014}, DLR's \textit{CATENA} \cite{kraus_fully_2013}, Ohio State University's \textit{RSP} and \textit{SETSM} \cite{qin_rpc_2016, noh_surface_2017}\todoroman{Regarder "Metric Evaluation Pipeline for 3D Modeling of Urban Scenes" pour des comparaisons}. All those pipelines roughly possess the same structure, \ie pre-processing, images resampling in a convenient geometry for pixel matching, dense matching, triangulation and rasterization. Variations in those pipelines concern the different preprocessing steps (bundle adjustment, histogram equalization), the type of geometry used, the dense matching algorithms available \etc\commanue{Donc pour un chapitre de thèse va fallour plus détailler, je suis sure que j'ai mis plus d'info dans la publi de CARS ;)} We will focus on the CARS pipeline used in this thesis, developed by CNES \cite{michel_new_2020}. A schematic of the different steps of the pipeline are presented in figure \ref{fig:cars_pipeline}.
-
+\todoroman{Insister sur le fait que CARS est tout automatique, y compris sur les cartes de performances à grande echelle. A voir avec Sylvia comment les DEM de l'IGN ont une carte de perf, et si oui si elle est pas manuelle}
 \begin{figure}
     \centering
     \includegraphics[width=\linewidth]{Images/Chap_1/CARS_pipeline_detailed.png}
@@ -107,11 +105,11 @@ Several stereo pipelines processing satellite images exist in the literature. We
 \end{figure}
 
 \subsection{Resampling in Epipolar Geometry}\label{sec:epipolar_geometry}
-The first step of the CARS pipeline is to resample the stereo acquisitions into a convenient geometry to carry out the dense matching. This geometry is the epipolar geometry \cite{cnes_imagerie_2008} \todoroman{Prendre la définition p128 de cnes imagerie}, which is constructed so that each line of an image follow the movement of the satellite, \ie the objects move only horizontally between the reference and secondary stereo images. This will greatly facilitates the dense matching as the search space for a match is only limited to a one dimensional space instead of a two dimensional space around the pixel. A first approximation of the epipolar geometry can be computed using the respective geolocation models of both images $\RPC_1$ and $\RPC_2$. Indeed, given the altitude $Z$ of the object represented by pixel $(row_1, ~col_1)$ in the reference image, then we can deduce its ground location $(X, ~Y, ~Z)$ using $\RPC_1^{-1}$. The position in the secondary image of those coordinates can then be retrieved using $\RPC_2$. In short, we found the secondary coordinates $(row_2,~col_2)$ of a pixel $(row_1,~col_1)$ in the reference image given an elevation $Z$: 
+The first step of the CARS pipeline is to resample the stereo acquisitions into a convenient geometry to carry out the dense matching. This geometry is the epipolar geometry \cite{cnes_imagerie_2008}, which is constructed so that each line of an image follow the movement of the satellite, \ie the objects move only horizontally between the reference and secondary stereo images. This will greatly facilitates the dense matching as the search space for a match is only limited to a one dimensional space instead of a two dimensional space around the pixel. A first approximation of the epipolar geometry can be computed using the respective geolocation models of both images $\RPC_1$ and $\RPC_2$. Indeed, given the altitude $Z$ of the object represented by pixel $(row_1, ~col_1)$ in the reference image, then we can deduce its ground location $(X, ~Y, ~Z)$ using $\RPC_1^{-1}$. The position in the secondary image of those coordinates can then be retrieved using $\RPC_2$. In short, we found the secondary coordinates $(row_2,~col_2)$ of a pixel $(row_1,~col_1)$ in the reference image given an elevation $Z$: 
 \begin{equation}
     (row_2,~col_2) = \RPC_2\circ\RPC_1^{-1}(row_1, ~col_1, ~Z)\label{eq:epipolar_transfer}
 \end{equation}
-By varying the altitude in the range of considered elevations $[Z_{min},~Z_{max}]$, $\RPC_2\circ\RPC_1^{-1}$ provides a characterization of the parallax between images. The lines described by $\RPC_2\circ\RPC_1^{-1}$ are thus the epipolar curves for the reference image. Similarly, $\RPC_1\circ\RPC_2^{-1}$ provides the epipolar curves for the secondary. The range of considered elevations $[Z_{min},~Z_{max}]$ can be determined with a low resolution digital elevation model. This is not constraining as a geoid of the Earth can be used, and there also exists open models such as the NASA's SRTM \cite{farr_shuttle_2007} ($30$m and $90$m of resolution between $-56\degree$ and $60\degree$ of latitude), or ESA's Copernicus DEM ($30$m and $90$m of resolution worldwide). 
+By varying the altitude in the range of considered elevations $[Z_{min},~Z_{max}]$, $\RPC_2\circ\RPC_1^{-1}$ provides a characterization of the parallax between images. The lines described by $\RPC_2\circ\RPC_1^{-1}$ are thus the epipolar curves for the reference image. Similarly, $\RPC_1\circ\RPC_2^{-1}$ provides the epipolar curves for the secondary. The range of considered elevations $[Z_{min},~Z_{max}]$ can be determined with a low resolution digital elevation model. This is not constraining as a geoid of the Earth can be used, and there also exists open models such as the NASA's SRTM \cite{farr_shuttle_2007} ($30$m and $90$m of resolution between $-56\degree$ and $60\degree$ of latitude), or ESA's Copernicus DEM ($30$m and $90$m of resolution worldwide).  \todoroman{Parler aussi de la RGE Alti de l'IGN. regarder aussi s'ils ont un masque de perf}
 
 \begin{figure}
     \centering
@@ -131,6 +129,8 @@ Because the geolocation models have a limited precision, there might be a misali
 \begin{remark}
     By computing the disparity for the set of SIFT points, it is possible to estimate the range of disparities to be considered in the dense matching step for a relatively low computation cost. It is also possible to get an approximation of the elevations of each SIFT match, by converting their disparity into height using the $B/H$ ratio as presented in section \ref{sec:stereo_matching}. A low resolution elevation model can then be derived from it, thus removing the need of an external model such as SRTM or Copernicus DEM.\commanue{Je ne suis pas sure que ça doit rester juste une remarque}
 \end{remark} 
+
+Epipolar grids can also provide a good approximation of the disparity to altitude ratio $d_{alt}$ over the whole image, which can be used to determine the approximate $Z$ resolution of the DSM. It can also convert disparities into height as we will see in section \ref{sec:uncertainty_pandora}. 
 
 \subsection{Stereo Matching}\label{sec:stereo_matching}
 \subsubsection{Different Approaches}
@@ -283,11 +283,11 @@ When all regularized cost curves $L_r$ have been computed, they are summed to ob
 The cost volume $C^{SGM}_V$ contains the regularized cost for 
 Since the original paper \cite{hirschmuller_accurate_2005}, different variations of the SGM algorithm have been proposed. For instance using different regularization paths \cite{facciolo_mgm_2015} or a different strategy for the aggregation of costs \cite{poggi_learning_2016}.
 
-The main problem of SGM regularization is its reluctancy to detect discontinuities in the disparity map. Indeed, SGM penalizes disparity changes, therefore strong variations of disparity are badly reconstructed. For instance near the border of a building, instead of a having the desired discontinuity in the disparity map, there can be a smooth transition between the roof and the road, leading to rounded borders and soft edges of buildings. This is even reinforced with the window adherence problem presented in \ref{fig:adherence_window}. Figure \ref{fig:DSM_toulouse} presents a comparison of two DSM: one obtained directly from LiDAR HD data, and the other using the CARS pipeline with the CENSUS cost function over a $5\times5$ window and with SGM regularization. We can this on this figure that the border of the buildings obtained using SGM regularization are not as sharp and precise as those of the LiDAR DSM. To provide a solution to this problem, one might limit the SGM regularization to pixels from the same object, defined using a segmentation \cite{dumas_improving_2022}. This method relies on the quality of the segmentation method used and can become quite costly. It has not been considered in the context of this thesis. \todoroman{est-ce que c'est prévu de l'utiliser dans le pipeline CO3D? Sinon je peux aussi dire que je ne considère que ce pipeline là}
+The main problem of SGM regularization is its reluctancy to detect discontinuities in the disparity map. Indeed, SGM penalizes disparity changes, therefore strong variations of disparity are badly reconstructed. For instance near the border of a building, instead of a having the desired discontinuity in the disparity map, there can be a smooth transition between the roof and the road, leading to rounded borders and soft edges of buildings. This is even reinforced with the window adherence problem presented in \ref{fig:adherence_window}. Figure \ref{fig:DSM_toulouse} presents a comparison of two DSM: one obtained directly from LiDAR HD data \cite{monnet_lidarhd_2023}, and the other using the CARS pipeline with the CENSUS cost function over a $5\times5$ window and with SGM regularization. We can this on this figure that the border of the buildings obtained using SGM regularization are not as sharp and precise as those of the LiDAR DSM. To provide a solution to this problem, one might limit the SGM regularization to pixels from the same object, defined using a segmentation \cite{dumas_improving_2022}. This method relies on the quality of the segmentation method used and can become quite costly. It has not been considered in the context of this thesis. \todoroman{est-ce que c'est prévu de l'utiliser dans le pipeline CO3D? Sinon je peux aussi dire que je ne considère que ce pipeline là}
 
 \begin{figure}
     \centering
-    \begin{subfigure}{0.5\linewidth}
+    \begin{subfigure}[t]{0.5\linewidth}
         \centering
         \includegraphics[height=6cm]{Images/Chap_1/DSM_Capitole_LiDAR.png}
         \caption{DSM from LiDAR HD data,\\Place du Capitole}
@@ -296,19 +296,19 @@ The main problem of SGM regularization is its reluctancy to detect discontinuiti
         %    \vfill              % This blank minipage is used to align
         %\end{minipage}          % images
     \end{subfigure}\hfill
-    \begin{subfigure}{0.5\linewidth}
+    \begin{subfigure}[t]{0.5\linewidth}
         \centering
         \includegraphics[height=6cm]{Images/Chap_1/DSM_Capitole_CARS.png}
         \caption{CARS DSM from Pléiades images,\\Place du Capitole}
         \label{fig:DSM_capitole_cars}
     \end{subfigure}
-    \begin{subfigure}{0.5\linewidth}
+    \begin{subfigure}[t]{0.5\linewidth}
         \centering
         \includegraphics[height=6cm]{Images/Chap_1/DSM_Wallon_LiDAR.png}
         \caption{DSM from LiDAR HD data,\\Ernest Wallon stadium}
         \label{fig:DSM_ernest_wallon_lidar}
     \end{subfigure}\hfill
-    \begin{subfigure}{0.5\linewidth}
+    \begin{subfigure}[t]{0.5\linewidth}
         \centering
         \includegraphics[height=6cm]{Images/Chap_1/DSM_Wallon_CARS.png}
         \caption{CARS DSM from Pléiades images,\\Ernest Wallon stadium}
@@ -331,13 +331,13 @@ It is common to add a sub-pixel refinement step, where a non-integer disparity i
 
 \begin{figure}
     \centering
-    \begin{subfigure}{0.5\linewidth}
+    \begin{subfigure}[t]{0.5\linewidth}
         \centering
         \includegraphics[width=\linewidth]{Images/Chap_1/subpixel_refinment_vfit.png}
         \caption{V-fit sub-pixel refinement}
         \label{fig:vfit_refinement}
     \end{subfigure}\hfill
-    \begin{subfigure}{0.5\linewidth}
+    \begin{subfigure}[t]{0.5\linewidth}
         \centering
         \includegraphics[width=\linewidth]{Images/Chap_1/subpixel_refinment_parabola.png}
         \caption{Parabola sub-pixel refinement}
@@ -356,7 +356,7 @@ As presented previously, the \textit{winner-takes-all} strategy presents the inc
 where $\tau$ is a consistency threshold usually set to $1$. For errors that do not check this consistency check, it has been proposed in \cite{hirschmuller_stereo_2008} to differentiate between mismatched pixels (pixels for which there exists a correct match) and occluded pixels (pixels that visible in an image but masked by an object in the other) as follows: if there is a disparity $d\in\mathcal{D}$ such that $\mathcal{D}'(row, col+d)=-d$ then it is a mismatch. Otherwise, pixel $(row, ~col)$ is occluded. Occluded regions of an image can be filled by interpolation with the closest valid disparities.  
 
 \begin{remark}
-     Equation \eqref{eq:cross-checking} requires the computation of a second cost volume, effectively doubles the processing time. As dense stereo matching is also the longest part of a photogrammetry pipeline, one might be reticent to carry out a cross-checking step. However, one might make the following observation: the cost volume contains the dissimilarity between every considered pair of pixels in the disparity range, so the cost of every considered match in the first cost volume is also present in the second cost volume. In theory, for every pixel $(row, ~col)$ and for every disparity $d$ in the (reference) disparity range, it holds:
+     Equation \eqref{eq:cross-checking} requires the computation of a second cost volume, effectively doubles the processing time. As dense stereo matching is also the longest part of a photogrammetry pipeline, one might be reticent to carry out a cross-checking step. However, one might make the following observation: the cost volume contains the dissimilarity between every considered pair of pixels in the disparity range, so the cost of every considered match in the first cost volume is also present in the second cost volume. In theory, for every pixel $(row, ~col)$ and for every disparity $d$ in the (reference) disparity range, it holds \cite{bebis_mutual_2008}:
      \begin{align}\label{eq:diagonal_search}
          C_V(row,~col,~d) = C_V'(row,~col+d, -d)
      \end{align}
@@ -369,7 +369,7 @@ When working with pinhole camera models, the depth $z$ of a pixel is computed us
 \end{equation}
 where $B$ is the baseline between cameras, $f$ is the focal length of the camera, and $d$ is the disparity of a pixel. This formula can be found using optical geometry \cite{bolles_epipolar-plane_1987}, and illustrate the fact that pixels closer to the camera present a bigger position shift in between images. In the case of satellite imagery, the pinhole camera model is not valid and we instead use other geometrical models (see section \ref{sec:sensors_rpc}). Equation \eqref{eq:z_bfd} thus cannot be used as such to provide accurate results.
 \begin{remark}
-	 Equation \eqref{eq:z_bfd}, although not used to determine the DSM, still prodides an estimation of the height which can for instance used to determine the height of SIFT matches during the epipolar resampling step. Equation \eqref{eq:z_bfd} also defines an important quantity, the $B/z$ ratio, usually called $B/H$. This ratio is used to indicate the disposition of satellites during the stereo acquisitions. A $B/H$ ratio near $0$ indicates a narrow angle between satellites, which will result in a DSM with few occluded areas but with low precision (an error of one disparity results in a larger height error). Conversely, a higher $B/H$ ratio indicates a large angle between satellites, resulting in a DSM with more occluded areas but with higher precision. In the case where one acquisition is made at Nadir, the $B/H$ ratio equals the tangent of the angle formed between satellites views. For information purposes, the CO3D mission will provide acquisition with a $B/H$ ratio between $0.2$ and $0.3$. \todoroman{Mettre le B/H sur le schéma des RPC ?}
+	 Equation \eqref{eq:z_bfd}, although not used to determine the DSM, still prodides an estimation of the height which can for instance used to determine the height of SIFT matches during the epipolar resampling step. Equation \eqref{eq:z_bfd} also defines an important quantity, the $B/z$ ratio, usually called $B/H$. This ratio is used to indicate the disposition of satellites during the stereo acquisitions. A $B/H$ ratio near $0$ indicates a narrow angle between satellites, which will result in a DSM with few occluded areas but with low precision (an error of one disparity results in a larger height error). Conversely, a higher $B/H$ ratio indicates a large angle between satellites, resulting in a DSM with more occluded areas but with higher precision. In the case where one acquisition is made at Nadir, the $B/H$ ratio equals the tangent of the angle formed between satellites views. For information purposes, the CO3D mission will provide acquisition with a $B/H$ ratio between $0.2$ and $0.3$.
 \end{remark}
 
 RPC models. Line of sight intersection
@@ -380,16 +380,6 @@ Gaussian rasterization. Holes filling.
 
 \subsection{From LiDAR to Ground Truth Disparity}
 Explaination on how to obtain GT disparity maps from georeferenced LiDAR, \cite{cournet_ground_2020}. Line of sight and default geoid. 
-
-\section{General Definition of Uncertainty}
-\commanue{Bonne intro sur l'incertitude, bravo ! Il te faudrait une petite phrase ou deux de transitions sur pourquoi tu abordes maintenant l'incertitude}
-Uncertainty is a situation where a measure or value of interest is not known, or not known with precision. It is subject to change, as additional information, measures or a different acquisition protocol may reduce how uncertain a value is. It can also be subjective. For instance someone maybe uncertain about the launch date of CO3D satellites while someone else working at the launch pad might have the answer. This highlights the fact that while everyone has an understanding of what uncertainty is, it encompasses very different concepts in nature. It is common to differentiate the various types of uncertainty by dividing it into two categories: stochastic (or random) uncertainty and epistemic uncertainty.
-
-Stochastic uncertainty refers to every situation of purely aleatoric nature. For instance, the result of a coin throw, random noise on a CCD captor or the Brownian movement of a particle. An operator typically encounters this kind of uncertainty in a situation where they have access to many measures or observations of the same value of interest. It is usually modeled mathematically with a frequentist approach, using probability measures such as the uniform distribution, Gaussian distribution, Student's $t$ distribution \etc 
-
-On the other hand, epistemic uncertainty refers to a situation where the value of interest is not known or ill-known due to a lack of knowledge. Think of the previous example with the launch date of satellites, or if someone was asked to guess Io's mass, one of the moons of Jupiter. There is no random process at stake here, and there is usually no point of acquiring multiple samples of the measure. Once the value of interest is known, the uncertainty usually no longer exists. It has been proposed to model this kind of uncertainty using probability, but with a Bayesian approach, by opposition with the frequentist approach. Probabilities here represent a state of knowledge, or degree of belief, one has over the value of interest. It can be update with additional knowledge, thus leading to the notion of prior and posterior probabilities. We will see in section \ref{sec:different_models_of_uncertainty} that other model can be used to characterize this uncertainty. 
-
-Although uncertainty can be complex and expensive to compute, characterizing and quantifying it has many benefits. It provides additional information for better decision making and risk management. It can also allow for a better understanding of the underlying processes at stake regarding the value of interest. In many cases, uncertainty estimation is treated as a secondary objective in applications. However, jointly estimating a value and its uncertainty can lead to new strategies to reduce the uncertainty or sometimes even improve the performances of the main applications \cite{chen_learning_2023,jiang_unsupervised_2024}.
 
 \section{Uncertainty in Stereophotogrammetry}\label{sec:previous_work_stereo_uncertainty}
 \todoroman{Sources d'incertitudes : acquisition des images et bruit sur le capteur. Précision du model RPC. Incertitude issue des différentes traitement (rééchantillonage, stereo matching). Intersection des lignes de visée. Rasterization.}
@@ -412,7 +402,7 @@ Dense stereo matching is a complex task, for which many different algorithms exi
 
 Once the disparity has been estimated, 3D points can be triangulated by intersecting RPC lines from each matched pixel. However, their is no guarantee that the 3D lines do indeed intersect. If they indeed do not intersect, the 3D point is determined as the point minimizing its squared distances to both lines of sight. An alternative is to modify the geolocation line from the secondary image so as it intersects the line from the reference image. In both cases, the localization of the 3D point is not exact. This uncertainty stems from the fact that we determine the 3D coordinates of the point from a match between two pixels that do not point exactly to the same object\commanue{Je comprends ce que tu veux dire. Avec l'échantillonnage des pixels les pixels ne sont pas exacteemnt comparable. Je réfélchis à comment le formuler}. Additionally, RPC models attempt to represent real lines of sight with polynomial coefficient, which is not exact and possess its own accuracy. The method used for coefficients calibration and the frequency of calibration also bring their share of uncertainty. Section \ref{sec:uncertainty_pandora} dives more into details regarding the different methods that have been developed to quantify the uncertainty of dense stereo matching.
 
-The final part of the stereo pipeline is to rasterize the point cloud onto a regular grid, thus yielding the DSM. When characterizing the uncertainty on the final result, we must first agree on what the DSM is supposed to represent. It is common to consider that each pixel's value should represent the average height over the cell. However, providing the maximum or minimal height might be more adapted to some scenarios: for instance if the DSM is used to prepare very low altitude flights (for drones \etc), the maximum height is more relevant as one would want to avoid any foliage or power line. In this thesis, we will consider that the DSM represents the (weighted) average height. The weights considered will be computed with a Gaussian whose variable is the distance to the center of the cell\commanue{Remarque un peu globale mise à l'arrache ici, mais il faudrait relire quand tu auras fini la partie d'avant pour voir si ça fait pas trop redite avec la description du pipeline}. Other weights can be considered, most notably the \textit{inverse distance weighting} (IDW), which produces very similar results in our applications. We now specified the projection method\commanue{Pourquoi au passé?}. Depending of the resolution of input images and the desired output resolution of the DSM, the density of points per DSM cell will vary. In our applications, the input and output resolutions are identical as we typically desire to produce a DSM at $50$cm resolution from $50$cm panchromatic images. This means that there is on average one $3D$ point per DSM cell. For occluded regions, or when we discarded stereo matches that seemed wrong, there might be no point directly in the output cell. In this case, the value of the DSM cell will be completely determined by the value of points in neighbouring cells, even if their distance is high and the averaging weights are small. Interpreting the final DSM as the average height on each cell is thus debatable, as the average is computed on a limited number of points, and sometimes not even belonging to the considered cell.  Note that if there is no points around in a given radius, the cell will be left empty. 
+The final part of the stereo pipeline is to rasterize the point cloud onto a regular grid, thus yielding the DSM. When characterizing the uncertainty on the final result, we must first agree on what the DSM is supposed to represent. It is common to consider that each pixel's value should represent the average height over the cell. However, providing the maximum or minimal height might be more adapted to some scenarios: for instance if the DSM is used to prepare very low altitude flights (for drones \etc), the maximum height is more relevant as one would want to avoid any foliage or power line. In this thesis, we will consider that the DSM represents the (weighted) average height. The weights considered will be computed with a Gaussian whose variable is the distance to the center of the cell\commanue{Remarque un peu globale mise à l'arrache ici, mais il faudrait relire quand tu auras fini la partie d'avant pour voir si ça fait pas trop redite avec la description du pipeline}. Other weights can be considered, most notably the \textit{inverse distance weighting} (IDW), which produces very similar results in our applications. We now specified the projection method\commanue{Pourquoi au passé?}. Depending of the resolution of input images and the desired output resolution of the DSM, the density of points per DSM cell will vary. In our applications, the input and output resolutions are identical as we typically desire to produce a DSM at $50$cm resolution from $50$cm panchromatic images. This means that there is on average one 3D point per DSM cell. For occluded regions, or when we discarded stereo matches that seemed wrong, there might be no point directly in the output cell. In this case, the value of the DSM cell will be completely determined by the value of points in neighbouring cells, even if their distance is high and the averaging weights are small. Interpreting the final DSM as the average height on each cell is thus debatable, as the average is computed on a limited number of points, and sometimes not even belonging to the considered cell.  Note that if there is no points around in a given radius, the cell will be left empty. 
 
 Different sources of uncertainty occurring throughout the stereo pipeline were presented in the previous paragraphs. Characterizing, modelling and propagating all of those uncertainties could not be considered in the span of this thesis. We thus focus mostly on the uncertainty arising from the dense stereo matching step, as it is the source of the biggest errors in the pipeline. Chapter \ref{chap:propagating} investigates how uncertainty from the input epipolar images can be propagated in the stereo matching step, and chapter \ref{chap:epistemic_uncertainty} attempts to model the processing uncertainty of stereo algorithm itself. We also propagate this uncertainty all the way to the output DSM and show that it can correctly estimate the errors made during the DSM production. 
 
@@ -426,11 +416,11 @@ The way uncertainty is quantified in stereo matching is by producing \textit{con
 There are multiple sources of information that can be used to compute a confidence measure. Left and right input images and the predicted disparity map being those available to every method, but cost-based approaches can also make use of the cost volume, as it contains a lot of useful information. Most confidence measures were first handcrafted using those different information sources. For reviews on those methods, we refer to \cite{egnal_stereo_2004, hu_quantitative_2012, poggi_quantitative_2017}. With the rising use of deep-learning in stereo, many networks have been developed to estimate the uncertainty. A review for methods using regression forests can be found in \cite{min-gyu_park_leveraging_2015}, and a more general review, including the use 2D and 3D CNNs on the cost volume, can be found in \cite{poggi_confidence_2021}.
 
 \begin{remark}
-     Quantifying the uncertainty in stereo matching is a popular field of research. Recently, people have even been trying to evaluate the uncertainty of the confidence estimation itself, called meta-confidence \cite{kim_meta-confidence_2022}.
+     Quantifying the uncertainty in stereo matching is a popular field of research. Recently, people have even been trying to evaluate the uncertainty of the confidence estimation itself, called \textit{meta-confidence} \cite{kim_meta-confidence_2022}.
 \end{remark}
 
 \begin{example}
-    Let us present some examples of confidence measures using different sources of information.
+    Let us present some examples of confidence measures that use different sources of information.
     
     Regarding confidence measure based on the disparity map, we already presented a type of binary confidence measure in section \ref{sec:postprocess_disparity} with the cross-checking test from equation \eqref{eq:cross-checking}. Other methods compute for instance the local variance of the disparity map, where a low variance suggests confident regions.
     
@@ -440,10 +430,106 @@ There are multiple sources of information that can be used to compute a confiden
     \end{equation}
     This measure can be normalized between $0$ and $1$ using the global minimum and maximum of the cost volume. The idea behind this measure is the following: a high matching cost for a selected disparity indicates that the two matched pixels are not that similar, and thus the match is not confident. Other measures using the matching cost compare the value of the first and second minimum of a cost curve, or measure the curvature of the cost curves. More advances measures make use of 3D CNNs on the entirety of the cost volume to learn an efficient confidence measure \cite{mehltretter_cnn-based_2019}.
     
-    Measure based on the input images usually measure the gradient \cite{haeusler_ensemble_2013} or variance \cite{park_learning_2019} of the images. High gradient or high variations indicate highly-textured regions, which are often easier to match. The confidence is therefore higher for those pixels. 
+    Measures based on the input images usually measure the gradient \cite{haeusler_ensemble_2013} or variance \cite{park_learning_2019} of input images. High gradient or high variances indicate highly-textured regions, which are often easier to match. The confidence is therefore higher for those pixels. 
     
-    Deep-learning approaches usually combine those multiple sources of information (input images, cost volume, disparity map) to learn a confidence measure \cite{tosi_beyond_2018, kim_adversarial_2020}.
+    Deep-learning approaches can combine multiple sources of information (input images, cost volume, disparity map) to learn a confidence measure \cite{tosi_beyond_2018, kim_adversarial_2020}.
 \end{example}
+
+In this thesis, we will also consider three confidence measures that can already be computed with our correlator. Those measures will help us to quantify the uncertainty in the photogrammetry pipeline or will be used as comparison with our proposed method.
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{0.5\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_1/Ambiguity.png}
+        \caption{}
+        \label{fig:ambgiuity}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.5\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_1/Risk.png}
+        \caption{}
+        \label{fig:risk}
+    \end{subfigure}\hfill
+    \caption{Cost curves with different levels of ambiguity \ref{fig:ambgiuity} and risk \ref{fig:risk}}
+    \label{fig:ambiguity_risk}
+\end{figure}
+
+The first confidence measure is a confidence measure called \textit{confidence from ambiguity} \cite{sarrazin_ambiguity_2021}. This method is based on the cost volume and quantifies how easy or hard it is to single out the correct disparity in a cost curve. Figure \ref{fig:ambgiuity} presents two curves: one that is ambiguous and one that is not. To compute it, we first start by constructing what is called an \textit{ambiguity curve}. We do that by counting how many disparities have a cost close within a threshold $\eta$ to the minimal cost, for increasing values of $\eta$. Figure \ref{fig:ambgiuity} presents two cost curves, one which is not ambiguous as there is a single well defined minimum, and an ambiguous cost curve which presents multiple values that are close to the minimum. Formally we need to define for a pixel $(row, ~col)$ the set of all disparities whose cost is within a range $\eta$ of the minimal cost, and then define the ambiguity curve as the cardinal of this set:
+\begin{align}
+    &\mathcal{D}_\eta = \{d ~|~ C_V(row,~col,~d) \leqslant \min_\delta C_V(row, ~col, ~\delta) + \eta\}\\
+    &Amb(row, ~col, ~\eta) = \#\mathcal{D}_\eta
+\end{align}
+where $\#$ is the cardinal of a set. Evaluating $Amb$ for different $\eta$ gives the ambiguity curve. Figure \ref{fig:integral_ambiguity_1} presents a cost curve with different values of $\eta$. Figure \ref{fig:integral_ambiguity_2} presents the resulting ambiguity curve. On those two figures we can see for instance that for $\eta_3$ there are $6$ disparities whose cost is lower than $\min_\delta C_V(row, ~col, ~\delta) + \eta_3$. For non-ambiguous cost curves, $Amb$ will increase only for high values of $\eta$. On the contrary, for ambiguous curves, $Amb$ will be high for small values of $\eta$. To obtain a scalar value from $Amb$, we compute the area under its curve, normalized by the range of $\eta$:
+\begin{equation}
+    \mathrm{AUC}_{Amb}(row, ~col) = \frac{1}{\max\eta-\min\eta}\int_\eta Amb(row,~col,~\eta)d\eta
+\end{equation}
+However, this results on low values for confident (non-ambiguous) cost curves, and high values for less confident (ambiguous) curves. The confidence from ambiguity $c_{Amb}$ is thus obtained by normalizing and reverting the integral:
+\begin{equation}\label{eq:confidence_from_ambiguity}
+    c_{Amb}(row, ~col) = \frac{\max \mathrm{AUC}_{Amb}- \mathrm{AUC}_{Amb}(row, ~col)}{\max \mathrm{AUC}_{Amb} -\min \mathrm{AUC}_{Amb}}
+\end{equation}
+This way, values of $c_{Amb}$ near $0$ indicate that we are not confident in the predicted disparity. Reversely, values of $c_{Amb}$ near $1$ indicate that we are confident in the predicted disparity.
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{0.6\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_1/Integral_Ambiguity_1.png}
+        \caption{Cost curve with different values of $\eta$. Horizontal dotted lines indicates the range of costs between $\min_\delta C_V(row, ~col, ~\delta)$ and $\min_\delta C_V(row, ~col, ~\delta)+\eta_3$}
+        \label{fig:integral_ambiguity_1}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.4\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_1/Integral_Ambiguity_2.png}
+        \caption{Associated ambiguity curve in full line. Ambiguous curve in gray dotted line}
+        \label{fig:integral_ambiguity_2}
+    \end{subfigure}\hfill
+    \caption{Illustration of the computation of the ambiguity curve.}
+    \label{fig:integral_ambiguity}
+\end{figure}
+
+The second confidence measure that we consider is named \textit{confidence from risk}. It is designed to measure if the magnitude of a potential error is high or low. After all, if we predict a wrong disparity while the correct disparity is right next to our prediction, the impact on the final result will be smaller than if the true disparity is at the other side of the disparity range. Keeping this in mind, we apply the same methodology as for the ambiguity. We consider the set $\mathcal{D}_\eta$ of all disparities whose cost is less than $\eta$ away from the minimal cost, and define the risk as the gap between extrema of this set:
+\begin{equation}
+    R(row, ~col, ~\eta) = \max_{\mathcal{D}_\eta}d - \min_{\mathcal{D}_\eta}d
+\end{equation}
+Figure \ref{fig:integral_risk_1} presents a cost curve with different values of $\eta$ and their associated risk $R$. Figure \ref{fig:integral_risk_2} presents the resulting risk for all $\eta$. For non-risky cost curves, $R$ will increase only for high values of $\eta$. On the contrary, for risky curves, $R$ will be high for small values of $\eta$. To obtain a single scalar, we compute the area under the risk curve, normalized by the range of $\eta$:
+\begin{equation}
+    \mathrm{AUC}_R = \frac{1}{\max\eta-\min\eta}\int_\eta R(row,~col,~\eta)d\eta
+\end{equation}
+$\mathrm{AUC}_R$ is thus expressed in number of disparities. Contrary to the confidence from ambiguity, the risk is kept as such with its current unity. 
+
+\begin{remark}
+     The risk measures the magnitude of the potential error, but not its probability. It is therefore possible to have a very risky cost curve, but which is not ambiguous at all. In other words, it means that the probability of an error occurring can be very low, but if it somehow happened, then the magnitude of this error would also be very low. The risk is thus a confidence measure that need to be completed by a measure such as ambiguity. On it own, it has less meaning than other measures.
+     
+    \begin{comment}
+        As detailed in section \ref{sec:co3d}, on of the requirements of the CO3D mission is to produce a performance map associated with the output DSM, expressed in meters. In order to produce such a performance map, one of the leads explored at CNES was to combine the confidence from ambiguity and the risk. This is done by weighting the risk with $1-c_{Amb}$, so as to reduce the risk of confident pixels. The result, expressed in number of disparities, can itself be converted into meters using the disparity to altitude ratio $d_{alt}$ computed along epipolar grids (see section \ref{sec:epipolar_geometry}). Finally, internal studies using real data have concluded that a good candidate for a performance criterion was:
+        \begin{equation}
+            perf(row, ~col) = \min(1, ~\frac{1-c_{amb}(row,~col)}{\tau_{amb}})\cdot \mathrm{AUC}_R(row,~col) \cdot d_{alt}
+        \end{equation}
+        where $\tau_{amb}$ is a threshold usually set to $0.4$. In plain words, if the confidence from ambiguity drops below $1-\tau_{amb}$, then we do not use the ambiguity weighting and the performance equals $\mathrm{AUC}_R \cdot d_{alt}$. This performance criterion thus provide a confidence measure expressed in meters, associated to a 3D point, which can then be rasterized alongside the DSM to produce the desired performance map. We will use it as a comparison for our method in chapter \ref{chap:epistemic_uncertainty}.
+    \end{comment}
+\end{remark}
+
+\todoroman{Dire qu'il y a eu des tentatives internes pour allier risk et amb pour faire une carte de perf. Nos travaux s'inscrivent dans cette continuité pour proposer une autre méthode. Il est envisagé de peut être l'utiliser dans la chaine CO3D.}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{0.6\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_1/Integral_Risk_1.png}
+        \caption{Cost curve with different values of $\eta$ and risk}
+        \label{fig:integral_risk_1}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.4\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_1/Integral_Risk_2.png}
+        \caption{Associated risk curve in full line. Risky curve in gray dotted line}
+        \label{fig:integral_risk_2}
+    \end{subfigure}\hfill
+    \caption{Illustration of the computation of the risk curve.}
+    \label{fig:integral_risk}
+\end{figure}
+
 
 \pagebreak
 \blankpage

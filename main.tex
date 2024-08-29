@@ -2,7 +2,7 @@
 \documentclass[a4paper,fleqn,12pt,openright]{report}
 %============================= Packages ================================
 
-\usepackage[english,french]{babel}
+\usepackage[french,english]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage{ae,lmodern} % Vectorial font
 \usepackage[T1]{fontenc}  % Zotero must export bib.tex in Western instead of UTF to avoid problem for \THORN characters
@@ -79,6 +79,8 @@
     }
 }
 \DeclareMathOperator*{\argmin}{arg\,min} % thin space, limits underneath in displays
+\DeclareMathOperator*{\mean}{mean}
+
 
 %%%%%%%%%%%%%%%%% Defining the properties of the frames for theorems etc %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mdfsetup{skipabove=\topskip, skipbelow=\topskip}  % Define Skips between the frames and text above and bellow
@@ -223,46 +225,55 @@
 
 \begin{document}
 
-\definecolor{color}{HTML}{F5F5F5}
-\definecolor{ForestGreen}{HTML}{228B22}
-%======================= Page de Garde =================================
-\thispagestyle{empty}
-\include{Misc/title_page}
-
-%==================== Glossaire, TOC etc ===============================
-\tableofcontents
-\thispagestyle{empty}
-\pagebreak
-\glsaddall
-\pagenumbering{Alph}  % Switch Numerotation of pages to uppercase letters
-\setcounter{page}{0}  % Resetting the page number
-\printglossary[type=\acronymtype,nonumberlist]
-\printglossary[nonumberlist]
-\pagebreak
-
-%========================== Les choses sérieuses commencent ===========
-
-\pagenumbering{arabic}  % Switch numerotation of pages to Arabic
-%\doublespacing
-\onehalfspace
-
-\input{Chapters/0_intro}
-
-\input{Chapters/1_intro_to_stereo}
-
-\input{Chapters/2_mathematical_representation_of_uncertainty}
-
-\input{Chapters/3_joining_credal_sets_using_copulas}
-
-\input{Chapters/4_propragating_the_uncertainty_to_stereo_images}
-
-\input{Chapters/5_epistemic_uncertainty_in_stereo_matching}
-
-\input{Chapters/6_results}
-
-\input{Chapters/Conclusion}
-
-\singlespace
-\bibliography{thesis}
+    \definecolor{color}{HTML}{F5F5F5}
+    \definecolor{ForestGreen}{HTML}{228B22}
+    %======================= Page de Garde =================================
+    \thispagestyle{empty}
+    \setkeys{Gin}{draft=true}
+    \include{Misc/title_page}
+    
+    %==================== Glossaire, TOC etc ===============================
+    \tableofcontents
+    \thispagestyle{empty}
+    \pagebreak
+    \glsaddall
+    \pagenumbering{Alph}  % Switch Numerotation of pages to uppercase letters
+    \setcounter{page}{0}  % Resetting the page number
+    \printglossary[type=\acronymtype,nonumberlist]
+    \printglossary[nonumberlist]
+    \pagebreak
+    
+    %========================== Les choses sérieuses commencent ===========
+    
+    \pagenumbering{arabic}  % Switch numerotation of pages to Arabic
+    %\doublespacing
+    \onehalfspace
+    
+    \setkeys{Gin}{draft=false}
+    \input{Chapters/0_intro}
+    
+    \setkeys{Gin}{draft=true}
+    \input{Chapters/1_intro_to_stereo}
+    
+    \setkeys{Gin}{draft=true}
+    \input{Chapters/2_mathematical_representation_of_uncertainty}
+    
+    \setkeys{Gin}{draft=true}
+    \input{Chapters/3_joining_credal_sets_using_copulas}
+    
+    \setkeys{Gin}{draft=true}
+    \input{Chapters/4_propragating_the_uncertainty_to_stereo_images}
+    
+    \setkeys{Gin}{draft=true}
+    \input{Chapters/5_epistemic_uncertainty_in_stereo_matching}
+    
+    \setkeys{Gin}{draft=true}
+    \input{Chapters/6_results}
+    
+    \setkeys{Gin}{draft=true}
+    \input{Chapters/Conclusion}
+    
+    \singlespace
+    \bibliography{thesis}
 
 \end{document}

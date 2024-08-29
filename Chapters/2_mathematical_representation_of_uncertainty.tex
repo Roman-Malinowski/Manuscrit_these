@@ -23,6 +23,10 @@ Assessing the reliability of an engineering system requires to quantify the unce
 \end{itemize}
 This list is not exhaustive. Additionally, those different models can sometimes be equivalent. Choosing to use one or another depends on the nature of the problem and of the available data. In this chapter, we will mainly consider probability distributions (section \ref{sec:probabilities}) and imprecise probabilities (section \ref{sec:imprecise_probabilities}). Two specific cases of imprecise probabilities will be detailed, namely possibility distributions in section \ref{sec:possibilities} and p-boxes in section \ref{sec:pboxes}.
 
+\begin{remark}
+    Distinguishing between stochastic and epistemic uncertainty is a model accepted by many to distinguish between different situations of uncertainty. One could argue that stochastic uncertainty is, to a certain degree, the same thing as epistemic uncertainty. Indeed, if we had enough knowledge on initial conditions of a dice throw for instance (force and torque applied on the dice, its exact shape and mass distribution \etc), as well as the exact physics model, one could predict with certainty on which side it would land. There would therefore be no aleatoric process at stake here. The question of whether or not we should make the distinction between aleatoric and epistemic uncertainty is of interest regarding theoretical aspects of the nature of uncertainty. For real-life applications however, differentiating between the two seems reasonable as we cannot know every parameter and exact model at stake for every quantity of interest. 
+\end{remark}
+
 At the end of the day, choosing one model over another is not always straightforward. It requires to be aware of the type of uncertainty faced, of the strengths and limitations of each model, of the tools available to manipulate the models \etc When it comes to less common models cited above, it fundamentally requires to be aware of the existence of such models, which is not always the case for non-specialists. During this thesis, we tried to promote less common models, especially possibility distributions. We did so by presenting real life cases where they could be used while improving uncertainty modeling in the field of stereo-photogrammetry (see chapters \ref{chap:propagating} and \ref{chap:epistemic_uncertainty}). \comroman{Je pense que cette remarque devrait plutôt se retrouver dans l'intro de la thèse, car elle s'éloigne de ce qui suit. Peut être même que les deux paragraphes pourraient être déplacés dans l'intro}\commanue{Oui tu peux mettre cela dans l'intro, ce sera mieux. Après la remarque est très bien}
 
 \subsection{Probabilities}\label{sec:probabilities}
@@ -153,9 +157,9 @@ Although, it is not required, we usually assume credal sets verify additional pr
         \M \neq \emptyset\label{eq:avoid_sure_loss}
     \end{equation}
     
-    A credal set $\M$ is said to be \textit{coherent} if its lower bounds an all events are attained by a probability measure, \ie if \commanue{C'est pas low(A) = P(A) dans l'équation et la phrase ne mentione upper bounds, j'ai l'impression qu'il te manque un bout ou c'est mon anglais qui est nul}:
+    A credal set $\M$ is said to be \textit{coherent} if its lower and upper bounds on all events are attained by a probability measure, \ie if:
     \begin{equation}
-        \forall A\in\mathcal{A}, \exists P, P'\in\M~\st~\low(A)=A \text{ and } \overline{P}(A)=P'(A) 
+        \forall A\in\mathcal{A}, \exists P, P'\in\M~\st~\low(A)=P(A) \text{ and } \overline{P}(A)=P'(A) 
     \end{equation}
 \end{definition}
 The bounds $\low, \overline{P}$ of a coherent credal set verifies the following property:
@@ -919,5 +923,7 @@ We do not present the $n$-dimensional general case here as it is a bit more comp
     \item The desired draw is $(x_1,\dots, x_n)=(F^{-1}_1(w_1), \dots, F^{-1}_n(w_n))$ with $F_i^{-1}$, being the quasi-inverse of the $i$-th marginal CDF.
 \end{itemize}
 \commanue{Alors il manque une conclusion un truc, là ça termine un peu de manière abrupte, transition donc ;)}
+
+
 \pagebreak
 \blankpage
