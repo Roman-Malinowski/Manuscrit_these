@@ -1,103 +1,265 @@
-\chapter{Propagating the Uncertainty of Stereo Images through a Cost Function}\label{chap:propagating}
-\todoroman{Mettre du contexte avec les objectifs, les hypothèses}
+\chapter{Propagating the Uncertainty from Stereo Images to the Cost Volume}\label{chap:propagating}
 \todoroman{Citer la publication d'origine pour les figure (license CC BY)}
-\todoroman{Loïc se demande à juste titre si le Chapitre 4 et 5 doivent bien se suivre ou s'ils doivent être vus comme deux applications différentes. A y réfléchir et à trancher.}
-This chapter details the work conducted on the propagation of uncertainty from images\commanue{Il faudrait être plsu précis. Tu vas t'intéresser à comlent l'incertitude sur la valeur des pixels se propage} into the cost curves of dense matching problems\commanue{Tu pourrais même aller jusqu'à dire jusqu'au choix de la disparité (bon d'accord sans SGM)}. We consider a simple model of uncertainty on the input images, a dependency model between the uncertain intensities of the images, and estimate the resulting uncertainty on the output cost curves. This chapter takes up work and data already published \cite{malinowski_copulas_2022, malinowski_uncertainty_2023}.
+The previous chapter presented different methods for joining credal sets using a copula. In this chapter, we will see how those results can be applied to propagate the uncertainty in a stereo matching example. More specifically, we will use possibility distributions from chapter \ref{chap:representation_of_uncertainty} as uncertainty models on the intensity values of epipolar images used in stereo matching. We will then propagate the uncertainty from those images to the cost volume using results from section \ref{subsec:necessity_functions}. We will also show that propagating the uncertainty has the potential to improve the disparity map derived from the cost volume. This chapter takes up work and data already published \cite{malinowski_copulas_2022, malinowski_uncertainty_2023}.
+
+It is important to note that in this disparity estimation problem, we only account for the uncertainty in our input image intensities, without considering the uncertainty in our cost function's ability to correctly identify the true disparity as its minimum. In other words, we do not account for the uncertainty arising from the difference between ``two patches are very similar'' and ``the pixels at the center of the patches are homologous''. We refer to figure \ref{fig:adherence_window} and the discussion in section \ref{sec:stereo_matching} regarding the adherence problem for more details. We focus in this chapter on the propagation of uncertainty. We will thus consider a stereo matching pipeline with a simple cost function and no SGM regularization. Indeed, propagating the uncertainty through a cost volume optimization is too complex and computationally expensive to be solved with this chapter's method. We will consider the different problem of uncertainty modelling with SGM regularization in the following chapter, chapter \ref{chap:epistemic_uncertainty}. 
+\todoroman{Je remets ici les commentaires de Manue que j'ai commencé à intégrer:  1) le problème global que tu cherches à résoudre 2) les paramètres que tu vas utiliser pour le matching genre la fonction de coût considérer 3) les hypothèses simplificatrices. Général vers particulier. Et ensuite dans tous les cas il te faudra une sorte de synthèse à la fin de la section pour résumer les choix}
 
 \section{Hypothesis for Uncertainty in Stereo Matching}\label{sec:sources_of_uncertainty}\commanue{J'ai toujours un pb avec ce titre, je le trouve super vague. Dans le cas précis, c'est les hypothèses/conditions que tu considères pour ton étude. C'est le contexte. Je me demande si il ne faudrait pas faire ressortir dans le texte, les hypothèses/conditions considérées ou alors faire un encart à la fin de la section pour que ce soit bien clair pour tout le monde le cadre d'utilisation. J'ai pas encore lu mais si tu as un cadre d'utilsiation, il faut que tu dises si c'est réaliste et applicable, ou au contrare très théorique et plus là pour donner une illustration posisble ce qu'on pourrait faire. ça manque peut-être dans l'intro d'expliquer l'applicabilité de ce cas d'utilisation et je te l'accorde je fais les remarques complètement dans le désordre. }
-\todoroman{Faire référence à une section 'Sources of Uncertainty' présentées dans l'intro/Chap 1 de la thèse.}
-\todoroman{Points à aborder: Atmospheric correction, vibration, resolution of a pixel, discretization.
-CO3D mission will not have the epipolar line correction problem that is encountered with pleiades images.
-Epipolar line rectification for Pléiades is a problem that is not dealt here.}
 
-To maintain simplicity in this section, we will not consider panchromatic images, such as Pléiades products, encoding the reflectance values as positive integer, usually contained in $[0, 5000]$. Instead, we consider grayscale images that have intensity levels quantified within the range $[0, 255]$, which will represent our measurable space $\X$. We hypothesize that a pixel's intensity value can deviate by no more than $1$ level from its observed value, with the observed value being the most likely\commanue{Est-ce que c'est réaliste? Est-ce que tu as fixé la valeur car il fallait fixer une valeur mais le raisonnement reste valide avec peut-être des calculs plus long ?}. This hypothesis arises from the noise of the sensor capturing the image, from pre-processing steps (see section \ref{sec:classical_stero_pipeline}) or from the quantification of observed radiometric values into integers. We assume this simple hypothesis to keep our explanation straightforward\commanue{Ok tu donnes une information sur ton choix ici mais ça reste léger}. Consequently, we model the uncertainty of each pixel $p\in I_L,I_R$ intensity with a possibility distribution $\pi$, centered around the observed intensity $i_p\in[0,255]$:
+\subsection{Considered Stereo Matching Pipeline}
+We consider the Sum of Absolute Differences (SAD) as our cost function, presented in section \ref{sec:cost_volume_computation}, and reminded here. Given patches $W_L\subset I_L$ and $W_R\subset I_R$ of the same shape with $n$ pixels (usually squares):
+\begin{align}
+    \SAD(W_L, W_R) = \sum_{(p_i, q_i)\in (W_L, W_R)}|I_L(p_i) - I_R(q_i)|\label{eq:SAD}
+\end{align}
+where $p_i$ and $q_i$ are pixels at the same position $i$ in their patch. For convenience purposes, we will refer to the Absolute Difference between two pixels as AD (when there is no sum involved). An illustration of the AD between pixels and SAD cost function can be found in Figure \ref{fig:SAD}.
+
+\begin{remark}
+    Although the SAD is not the best performing cost function for dense matching, it is both fast and easily parallelizable. It is often use for comparison in cost-based stereo algorithms \cite{hirschmuller_evaluation_2007, zbontar_stereo_2016}, or in other applications. Considering a simple cost function such as SAD is relevant for different reasons:
+    \begin{itemize}
+        \item Simple stereo matching algorithms are often used as a quick and easy method for estimating the disparity.
+        \item Simple cost functions (such as SAD, ZNCC, \etc) considered here are still used in other problems, such as video compression for instance \cite{richardson_h264_2006}.
+        \item As both stereo matching and uncertainty propagation can be complicated problems, considering a simple stereo algorithm allow us to remain (relatively) simple and didactic in our explanations. 
+    \end{itemize}
+\end{remark}
+
+As stated previously, we will not consider in this chapter the use of Semi Global Matching (or similar regularization methods), as it necessitates many operations due to its recursive formulation and thus greatly increases complexity for the uncertainty propagation. We diverge from state-of-the-art methods to keep explanations as simple as possible, however the modeling of uncertainty for more advanced cost functions and SGM methods will be considered in chapter \ref{chap:epistemic_uncertainty}.
+
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\linewidth]{Images/Chap_4/SAD.png}
+    \caption{Diagram representing the $SAD$ cost function between two $3\times3$ patches. From \cite{malinowski_uncertainty_2024}}
+    \label{fig:SAD}
+\end{figure}
+
+\subsection{Uncertainty Model for Epipolar Images Intensities}
+To maintain simplicity in this section, we will not consider panchromatic images, such as Pléiades products, encoding the reflectance values as positive integer, usually contained in $[0, 5000]$. Instead, we consider grayscale images that have intensity levels quantified within the range $[0, 255]$, which will represent our measurable space $\X$.
+
+\begin{remark}
+    This hypothesis is not constraining as we can easily normalize reflectances in order to encode them using 8-bit integers value, although doing so reduces the precision of the initial images. Moreover, this normalization step is often required to fit a given format, for instance if the images must be processed by a CNN trained on 8-bit integers.
+\end{remark}
+
+We hypothesize that a pixel's intensity value can deviate around its its observed value with a range of $\pm i_\sigma$, with the observed value being the most likely. This specific hypothesis as it remains simple and relatively plausible with regards to the processing leading to the epipolar images. We suppose that the uncertainty from the noise of the sensor capturing the image, from pre-processing steps such as atmospheric correction or epipolar resampling (see section \ref{sec:uncertainty_cars}) or from the quantification of observed radiometric values into integers, are not exactly known, but can be model by a possibility distribution. This hypothesis does not seem far-stretched depending on the range of possible intensities. Consequently, we model the uncertainty of each pixel $p\in I_L,I_R$ intensity with a possibility distribution $\pi$, centered around the observed intensity $i_p\in[0,255]$:
 \begin{equation}
-    \pi(i_p)=1,\quad \pi(i_p\pm1)=\alpha\,,
+    \pi(i_p)=1,\quad \pi(i_p\pm i_\sigma)=\alpha\,,
 \end{equation}\label{eq:pixel_possibility}
-with $\alpha \in [0,1]$. The $\pm$ indicates that both positive and negative values are considered. In our simulation, $\alpha = 0.3$ for pixels in the left image and $\alpha = 0.4$ for pixels in the right image\commanue{Je ne sais pas si tu synthétises les valeurs quelque part mais ce serait cool, ça peut être un tableau en annexe, sinon ça oblige à relire la section pour retrouver les valeurs}. We use different values of $\alpha$ for the left and right images because the uncertainty model may vary between images due to differences in exposure, noise levels, or camera calibration. This model effectively states that we accept any probability distribution supported within $[i_p - 1, i_p + 1]$ where the probability measure $P$ satisfies $\{P(A) \leq \sup_{i \in A} \pi(i)\}$ as an acceptable model for our uncertainty. The mass distribution function $m_p$ associated to this credal set possesses two focal sets $a^p$:
+with $\alpha \in [0,1]$. The $\pm$ indicates that both positive and negative values are considered. To remain simple, we chose $i_\sigma=1$ in the following, which is relatively narrow but simplifies without impacting our reasoning. In our simulation, $\alpha = 0.3$ for pixels in the left image and $\alpha = 0.4$ for pixels in the right image\commanue{Je ne sais pas si tu synthétises les valeurs quelque part mais ce serait cool, ça peut être un tableau en annexe, sinon ça oblige à relire la section pour retrouver les valeurs}. We use different values of $\alpha$ for the left and right images because the uncertainty model may vary between images due to differences in exposure, noise levels, or camera calibration. The values on themselves are chosen arbitrarily for the purpose of this example. From a credal set interpretation, this model effectively states that we accept any probability distribution supported within $[i_p - 1, i_p + 1]$ where the probability measure $P$ satisfies $\{P(A) \leq \sup_{i \in A} \pi(i)\}$ as an acceptable model for our uncertainty. The mass distribution function $m_p$ associated to this credal set possesses two focal sets $a^p$:
 \begin{eqnarray}
     &m_p(a^p_1=\opi i_p, i_p\cli)=1-\alpha\,\nonumber\\
     &m_p(a^p_2=\opi i_p-1, i_p + 1\cli)=\alpha\,\label{eq:pixel_mass}
 \end{eqnarray}
 with $\opi\cdot, \cdot\cli$ referring to integer intervals. In particular, $\opi i_p, i_p\cli$ correspond to the singleton $\{i_p\}$.
 
-It is important to note that in this disparity estimation problem, we only account for the uncertainty in our input image intensities, without considering the uncertainty in our cost function's ability to correctly identify the true disparity as its minimum\commanue{Alors c'est surement mon côté psychorigide mais ça c'est pas vraiment l'hypothèse c'est vraiment le problème que tu cherches à résoudre donc en intro peut-être ? Il faut faire attention à mettre les explications dans le bon ordre pour ne pas perdre les gens : 1) le problème global que tu cherches à résoudre 2) les paramètres que tu vas utiliser pour le matching genre la fonction de coût considérer 3) les hypothèses simplificatrices que tu considères car sinon tu y es encore dans 30 ans. En gros le classique du générique ou plus particulier. Tu peux faire peut-être des sous-section dans cette section pour que ce soit vraiment clair pour les neuneus comme moi.Je continue mon raisonnement tu as choisi d'expliquer les choses en prenant chaque élément de la chaine un par un dans l'ordre donc c'est ton choix. Moi j'en ai un autre. Quel que soit le choix que tu gardes, il faut que tu expliques cela au début pour que l'on comprenne ce que tu fais et dans l'ordre que tu le fais. Et ensuite dans tous les cas il te faudra une sorte de synthèse à la fin de la section pour résumer les choix}. In other words, we do not account for the uncertainty arising from the difference between ``two patches are very similar'' and ``the pixels at the center of the patches are homologous''. To better illustrate this, imagine a scenario where two pixels should be matched, but the surrounding patches\commanue{patches ? or pixels in both patches ?} are dissimilar. In this case, the cost function between those two patches would be high, potentially leading to the selection of a different patch with a lower cost function as the estimated disparity. The correct disparity would not be the minimum of the cost curve. This problem tends to appear more often when considering large windows, as the cost function can `average' the similarity of all its pixels\commanue{he resulting similarity of all the pixels in the patch}, regardless of the similarity of the central ones\commanue{ajouter un only peut-être pour bien marquer le distinction entre le patch ety le pixel}. 
-
-We consider the Sum of Absolute Differences (SAD)\commanue{il faudrait trouver un moyen de mettre cet élément en avant avec une sorte de code couleur/format pour identifier les choix du pipeline et les hypothèses simplificatrices} as our cost function, defined as follows. Given patches $W_L\subset I_L$ and $W_R\subset I_R$ of the same shape with $n$ pixels (usually squares):
-\begin{align}
-    \mathrm{SAD}(W_L, W_R) = \sum_{(p_i, q_i)\in (W_L, W_R)}|I_L(p_i) - I_R(q_i)|\label{eq:SAD}
-\end{align}
-where $p_i$ and $q_i$ are pixels at the same position $i$ in their patch. For convenience purposes, we will refer to the Absolute Difference as AD\commanue{Bah donc c'est SAD ou AD au final, c'est phrase porte à confusion}. This cost function is not ideal compared to more complex state-of-the-art cost function (\cite{zbontar_stereo_2016}, \cite{laga_survey_2022}), but it is preferred here to focus on simplicity and to ease didactic explanations regarding uncertainty propagation. An illustration of the SAD cost function can be found in Figure \ref{fig:SAD}. Furthermore, we will not consider in this chapter the use of Semi Global Matching (or similar regularization methods), as it necessitates many operations due to its recursive formulation and thus greatly increases complexity for the uncertainty propagation. We diverge from state-of-the-art methods to keep explanations as simple as possible, however the modeling of uncertainty for more advanced cost functions and SGM methods will be considered in chapter \ref{chap:epistemic_uncertainty}\commanue{Bah si tu commençais par dire que tu souhaites te focaliser sur la propagation et que pour la modélisation plus avancé de l'inecrtitude c'ets le chapitre suivant. Ensuite tu décris  donc tu prends un pipeline simple. ça évite les AR entre les différents éléments}.
-
-\begin{remark}\commanue{et bam! une remarque SAD après un passage SGM. Après tu as déjà des remarques sur SAD donc pourquoi mettre celle-ci dans un encart ?}
-    Although the SAD is not the best performing cost function for dense matching, it is both fast and easily parallelizable. It is often use for comparison in cost-based stereo algorithms \cite{hirschmuller_evaluation_2007, zbontar_stereo_2016} Propagating its uncertainty can thus be interesting as a first quick estimation of similarity. Moreover, the SAD is used in other applications, such as motion estimation or image/video compression for instance \cite{richardson_h264_2006}. The reach of this is thus not limited to stereo matching\commanue{Au final c'est remarques en un s qu'il faudrait et surtout elles sont d'un peu tous les niveaux: Le contexte d'application, la représentativité des choix, la simplicité... Il faudrait ranger un peu tout ça}. 
+\begin{remark}
+    The hypothesis of modelling the uncertainty on image intensities by possibility distributions does not consider uncertainty from potentially bigger sources of errors, such as satellite vibrations during the acquisition, or errors in the computations of epipolar lines. Those type of errors have been encountered on some Pléiades acquisitions, and lead to significant biases and errors on the final DSM, that our simple model does not account for. However, the CO3D mission will acquire images using a CCD matrix sensor and not a push-broom sensor as used in Pléiades, so we can safely assume that those problems should not be encountered on images from the CO3D mission.
 \end{remark}
 
-An ideal cost function would generate a cost curve with a unique minimum corresponding to the correct disparity. In practice, such a function is hard to determine. There is no guarantee that the minimum is unique, nor that it corresponds to the correct disparity\commanue{La remarque est juste mais comment elle se rattache au reste.C'est pasr rapport à ton choix de prendre SAD ?}. 
+\subsection{Dependency Model between Epipolar Images}
+We presented the uncertainty models for pixels in both images, but we also need to define the dependency model between every pixel of both images. Indeed, as some pixels between images represent the light reflected by the same object, it seems natural that their (uncertain) values are correlated. In our case, we propose to model their dependency with the product copula if the pixels are not from the same physical object, meaning that the value of their intensities are independent. For pixels belonging to the same object, we model their dependency by a Gaussian copula with a covariance matrix $R$. Those copulas were presented in equation \eqref{eq:gaussian_copula} from chapter \ref{chap:representation_of_uncertainty}. The correlation values inside the covariance matrix are based on a segmentation $S:(I_L\cup I_R)\rightarrow\opi1,K\cli$, $K\in\mathbb{N}$, of the images. This segmentation is the result of a \textit{k-means} clustering performed on the ground truth disparity map. Example of such a clustering is presented in figure \ref{fig:clustering_example}, with $K=8$. Given the segmentation $S$ and two pixels $(p, q)\in(I_L\cup I_R)^2$, their covariance is determined by
+\begin{equation}
+    \sigma(p, q) =
+    \begin{cases}
+        1 &\text{ if }p=q,\\
+        \rho_K, &\text{ if } p\ne q\text{ and }S(p)=S(q)\,, \\
+        0 & \text{otherwise}\,.
+    \end{cases}\label{eq:correlation}
+\end{equation}
+where $0<\rho_k<1$ is the correlation of pixels belong to segment $k\in\opi 1, N\cli$. Given a set of pixels $\{p_1, \dots, p_n\}\subseteq(I_L\cup I_R)^2$, their covariance matrix $R$ is therefore:
+\begin{align}
+    R = \begin{bmatrix}
+            1 & \sigma(p_{1}, p_{2}) & \dots & \sigma(p_{1}, p_{n-1}) & \sigma(p_{1}, p_{n})\\
+            \sigma(p_{2}, p_{1}) & 1 & \dots & \sigma(p_{2}, p_{n-1}) & \sigma(p_{2}, p_{n})\\
+            \dots & \dots & \dots & \dots & \dots\\
+            \sigma(p_{n-1}, p_{1}) & \sigma(p_{n-1}, p_{2}) & \dots & 1 & \sigma(p_{n-1}, p_{n})\\
+            sigma(p_{n}, p_{1}) & \sigma(p_{n}, p_{2}) & \dots & \sigma(p_{n}, p_{n-1}) & 1
+        \end{bmatrix}
+\end{align}
+
+In practice, we will only compute the correlation matrix between the two windows from the reference and secondary images that are compared. The windows have a $3\times 3$ shape, we thus consider Gaussian $18-$copulas to model the dependency between pixels. This copula will be used for joining marginal masses in the uncertainty propagation step using equation \eqref{eq:joint_mass} from the previous chapter. It will also be used to sample noise for Monte Carlo sampling in section \ref{sec:montecarlo}.
+
+\begin{remark}
+    Gaussian copulas are a popular and simple model to represent dependency between more than $2$ variables. The different $2$-copulas presented in section \ref{sec:copulas} cannot always be defined in more than $2$ dimensions. Another method for modelling the dependency for more than $2$ variables is to express a $n$-copula as a combination of $2$-copulas, which is called a vine copula (\cite{czado_vine_2022}). However this is a complex subject that is not adapted to our type of dependency, and is therefore not explored in this thesis.
+\end{remark}
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.5\linewidth]{Images/Chap_4/SAD.png}
-    \caption{Diagram representing the $SAD$ cost function between two $3\times3$ patches.}
-    \label{fig:SAD}
+    \begin{subfigure}[t]{0.5\linewidth}
+        \centering
+        \includegraphics[width=0.9\linewidth]{Images/Chap_4/im2.png}
+        \caption{Colored left image}
+        \label{fig:color_cones_image}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.5\linewidth}
+        \centering
+        \includegraphics[width=0.9\linewidth]{Images/Chap_4/cluster.jpg}
+        \caption{Proposed clustering of the image (\textit{k-means} with $k=8$)}
+        \label{fig:cluster}
+    \end{subfigure}
+    \caption{Middlebury 2003 Cones left image, and a clustering computed from the disparity ground truth.}
+    \label{fig:clustering_example}
 \end{figure}
 
-We presented the uncertainty models for pixels in both images\commanue{entre temps on a aussi fait un détour sur le pipeline... et là on revient donc sur les pixels, comment dire c'est le sort de téléportation des arguments ?}, but we also need to define the dependency model between every pixels of both images. In our case, we propose to model their dependency with the product copula if the pixels are not from the same physical object (meaning that the value of their intensities are independent)\commanue{je mettrais pas la phrase entre parenthèse car tu considères que c'est indépendant si pas le même objet ce qui se comprend donc copule produit}, and by a Gaussian copula with a covariance matrix parameterized by a correlation matrix $R$\commanue{là j'ai l'impression qu'il manque un bout, il faudrait ajouter pour les pixels appartenant au même objet. Tu peux aussi dire que la dépendence d'un pixel est lié à l'objet qui appartient et ensuite donner les deux choix que tu fais. Bref on comprend mais c'est au lecteur de reconstituer les éléments manquants, c'est un peu dommage}. The correlation between the uncertain pixel intensities is based on a segmentation $S:(I_L\cup I_R)\rightarrow[\![0,K]\!]$, $K\in\mathbb{N}$, of the images, performed on the ground truth disparity of each pixel\commanue{des détails peut-être ? La segmentation est réalisée comment ? C'est une segmentation ou une classification ? C'est juste la corrélation qui utlise la segmentation ou c'est aussi utilisé pour savoir la copule choisie}. Given two pixels $(p, q)\in(I_L\cup I_R)^2$, their covariance is determined by\commanue{ça méritait de mettre de manière explicite le lien entre R et cov}:
-\begin{equation}
-    \mathrm{cov}(p, q) =
-    \begin{cases}
-        1 &\text{ if }p=q\,,\\
-        \rho_k, &\text{ if } p\ne q\text{ and }S(p)=S(q)\,, \\
-        0, & \text{otherwise}\,.
-    \end{cases}\label{eq:correlation}
-\end{equation}
-During the simulations, the segmentation contains $K=8$ different clusters, and for every $k$ in $[\![0,K]\!]$, $\rho_k$\commanue{c'est quoi ?} is assigned an arbitrary value between $0.9$ and $1$.
+During our simulations, the segmentation contains $K=8$ different clusters. For every $k$ in $\opi1,K\cli$, $\rho_k$ is assigned an value between $0.9$ and $1$ in order to really emphasize on their correlation.
 
-We can thus build a correlation matrix $R$ for all pixels of $(I_L\cup I_R)$\commanue{alors je suis vieux jeu mais si tu vas à la ligne c'est pur une nouvelle idée là on toujours sur la copule gaussienne et la mtrice de corrélation R}, and sample a perturbation on all of the pixels using a Gaussian copula with this correlation matrix. The Gaussian $18-$copula\commanue{le 18 c'ets lié à la taille de la fenêtre ? si c'est le cas tu l'avais pas précisé.} used to model the dependency between marginal masses in the uncertainty propagation step (using equation \eqref{eq:joint_mass}) is also constructed using Equation \eqref{eq:correlation}\commanue{tel que tu l'expliques avant j'aurais tourné la phrase la copule utilise R de cette manière sachant le lien engtre R et cov, on a le lien entre copule et cov. En lisant plus loin, j'ai l'impression qu'il n'y a plus que la copule gaussienne ?}. 
+\begin{remark}
+    The segmentation is based on the ground truth disparity map. This means that two objects with similar disparities located at opposite sides of the image will be considered as belonging to the same object and thus correlated. In practice, those pixels are never compared as we only measure the dissimilarity between small windows in a restricted disparity range. The clustering is thus only considered at a \textit{local} scale. 
+    
+    Secondly, the segmentation allows to compute the Gaussian copula, which will be used to propagate the uncertainty models. We will validate the uncertainty propagation in section \ref{sec:montecarlo} with Monte Carlo samples using the same copula. As long as the copulas used are the same between the propagation and validation, it does not really matter which correlation matrix is used. We still tried to create a realistic but simple model for the sake of the example, but it is not requirement from a theoretical point of view.
+\end{remark}
 
-\section{Propagation of the Uncertainty with Belief Functions}
-This section \commanue{alors j'ai passé 2 jours à lire le chapitre 3 et j'ai même pas le droit à faire le lien avec. } will present how we can compute a Belief function on the matching cost curve values from the original beliefs as well as a copula representing the dependency between variables\commanue{j'aurais tourné le début en disant voilà ce qu'on a les modèles d'incertitude et les copules et donc on va utiliser notre chapitre préféré de telle et telle manière pour calculer l'incertitude qui résulte au niveau du résultat de la fonction de coût et blablabla}. We first detail how it can be done in the precise case, as the imprecise setting is similar\commanue{quoi ? on repasse en mode précis alosr que début le début c'est imprécis. C'est quoi le but faire le calcul précis puis généraliser ?}. We use the case of the SAD cost function to illustrate the process\commanue{bah c'est pas ce que tu as dit déjà ?}.
+\section{Propagating the Uncertainty with Belief Functions and a Copula}
+Having defined both marginal models for pixel intensities using possibility distributions as well as dependency models using copulas, we can know join them all to construct a multivariate uncertainty model. As seen in section \ref{subsec:necessity_functions}, the multivariate model is a belief function and not necessarily a possibility distribution. We will see in this section that the multivariate belief function can then be used to compute the uncertainty regarding the cost curve. 
 
-First, let us present the propagation of uncertainty in the precise bivariate case\commanue{Fais des sous-sections car là il faut aider les gens et rendre lisible le tout. Donc sépare les cas. Après ce qui est bizarre c'est que tu as décris précédemment avec des modèles imprécis...}. Let $f:\X_1\times\X_2\rightarrow\mathcal{Z}$ be a mapping and we define the random variables $Z$ as $Z=f(X,Y)$\commanue{alors là je t'avoue que je ne suis pas sure de comprendre dans quel cas simplifié tu te places par rapport à ce que tu as décrit avant, je vois pas le lien}. 
-When considering precise probabilities, the mass distribution $p_Z$\commanue{ça a toujours m ?} on atoms of $Z$ is:
-\begin{align}
-    \forall z\in\mathcal{Z}, p_Z(z)=\sum_{\substack{x_1,x_2\\z=f(x_1,x_2)}}p(x_1,x_2).
+\subsection{From Multivariate Uncertainty Models to the Propagated Model}
+We first detail how multivariate models are used to propagate uncertainty in the precise case. We will then do the same in the imprecise setting by analogy.
+
+Consider a mapping $f:\X_1\times\X_2\rightarrow\mathcal{Z}$ from a product space $\X_1\times\X_2$ to a space $\mathcal{Z}$, which propagates multiple random variables $X_1$, $X_2$ to a new random variable $Z=f(X_1, ~X_2)$. In our case, $f$ will be the SAD cost function propagating the intensities to the matching cost. When considering precise probabilities, the probability of $Z=z$ is obtained by summing the probabilities of all events $X_1=x_1$, $X_2=x_2$ whose image by $f$ is $z$: 
+\begin{align}\label{eq:precise_propagate_proba}
+    \forall z\in\mathcal{Z}, P_Z(z)=\sum_{\substack{x_1,x_2\\z=f(x_1,x_2)}}P(x_1,x_2).
 \end{align}
+where $P(x_1,x_2)$ is the joint probability, which is linked to its marginals by a copula $C$. $P_Z$ only needs to be evaluated for every combination of atoms of $\X_1$ and $\X_2$.
 
-Determining every $(x,y)$, whose image by $f$ equals $z$, is not always trivial. This becomes even more complex when we are considering copulas with $n>2$ variables. Note that the joint probability $p(x_1,x_2)$ is computed using a H-volume, which is the sum of $2^n$ terms, also increasing exponentially with the dimension. In the continuous case, the H-volume is replaced with the density $h$ of the joint CDF. The density of $Z$ is thus:
+\begin{example}
+    Consider the same setting as example \ref{ex:copulas}, where a dealer throws two coins in a separate room. The coins seem fair when looked at independently. In this example, a coin landing on heads rewards you with $1$€(or any currency of your choice), and a coin landing on tails rewards you with $0$€. So you earn $2$€ if both coins land on heads, $1$€ if only one coin land on heads and the other on tails, and $0$€ if both coins land on tails. We are interesting in the uncertainty regarding you earnings, noted $Z$.
+    
+    In example \ref{ex:copulas}, we consider $3$ different cases, each leading to a different copula $C$ modelling the dependency between the probability $P_1$ of first coin and $P_2$ of the second coin. For each copula, we then computed the joint probability $P$.
+    
+    In the first case, where coin throws were independent, we saw that the joint probability $P$ was:\\
+    \begin{minipage}[b]{0.5\linewidth}
+    \begin{align*}
+        & P(\text{heads}, ~\text{heads}) = 0.25\\
+        & P(\text{heads}, ~\text{tails}) = 0.25
+    \end{align*}
+    \end{minipage}
+    \begin{minipage}[b]{0.5\linewidth}
+    \begin{align*}
+        & P(\text{tails}, ~\text{tails}) = 0.25 \\
+        & P(\text{tails}, ~\text{heads}) = 0.25
+    \end{align*}
+    \end{minipage}
+    In that case, it holds that the probability $P_Z$ of our earnings are:
+    \begin{align*}
+        & P_Z(Z=2) = P(\text{heads}, ~\text{heads}) = 0.25\\
+        & P_Z(Z=1) = P(\text{heads}, ~\text{tails}) + P(\text{tails}, ~\text{heads}) = 0.5 \\
+        & P_Z(Z=0) = P(\text{tails}, ~\text{tails}) = 0.25
+    \end{align*}
+    
+    In the second case, where coin throws were rigged to land on the same side, we saw that the joint probability $P$ was:\\
+    \noindent
+    \begin{minipage}[b]{0.5\linewidth}
+    \begin{align*}
+        & P(\text{heads}, ~\text{heads}) = 0.5\\
+        & P(\text{heads}, ~\text{tails}) = 0
+    \end{align*}
+    \end{minipage}
+    \begin{minipage}[b]{0.5\linewidth}
+    \begin{align*}
+        & P(\text{tails}, ~\text{tails}) = 0.5\\
+        & P(\text{tails}, ~\text{heads}) = 0 
+    \end{align*}
+    \end{minipage}
+    Following the same methodology, we have:\\
+    \noindent\begin{minipage}[b]{0.33\linewidth}
+    \begin{align*}
+        & P_Z(Z=2) = 0.5
+    \end{align*}
+    \end{minipage}
+    \begin{minipage}[b]{0.33\linewidth}
+    \begin{align*}
+        & P_Z(Z=1) = 0
+    \end{align*}
+    \end{minipage}
+    \begin{minipage}[b]{0.33\linewidth}
+    \begin{align*}
+        & P_Z(Z=0) = 0.5
+    \end{align*}
+    \end{minipage}
+    
+    In the third case, where coin throws were rigged to land on opposite sides, we saw that the joint probability $P$ was:\\
+    \noindent\begin{minipage}[b]{0.5\linewidth}
+    \begin{align*}
+        & P(\text{heads}, ~\text{heads}) = 0\\
+        & P(\text{heads}, ~\text{tails}) = 0.5
+    \end{align*}
+    \end{minipage}
+    \begin{minipage}[b]{0.5\linewidth}
+    \begin{align*}
+        & P(\text{tails}, ~\text{tails}) = 0\\
+        & P(\text{tails}, ~\text{heads}) = 0.5
+    \end{align*}
+    \end{minipage}
+    Therefore:\\
+    \begin{minipage}[b]{0.33\linewidth}
+    \begin{align*}
+        & P_Z(Z=2) = 0
+    \end{align*}
+    \end{minipage}
+    \begin{minipage}[b]{0.33\linewidth}
+    \begin{align*}
+        & P_Z(Z=1) = 1
+    \end{align*}
+    \end{minipage}
+    \begin{minipage}[b]{0.33\linewidth}
+    \begin{align*}
+        & P_Z(Z=0) = 0
+    \end{align*}
+    \end{minipage}
+\end{example}
+
+Determining every $(x_1, x_2)$, whose image by $f$ equals $z$, is not always trivial. This becomes even more complex when considering $n>2$ marginal variables. Similarly, the joint probability $P(x_1,x_2)$ is computed using a H-volume, which is the sum of $2^n$ terms, thus also increasing exponentially with the dimension.
+
+There are multiple ways of extending equation \eqref{eq:precise_propagate_proba} to the imprecise setting, as there are multiple ways of aggregating imprecise models using a copula. We presented in chapter \ref{chap:joining_credal_sets} three methods for joining marginal credal sets, creating three different multivariate credal sets $\M_{robust}$, $\M_{mass}$ and $\M_{agg}$.
+
+The robust approach of extending equation \eqref{eq:precise_propagate_proba} is based on the robust approach from section \ref{sec:robust_method}. Given $n$ marginal credal sets $\M_i$, we can join them using a copula $C$ into a credal set $\M_{robust}$ as in \eqref{eq:robust_set}. The propagated uncertain model $\M^Z_{robust}$ is then defined as:
 \begin{align}
-    p_Z(z) = \int_{\X_1}\int_{\X_2}h(x_1,x_2)\mathds{1}(f(x_1,x_2)=z)dx_1dx_2,
+    \M^Z_{robust} = \{P_Z~|~\forall z\in Z, P(z)=\sum_{\substack{x_1,\dots,x_n\\z=f(x_1,\dots,x_n)}}P(x_1,\dots,x_n), ~P\in\M_{robust}\}
 \end{align}
-Here, $\mathds{1}$ refers to the characteristic function\commanue{clairement je comprends pas où tu veux aller avec ton exemple}.
+Practically, it consists in sampling every probability $P_i$ from each marginal credal set $\M_i$ and joining them using Sklar's theorem \ref{theorem:sklar} into a multivariate probability $P$. Then for each $z=P(x_1,\dots,x_n)$, we can compute $P_Z$ from $P$ using \eqref{eq:precise_propagate_proba}. In short, each sample $(P_1,\dots,P_n)$ leads to a new $P$, itself leading to a new $P_Z$. Sampling through every $(P_1,\dots,P_n)$ thus leads to the estimation of the uncertain model of $Z$. This method is complicated to compute, but correctly propagates uncertainty.
 
-Similarly, belief functions can be propagated by replacing the mass on atoms with the mass associated to the joint belief function. Given the joint mass distribution function $m_\times$ constructed with a copula as in equation \eqref{eq:joint_mass}, it is possible to compute the mass distribution function $m_Z$ of a random set $Z$ from $n$ marginal random sets:
+We saw that it was easier to compute $\M_{mass}$ than $\M_{robust}$. Another way of approximating the uncertainty model of $Z$ is to compute it using $\M_{mass}$. This is done by replacing the probability on atoms from equation \eqref{eq:precise_propagate_proba} with the joint mass $m_\times$ from equation \eqref{eq:joint_mass} \cite{gray_dependent_2021}. Consider $n$ uncertain variables $X_i$, each modeled by a mass distribution function $m_i$ with focal sets $(a^i_j)$. Given their multivariate mass $m_\times$, it is possible to compute the mass distribution function $m_Z$ of a random set $Z=f(X_1,\dots,X_n)$ as:
 \begin{align}
     \forall a^Z\subseteq\mathcal{Z}, m_Z(a^Z) = \sum_{\substack{a^1_i, \dots, a^n_j\\a^Z=f(a^n_1,\dots, a^n_j)}}m_\times(a^1_i, \dots, a^n_j)\label{eq:mass_propagated}
 \end{align}
-Computing the image of $f$ for every pair of focal sets $(a^1_i, \dots, a^n_j)$ is even more difficult than in the precise case, as we are computing reverse images of sets instead of real numbers. Propagation of uncertainty with a copula has also been investigated in the case of necessity functions in \cite{gray_dependent_2021}\commanue{donc là je t'avoue que je sais pas ce que tu as cherché à montrer quel est le but exacte de cette partie. Je sais pas il faut peut-être faire un encart et pas un sous-section avec une proposition qui explique clairement quel résultat du cherche à montrer}. To illustrate how to propagate the uncertainty using belief functions and a copula, we will use the SAD cost function as an example\commanue{oui c'est SAD depuis le début. On a l'impression que tu as repris des phrases de ton article mais là tu n'as pas la même organisation donc les remarques poppent bizarrement}.
 
-The SAD is used to compute the similarity between $3\times3$ windows $W_L, W_R$\commanue{Alors on a la taille maintenant...}. We use the mass distribution $m_p$ of Equation \eqref{eq:pixel_mass} to represent the uncertainty of each pixel $p$\commanue{donc on est plus dans le cas précis on est revenu au cas qui nous intéresse ?}. For every pair of pixels $p\in I_L, q\in I_R$, we note $\mathrm{AD}_{pq}=|i_p - i_q|$. There exists $3$ focal sets related to the absolute difference:
+In order to compute the propagated mass $m_Z$ (and its associated belief function) from equation \eqref{eq:mass_propagated}, two difficulties arise. The first one is to determine what the focal sets $a_Z$ of $m_Z$ will be, which corresponds to the subscript $a^Z=f(a^n_1,\dots, a^n_j)$ of the sum. Computing the image of $f$ for every combination of focal sets $(a^1_i, \dots, a^n_j)$ is even more difficult than in the precise case, as we are computing images of sets instead of real numbers. The second difficulty is to compute the joint mass $m_\times$, as in the case of the SAD it requires to compute the $H$ volume of an $18$-copula. Those difficulties will be addressed in the following sections \ref{sec:propagated_focal_sets} and \ref{sec:propagated_masses}
+
+We saw in chapter \ref{chap:joining_credal_sets} that in the situation where marginals are possibility distributions, $\M_{mass}$ and $\M_{agg}$ have the same bounds on Cartesian products of events (see equation \eqref{eq:inclusion_necessity}). We will thus only compute the lower bounds $Bel_\times$ of $\M_{mass}$ as it directly provides the bounds of $\M_{agg}$ on those events.
+
+\subsection{Computing the Propagated Focal Sets}\label{sec:propagated_focal_sets}
+In this section, we will detail how we compute the SAD image of marginal focal sets. Computing the image of sets needs to be treated with caution in the general case. However in our case, because we chose marginal focal sets with a simple form, and because we are using a relatively regular cost function, computing the image does not raise any significant problem.
+
+Given a pixel $p$, we consider the mass distribution $m_p$ of equation \eqref{eq:pixel_mass} and its two focal sets $a_1^p$ and $a_2^p$. For every pair of pixels $p\in I_L, q\in I_R$, we note $\AD_{pq}=|i_p - i_q|$, where $i$ refers to a pixel's intensity. Given $m_p$, There exist $3$ focal sets related to the absolute difference:
 \begin{itemize}
-    \item $a^{\mathrm{AD}}_1$ is the image of the AD of $a^p_1$ and $a^q_1$
-    \item $a^{\mathrm{AD}}_2$ is the image of the AD of $a^p_2$ and $a^q_1$ or $a^p_1$ and $a^q_2$
-    \item  $a^{\mathrm{AD}}_3$ is the image of the AD of $a^p_2$ and $a^q_2$
+    \item $a^{\AD}_1$ is the image of the AD of $a^p_1$ and $a^q_1$
+    \item $a^{\AD}_2$ is the image of the AD of $a^p_2$ and $a^q_1$ or $a^p_1$ and $a^q_2$
+    \item  $a^{\AD}_3$ is the image of the AD of $a^p_2$ and $a^q_2$
 \end{itemize}
-The non-monotonicity of the absolute value around $0$ needs to be taken into account to compute their exact image through the AD:
+The non-monotonicity of the absolute value around $0$ needs to be taken into account to compute their exact image through the AD. Indeed, if a value $x$ is in $[-1,1]$, then its absolute value will be in $[0,1]$. Applying this remark to the AD yields the following focal sets:
 \begin{align*}
-    a^{\mathrm{AD}}_1&=\opi\mathrm{AD}_{pq},~\mathrm{AD}_{pq}\cli\,,\\
-    a^{\mathrm{AD}}_2&=\opi\mathrm{AD}_{pq} - 1,~\mathrm{AD}_{pq} + 1\cli\text{ if }\mathrm{AD}_{pq}>0\,,\\
-            &=\opi\mathrm{AD}_{pq},~\mathrm{AD}_{pq} + 1\cli\text{ otherwise }\,,\\
-    a^{\mathrm{AD}}_3&=\opi\mathrm{AD}_{pq} - 2,~\mathrm{AD}_{pq} + 2\cli\text{ if }\mathrm{AD}_{pq}>1\,,\\
-            &=\opi\mathrm{AD}_{pq} - 1,~\mathrm{AD}_{pq} + 2\cli\text{ if }\mathrm{AD}_{pq}=1\,,\\
-            &=\opi\mathrm{AD}_{pq},~\mathrm{AD}_{pq} + 2\cli\text{ otherwise}\,.
+    a^{\AD}_1&=\opi\AD_{pq},~\AD_{pq}\cli\,,\\
+    a^{\AD}_2&=\opi\max(0, \AD_{pq} - 1),~\AD_{pq} + 1\cli\,,\\
+    a^{\AD}_3&=\opi\max(0, \AD_{pq} - 2),~\AD_{pq} + 2\cli\,,
 \end{align*}
 
-Bounds of the AD are then summed to obtain the final values of the SAD focal sets. The mass $m_{\mathrm{SAD}}$ of those focal sets are computed using equations \eqref{eq:joint_mass}\commanue{le voilà mon lien avec le chapitre 3, je savais bien que j'avais eu raison de le lire. Bon blague à part il faut le lien dans l'intro} and \eqref{eq:mass_propagated}\commanue{donc voilà à quoi servait la digression}. To represent the dependency between pixels of both windows, a Gaussian $18$-copula is used. Splitting the problem using lower dimension copulas is tempting, similarly to what can be done with vine copulas (\cite{czado_vine_2022}). However this is a complex problem that will not be explored in this thesis\commanue{donc c'est plus simple d'utiliser des copules avec bcp de dimensions...il sont fous ces matheux}. We will instead work with Gaussian copulas, introducing a simple method for creating a correlation matrix\commanue{c'est pas déjà expliqué avant}. This will also allow us to present simple optimisation to reduce computation complexity and splitting the copulas into mutually independent groups of variables\commanue{c'est bizarre car tu justifies ici un choix que tu avais fait précédemment. Si ton but c'est de dire que avec les copules gaussienne cela est coûteux numériquement donc il faut trouver un moyen de réduire ce coût et ça tombe bien car ce moyen existe.}. 
+Focal sets of the final SAD are then computed by simply summing the bounds of the $9$ AD focal sets (as in figure \ref{fig:SAD}), for every combination of those focal sets. 
 
-\section{Leveraging Specificities to Accelerate Computations}
-\todoroman{H Volume etc for SAD example, see IJAR.}
+\begin{remark}
+    In many cases, different combinations of $\AD$ focal sets will lead to the same $\SAD$ focal set. Actually, if every $\AD$ is greater than $2$ (so that each $a^\AD_i$ is symmetric with regard to its $\AD$) there will only be $19$ focal sets $a^\SAD$ for the $\SAD$, and they are of the following form:
+    \begin{align*}
+        a^\SAD = \opi\SAD-t,\SAD+t\cli,\text{ with }t\in\opi0, ~18\cli
+    \end{align*}
+    In comparison, there are $3^9=19683$ different combinations of $\AD$ focal sets.
+\end{remark}
 
-Determining the bounds of the SAD focal sets is mostly straightforward\commanue{on repart en arrière, c'est pour prendre un peu d'élan ?}. However, computing the joint mass over two $3 \times 3$ windows is significantly more complex. For each combination of marginal focal sets, the mass $m_{\mathrm{SAD}}$ is computed using the $H$-volume of an $18$-copula, involving a sum of $2^{18}$ terms\commanue{c'est la justification de pourquoi c'est coûteux numériquement donc soit à remonter soit enlever le teasing au paragraphe d'avant}. Given that the uncertainty for each pixel is represented by $2$ focal sets, we need to evaluate $2^{18}$ combinations of these focal sets in total. This computation can thus become quite costly in memory and computation time, especially when computing it over a whole image. A strategy to reduce computation time is to leverage the fact that the focal sets derived from a possibility distribution (or equivalently from its necessity measure) form a nested family of sets\commanue{Peut-être faire un renvoi vers le passage du chapitre 2 pour les gens comme moi qui auraient pu oublier entre temps}. For simplicity, the following observations will be detailed in the case where there are $n=2$ sources of uncertainty to join, but they hold for every $n\geqslant2$\commanue{Mayday, encart pour signaler une digression ou disons une explication qui sort du cas de base !}. Propagating two necessity measures\commanue{c'est toujours perturbant pour moi , je ne sais pas faut pas être trop répétitif mais juste rappeler que considère la necessity function définie par la possibility distribution. Je sais que c'est évident pour un matheux mais le truc c'est que le manuscrit s'adresse un peu à tout le monde} $\mathrm{Nec}_1:2^{\X_1} \rightarrow [0,1]$ and $\mathrm{Nec}_2: 2^{\X_2} \rightarrow [0,1]$ through a mapping $f: \X_1 \times \X_2 \rightarrow \mathcal{Z}$ using a copula $C$ does not generally result in a necessity measure, but rather a belief function.
+\subsection{Computing the Mass of Propagated Focal Sets}\label{sec:propagated_masses}
+%\section{Leveraging Specificities to Accelerate Computations}
+Now that the bounds of the $\SAD$ have been computed, we need to compute the associated mass. Computing the joint mass over two $3 \times 3$ windows is however significantly more complex. For each combination of marginal focal sets, the joint mass $m_{\times}$ is computed using the $H$-volume of an $18$-copula, involving a sum of $2^{18}$ terms. Given that the uncertainty for each pixel is represented by $2$ focal sets, we need to evaluate $2^{18}$ combinations of these focal sets in total. This computation can thus become quite costly in memory and computation time, especially when computing it over a whole image.
+
+A strategy to reduce computation time is to leverage the fact that focal sets derived from a possibility distribution (or equivalently from its necessity measure) form a nested family of sets. As a reminded, a nested family of sets is a family $a_1\subset\dots\subset a_n$ of sets. We saw that in that case,
+\todoroman{Dire que pour le cas où AD>2, $Bel_Z$ est encore une mesure de nécessité. On pourrait donc calculer son $\pi$. On sait donc qu'elle est déterminée par les $37$ valeurs de $\Pi$ sur chaque atome. Faire une digression qui dit dans quel cas on à ce comportement là ?
+Et sinon: dans tous les cas on peut faire $Bel=C(Nec_1,...,Nec_n)$ et donc calculer rapidement Bel sur les évennements qui nous intéressent sans passer par m ou le H volume.}
+For simplicity, the following observations will be detailed in the case where there are $n=2$ sources of uncertainty to join, but they hold for every $n\geqslant2$\commanue{Mayday, encart pour signaler une digression ou disons une explication qui sort du cas de base !}. Propagating two necessity measures\commanue{c'est toujours perturbant pour moi , je ne sais pas faut pas être trop répétitif mais juste rappeler que considère la necessity function définie par la possibility distribution. Je sais que c'est évident pour un matheux mais le truc c'est que le manuscrit s'adresse un peu à tout le monde} $\mathrm{Nec}_1:2^{\X_1} \rightarrow [0,1]$ and $\mathrm{Nec}_2: 2^{\X_2} \rightarrow [0,1]$ through a mapping $f: \X_1 \times \X_2 \rightarrow \mathcal{Z}$ using a copula $C$ does not generally result in a necessity measure, but rather a belief function.
 
 For the special case where\commanue{c'est le cas spécial de la démonstration en dimension 2 qui correspond à notre pb à plus de 2 dimension, non parce que là je suis perdue}:
 \begin{itemize}
@@ -203,7 +365,7 @@ For each pixel in the left image, we calculated the SAD cost curve, incorporatin
 \begin{figure}[ht]
   \centering
   \includegraphics[width=0.8\linewidth]{Images/Chap_4/Cones.png}
-  \caption{Homologous pixels in a pair of images}\label{fig:Cones}
+  \caption{Homologous pixels in a pair of images. From \cite{malinowski_uncertainty_2024}}\label{fig:Cones}
 \end{figure}
 
 To visualize this uncertainty, we computed upper and lower envelopes for various plausibility levels $\gamma$\commanue{essayer de dire ce que représentent les différentes valeurs ou cets choisi au pif. J'ai sureemnt raté la conclusion précédente mais tu as parlé de Belx, tu as mentionné qqch par Pl mais c'était un peu noyé dans le reste. Donc on comprend ce que tu cherches à faire mais je défie quiconque pouvoir reproduire ce que tu as fait avec les indications que tu as donné}. These envelopes illustrate the largest (upper bound $\overline{a}$) and smallest (lower bound $\underline{a}$) focal sets where the plausibility, determined by Equation \eqref{eq:bel_pl}, meets or exceeds the given threshold $\gamma$: $\mathrm{Pl}(\overline{a}) \geqslant \gamma$. Consequently, there are two bounds for each level of $\gamma$.
@@ -235,7 +397,7 @@ At the plausibility threshold of 0 ($\mathrm{Pl}(\overline{a}) > 0$), the bounds
         \caption{Zoom of the rectangle in (c)}
         \label{fig:belief_gaussian_zoom}
     \end{subfigure}
-    \caption{Plausibility levels of a cost curve for the product copula $C_\Pi$ and the Gaussian copula $C_R$. The green vertical line represents the true disparity. The figure on the right are a zoom of the black dashed rectangle.}
+    \caption{Plausibility levels of a cost curve for the product copula $C_\Pi$ and the Gaussian copula $C_R$. The green vertical line represents the true disparity. The figure on the right are a zoom of the black dashed rectangle. From \cite{malinowski_uncertainty_2024}.}
     \label{fig:belief_curves}
 \end{figure}
 
@@ -268,7 +430,7 @@ Monte Carlo draws using the Gaussian copula and marginals credal sets of \ref{eq
         \caption{Zoom over the second rectangle}
         \label{fig:montecarlo_gauss_100_120_zoom2}
     \end{subfigure}
-    \caption{Plausibility levels and Monte Carlo sampling for a pixel of the left image}
+    \caption{Plausibility levels and Monte Carlo sampling for a pixel of the left image. From \cite{malinowski_uncertainty_2024}.}
     \label{fig:montecarlo_gauss_100_120}
 \end{figure}
 
@@ -293,7 +455,7 @@ Monte Carlo draws using the Gaussian copula and marginals credal sets of \ref{eq
         \caption{Zoom over the second rectangle}
         \label{fig:montecarlo_gauss_200_150_zoom2}
     \end{subfigure}
-    \caption{Plausibility levels and Monte Carlo sampling for a pixel of the left image}
+    \caption{Plausibility levels and Monte Carlo sampling for a pixel of the left image.  From \cite{malinowski_uncertainty_2024}.}
     \label{fig:montecarlo_gauss_200_150}
 \end{figure}
 
@@ -336,7 +498,7 @@ $p=(row,col)$ & $\gamma=0.9$  & $\gamma=0.85$ & $\gamma=0.5$  & $\gamma=0$   \\ 
         \caption{$\gamma=0,~\Delta s_\gamma=28.87\%$}
         \label{fig:improvements_d}
     \end{subfigure}
-    \caption{Spatial disposition of potential improvements for different values of $\gamma$. Pixels with potential improvements appear in blue. Occluded pixels, for which a correct disparity does not exist, appear in orange. Grayscale left image is displayed on the background.}
+    \caption{Spatial disposition of potential improvements for different values of $\gamma$. Pixels with potential improvements appear in blue. Occluded pixels, for which a correct disparity does not exist, appear in orange. Grayscale left image is displayed on the background. From \cite{malinowski_uncertainty_2024}.}
     \label{fig:improvements}
 \end{figure}
 
@@ -344,17 +506,17 @@ $p=(row,col)$ & $\gamma=0.9$  & $\gamma=0.85$ & $\gamma=0.5$  & $\gamma=0$   \\ 
 
 Knowing the uncertainty, in our case represented as confidence envelopes, can provide valuable insights into potential matches. This section outlines observations suggesting that incorporating this information can enhance the performance of stereo-matching algorithms\commanue{donc on va bien jusqu'à la disparité, c'était pas dans l'intro}.
 
-A common metric for evaluating stereo algorithm performance is the proportion of pixels $(row, col)$ for which the absolute difference between the true disparity and the predicted disparity is less than one pixel. This metric is used as we only consider integer disparities, but the ground truth disparity can be any real number in the disparity range. We thus consider a disparity to be ``correct'' if it is less than one pixel away from the true disparity. With this definition, there can be two ``correct'' disparities for every cost curve, which is inherent to the limited number of disparities one can consider\commanue{il est 23h passé mais là je comprends pas}. Let $d_{\mathrm{true}}(row, col)$ denote the true disparity and $\tilde{d}(row, col) = \arg \min_d \mathrm{SAD}(row, col, d)$ be the estimated disparity at pixel $(row, col)$. The score \( s \) is defined as:
+A common metric for evaluating stereo algorithm performance is the proportion of pixels $(row, col)$ for which the absolute difference between the true disparity and the predicted disparity is less than one pixel. This metric is used as we only consider integer disparities, but the ground truth disparity can be any real number in the disparity range. We thus consider a disparity to be ``correct'' if it is less than one pixel away from the true disparity. With this definition, there can be two ``correct'' disparities for every cost curve, which is inherent to the limited number of disparities one can consider\commanue{il est 23h passé mais là je comprends pas}. Let $d_{\mathrm{true}}(row, col)$ denote the true disparity and $\tilde{d}(row, col) = \arg \min_d \SAD(row, col, d)$ be the estimated disparity at pixel $(row, col)$. The score \( s \) is defined as:
 \begin{equation}
     s = \frac{\#\{(row, col) \text{ such that } |d_{\mathrm{true}}(row, col) - \tilde{d}(row, col)| < 1\}}{\#\{(row, col)\}}\,.
 \end{equation}
 
 For a given confidence level $\gamma \in [0, 1]$ and a pixel $(row, col)$, we define the set of potential disparities $D_\gamma^{row, col}$ as:
 \begin{equation}
-    D_\gamma^{row, col} = \{d \mid \underline{\mathrm{SAD}}_\gamma(row, col, d) \leq \overline{\mathrm{SAD}}_\gamma(row, col, \tilde{d})\}\,.
+    D_\gamma^{row, col} = \{d \mid \underline{\SAD}_\gamma(row, col, d) \leq \overline{\SAD}_\gamma(row, col, \tilde{d})\}\,.
 \end{equation}
 
-This set contains all disparities for which the lower estimate of $\mathrm{SAD}_\gamma$ at confidence level $\gamma$ is less than or equal to the upper estimate of $\mathrm{SAD}_\gamma$ at the predicted disparity $\tilde{d}$.
+This set contains all disparities for which the lower estimate of $\SAD_\gamma$ at confidence level $\gamma$ is less than or equal to the upper estimate of $\SAD_\gamma$ at the predicted disparity $\tilde{d}$.
 
 To evaluate if this set holds relevant information, we compute the optimal score \( s_\gamma^{\text{opt}} \) achievable using the set of possible disparities\commanue{rajouter une description de ce nouveau score.}:
 \begin{equation}
