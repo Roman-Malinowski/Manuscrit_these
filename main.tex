@@ -7,7 +7,7 @@
 \usepackage{ae,lmodern} % Vectorial font
 \usepackage[T1]{fontenc}  % Zotero must export bib.tex in Western instead of UTF to avoid problem for \THORN characters
 
-\usepackage[hidelinks]{hyperref} % Cick on citations
+\usepackage[hidelinks, breaklinks]{hyperref} % Cick on citations, allow line breaking
 \usepackage[skip=10pt, indent=20pt]{parskip}  % Paragraph spacing
 \usepackage{setspace} % Line spacing
 \usepackage[hypcap=false]{caption} % When using hypcap=false, hyperref will link to the caption and not the float environment. This is because using \captionof outside a float env, it generates warnings
@@ -42,6 +42,8 @@
 
 \usepackage[margin,index]{fixme}
 
+\usepackage{menukeys} % For accessing characters from the keyboard, such as Alt or Ctrl
+
 %Import the natbib package and sets a bibliography  and citation styles
 \bibliographystyle{apalike}
 
@@ -51,7 +53,7 @@
 
 \newcommand{\comseb}[1]{{\color{red}\footnote{\color{red}Seb: \textit{#1}}}}
 \newcommand{\comroman}[1]{{\color{purple}\footnote{\color{purple}Roman: \textit{#1}}}}
-\newcommand{\commanu}[1]{{\color{green}\footnote{\color{green}Manu: \textit{#1}}}}
+\newcommand{\commanu}[1]{{\color{green}\footnote{\color{teal}Manu: \textit{#1}}}}
 \newcommand{\commanue}[1]{{\color{blue}\footnote{\color{blue}Manue: \textit{#1}}}}
 \newcommand{\comloic}[1]{{\color{orange}\footnote{\color{orange}Loïc: \textit{#1}}}}
 
@@ -65,6 +67,7 @@
 \newcommand{\X}{{\mathcal{X}}}
 \newcommand{\low}{{\underline{P}}}
 \newcommand{\tdt}{{\times\dots\times}}
+\newcommand{\enum}{{, ~\dots, ~}}
 \newcommand{\opi}{{[\![}}
 \newcommand{\cli}{{]\!]}}
 \newcommand{\Bel}{{\mathrm{Bel}}}
@@ -81,6 +84,7 @@
     }
 }
 \DeclareMathOperator*{\argmin}{arg\,min} % thin space, limits underneath in displays
+\DeclareMathOperator*{\argmax}{arg\,max} % thin space, limits underneath in displays
 \DeclareMathOperator*{\mean}{mean}
 
 

@@ -9,16 +9,16 @@ When working with precise probabilities, using a copula $C$ to join univariate C
 
 We consider here $n\in\mathbb{N}^*$ uncertain variables $(X_i)_{1\leqslant i\leqslant n}$ taking values respectively in an totally ordered finite space $\X_i$. Index $i$ will usually refer to the $i$-th random variable (or random set). We note $\M_i$ the credal set representing the uncertainty of $X_i$, and $C$ a $n$-copula. Focal sets of a belief function will be noted $a^i_k$, where $k$ refers to the $k$-th focal if they are numbered. We also note $\bigsqcup$ the union of disjoint elements. Finally, we must introduce the concept of cylindrical sets which will come in handy for specifying definition domains of various mappings. 
 \begin{definition}[Cylindrical sets]
-    Let $\X_1,~\dots,~\X_n$ be $n$ sets and let $\X$\commanue{tu n'as pas un autre symbole car là je vais me mélanger. A moins que tu voulais mettre $\times$} be the Cartesian product of $\X_1,~\dots,~\X_n$. We call a cylindrical (or cylinder) set $X$ of $\X$ a set which can be written as a Cartesian product of elements of $\X_1,~\dots,~\X_n$, \ie:
+    Let $\X_1 \enum \X_n$ be $n$ sets and let $\X$\commanue{tu n'as pas un autre symbole car là je vais me mélanger. A moins que tu voulais mettre $\times$} be the Cartesian product of $\X_1 \enum \X_n$. We call a cylindrical (or cylinder) set $X$ of $\X$ a set which can be written as a Cartesian product of elements of $\X_1 \enum \X_n$, \ie:
     \begin{equation}
-        X\subseteq\X \text{ is cylindrical} ~\Leftrightarrow~ \exists (X_1,~\dots,~X_n),~\st~X=X_1\tdt X_n \label{eq:cylindrical_sets}
+        X\subseteq\X \text{ is cylindrical} ~\Leftrightarrow~ \exists (X_1 \enum X_n),~\st~X=X_1\tdt X_n \label{eq:cylindrical_sets}
     \end{equation}
 \end{definition}
 
 \subsection{Point-wise Aggregation}\label{sec:robust_method}
 A first way of creating a joint credal set is to sample a precise marginal for each marginal credal sets $\M_i$ and to use Sklar's theorem with the copula $C$ to create a precise multivariate CDF. The set of all resulting CDFs is thus\commanue{alors j'ai du mal avec la notation, je pense que mon problème vient de l'expression sample a precise marginal for each marginal credal sets. Je dois pas comprendre ce qu'il faut ou disons que je vois pas comment cela se traduit en notation}:
 \begin{eqnarray}\label{eq:robust_ancestor}
-    \mathcal{S}(C,\M_i) = \{F~|~\forall x_i \in \X_i,~ F(x_1,\dots,x_n) = C(F_1(x_1), \dots, F_n(x_n)),~F_i\in\M_i \}
+    \mathcal{S}(C,\M_i) = \{F~|~\forall x_i \in \X_i,~ F(x_1 \enum x_n) = C(F_1(x_1) \enum F_n(x_n)),~F_i\in\M_i \}
 \end{eqnarray}
 
 This set is not is not guaranteed to be convex \cite{schmelzer_random_2023}. We thus define the joint credal set as the convex hull $\M_{robust}$ of $\mathcal{S}$
@@ -26,7 +26,7 @@ This set is not is not guaranteed to be convex \cite{schmelzer_random_2023}. We 
 \begin{definition}[Robust Credal Set]\label{def:robust_credal_set}
     We define the robust credal set obtained by joining $n$ marginal credal sets $\M_i$ and a copula $C$ as:
     \begin{eqnarray}\label{eq:robust_set}
-        \M_{robust}(C,\M_i) = CH(\{C(F_1, \dots, F_n),~F_i\in\M_i \})
+        \M_{robust}(C,\M_i) = CH(\{C(F_1 \enum F_n),~F_i\in\M_i \})
     \end{eqnarray}
     where $CH$ is the convex hull presented in definition \ref{def:convex_hull}.
 \end{definition}
@@ -80,15 +80,15 @@ Figure \ref{fig:schema_m_robust} represents a schematic of how the lower probabi
     \caption{Schematic representation of the lower probability $P_{robust}$ of $\M_{robust}$}\label{fig:schema_m_robust}
 \end{figure}
 
-\subsection{Copula Applied to Cumulated Mass Functions}\label{sec:joint_mass}
-In this section, we will present another way of creating a joint credal set from multiple marginal ones. Consider the same copula $C$ as before and the same marginal credal sets $\M_i$. Each credal set $\M_i$ is fully determined by a mass distribution function $m_i$, which is strictly positive over its $N_i$ focal sets $a^i_1, \dots, a^i_{N_i}$. As described in \cite{ferson_dependence_2004}, it is possible to use the cumulative mass distribution functions as marginals of the copula to create a joint mass distribution function, granted that there is a complete order defined on the focal sets. Links between copulas and belief functions have been investigated in the continuous case in \cite{schmelzer_joint_2015, schmelzer_multivariate_2019}, the special case of necessity functions in \cite{schmelzer_sklars_2015} and of p-boxes in \cite{schmelzer_random_2023}.
+\subsection{Copula Applied to Cumulative Mass Functions}\label{sec:joint_mass}
+In this section, we will present another way of creating a joint credal set from multiple marginal ones. Consider the same copula $C$ as before and the same marginal credal sets $\M_i$. Each credal set $\M_i$ is fully determined by a mass distribution function $m_i$, which is strictly positive over its $N_i$ focal sets $a^i_1 \enum a^i_{N_i}$. As described in \cite{ferson_dependence_2004}, it is possible to use the cumulative mass distribution functions as marginals of the copula to create a joint mass distribution function, granted that there is a complete order defined on the focal sets. Links between copulas and belief functions have been investigated in the continuous case in \cite{schmelzer_joint_2015, schmelzer_multivariate_2019}, the special case of necessity functions in \cite{schmelzer_sklars_2015} and of p-boxes in \cite{schmelzer_random_2023}.
 
 Let suppose, without loss of generality, that the marginal focal sets are numbered according to the order $\preceq_i$: $a^i_1\preceq_ia^i_2\preceq_i\dots\preceq_i a^i_{N_i}$. The idea behind this method is to replace the precise marginal CDFs by cumulative masses, to conserve the philosophy behind Sklar's theorem. We thus first define the joint mass $m_\times$ on the product space of focal sets as follows:
 
 \begin{definition}[Joint Mass]\label{def:joint_mass}
-    Let $m_1$, \dots, $m_n$ be mass distribution functions over their respective power sets of $\X_1$, \dots, $\X_n$. Suppose that focal sets in each $\X_i$ are ordered and that $a_{k_i}^i$ is the $k_i$-th focal set of $m_i$ according to the chosen order. We define $m_\times$ as the H-volume of copula $C$ computed over the cumulative marginal masses:
+    Let $m_1 \enum m_n$ be mass distribution functions over their respective power sets of $\X_1 \enum \X_n$. Suppose that focal sets in each $\X_i$ are ordered and that $a_{k_i}^i$ is the $k_i$-th focal set of $m_i$ according to the chosen order. We define $m_\times$ as the H-volume of copula $C$ computed over the cumulative marginal masses:
     \begin{eqnarray}\label{eq:joint_mass}
-        m_\times(a^1_{k_1}\tdt a^n_{k_n}) = H_{\sum_{k=0}^{k_1-1}m_1(a^1_k), \dots, \sum_{k=0}^{k_n-1}m_n(a^n_k)}^{\sum_{k=0}^{k_1}m_1(a^1_k), \dots, \sum_{k=0}^{k_n}m_n(a^n_k)}
+        m_\times(a^1_{k_1}\tdt a^n_{k_n}) = H_{\sum_{k=0}^{k_1-1}m_1(a^1_k) \enum \sum_{k=0}^{k_n-1}m_n(a^n_k)}^{\sum_{k=0}^{k_1}m_1(a^1_k) \enum \sum_{k=0}^{k_n}m_n(a^n_k)}
     \end{eqnarray}
     with the convention that $\forall i,\, a^i_0=\emptyset$. It is not \textit{strictly} a focal set but allows to deal with the case $k_i=1$ as $m_i(a^i_0)=0$. For sets that are not of the form $a^1_{k_1}\tdt a^n_{k_n}$, the mass $m_\times$ is null.
 \end{definition}
@@ -103,14 +103,14 @@ Let suppose, without loss of generality, that the marginal focal sets are number
     
     There are multiple way of proving that $\sum_{A\subseteq\X}m_\times(A)=1$. A direct proof can be done in the case $n=2$, but the notations become quite heavy for any $n>2$. Instead let us use the interpretation of a copula as a multivariate CDF. This method will be also be used in future proofs.
     
-    For all \(i\in\opi 0,\, n\cli\) let $F_i$ be a CDF over $[0,\, N_i]$, with, $F_i(j)=\sum_{k=0}^j m_i(a_k^i)$. By Sklar's theorem, $F=C(F_1,\dots, F_n)$ is a multivariate CDF over $[0,\, N_1]\tdt[0,\, N_n]$. Thus it holds that $F([0,\, N_1]\tdt[0,\, N_n])=1$ and\commanue{Alors là j'ai du mal avec les notation. Après c'est une preuve donc c'est pas grave}:
+    For all \(i\in\opi 0,\, n\cli\) let $F_i$ be a CDF over $[0,\, N_i]$, with, $F_i(j)=\sum_{k=0}^j m_i(a_k^i)$. By Sklar's theorem, $F=C(F_1 \enum  F_n)$ is a multivariate CDF over $[0,\, N_1]\tdt[0,\, N_n]$. Thus it holds that $F([0,\, N_1]\tdt[0,\, N_n])=1$ and\commanue{Alors là j'ai du mal avec les notation. Après c'est une preuve donc c'est pas grave}:
     \begin{eqnarray*}
         F([0, N_1]\tdt[0, N_n]) &=& F([0, ~\dots, ~0])+\\
         &&F\left(\bigsqcup_{k_1=0}^{N_1-1}\dots\bigsqcup_{k_n=0}^{N_n-1}\left(]k_1, k_1+1]\tdt]k_n, k_n+1]\right)\right)\\
         &=& 0 + \sum_{k_1=0}^{N_1-1}\dots\sum_{k_n=0}^{N_n-1} F(]k_1, k_1+1]\tdt]k_n, k_n+1])\\
         && \text{(CDF of an union of disjoint elements)}\\
-        &=& \sum_{k_1=0}^{N_1-1}\dots\sum_{k_n=0}^{N_n-1} H_{F_1(k_1), \dots, F_n(k_n)}^{F_1(k_1+1), \dots, F_n(k_n+1)}\\
-        &=& \sum_{k_1=1}^{N_1}\dots\sum_{k_n=1}^{N_n} H_{\sum_{k=0}^{k_1-1}m_1(a^1_k), \dots, \sum_{k=0}^{k_n}m_n(a^n_k)}^{\sum_{k=0}^{k_1}m_1(a^1_k), \dots, \sum_{k=0}^{k_n}m_n(a^n_k)}\\
+        &=& \sum_{k_1=0}^{N_1-1}\dots\sum_{k_n=0}^{N_n-1} H_{F_1(k_1) \enum F_n(k_n)}^{F_1(k_1+1) \enum F_n(k_n+1)}\\
+        &=& \sum_{k_1=1}^{N_1}\dots\sum_{k_n=1}^{N_n} H_{\sum_{k=0}^{k_1-1}m_1(a^1_k) \enum \sum_{k=0}^{k_n}m_n(a^n_k)}^{\sum_{k=0}^{k_1}m_1(a^1_k) \enum \sum_{k=0}^{k_n}m_n(a^n_k)}\\
         &=& \sum_{(a^1_{k_1}\tdt a^n_{k_n})\subseteq\X}m_\times(a^1_{k_1}\tdt a^n_{k_n})
     \end{eqnarray*}
 Therefore it holds that:
@@ -176,7 +176,7 @@ Figure \ref{fig:schema_credal_masss} presents a schematic of $\Bel_\times$ simil
     \caption{Schematic representation of the lower probability $\Bel_\times$ of $\M_{mass}$} \label{fig:schema_credal_masss}
 \end{figure}
 
-With this way of defining the multivariate mass, the choice of arbitrary orders $\preceq_i$ can have a significant impact on the value of the multivariate mass function\commanue{Alors je te crois mais tu saurais l'expliquer avec les mains. Je ne vois pas où l'ordre inflût. Je complète ma remarque, tu donnes une explication dans l'exemple qui suit donc peut-être que tu pourrais a minima pointer vers l'exemple ou là remarque qui suit}. Those order will specifically be ``natural'' orders in sections \ref{subsec:necessity_functions}, \ref{subsec:pboxes} and \ref{subsec:multiple_models}, in the sense where there exists an intuitive total order (inspired by the order on reals). When no natural order exists, the arbitrary choice of the order can greatly impact the output mass or belief functions, as illustrated by the following example.
+With this way of defining the multivariate mass, the choice of arbitrary orders $\preceq_i$ can have a significant impact on the value of the multivariate mass function\commanue{Alors je te crois mais tu saurais l'expliquer avec les mains. Je ne vois pas où l'ordre inflût. Je complète ma remarque, tu donnes une explication dans l'exemple qui suit donc peut-être que tu pourrais a minima pointer vers l'exemple ou là remarque qui suit}. Those order will specifically be ``natural'' orders in sections \ref{sec:necessity_functions}, \ref{subsec:pboxes} and \ref{subsec:multiple_models}, in the sense where there exists an intuitive total order (inspired by the order on reals). When no natural order exists, the arbitrary choice of the order can greatly impact the output mass or belief functions, as illustrated by the following example.
 \todoroman{Quand j'ai $n$ variables j'utilise des notations du style $a_i^n$ (pas trop le choix). Par contre quand j'ai que 2 variables, ça vaudrait peut être le coup de repasser sur des $a_i$ et $b_i$ pour plus de lisibilité ?}\commanue{alors je sais pas je suis habitué à a pour les focal sets si tu décides de les appeler b ça va me perturber}
 \begin{example}\label{ex:joint_mass}
     Let us present an example in the case $n=2$. Let $m_1$ be a mass distribution function over the power set $2^{\X_1}$ of $\X_1$ with two focal sets $a_1,\, a_2$. Similarly, let $m_2$ be a mass distribution function over the power set $2^\X_2$\commanue{je pense que tu as un pb de notation car c'est pas pareil que pour le power set 1} with two focal sets $a_1^2,~a_2^2$. Throughout this example we will assume that $a_1^2\preceq_2a_2^2$. We consider the minimum copula $C(u,v)=\min(u,v)$ and that all masses are equal $m_1(a_1^1)=m_1(a_2^1)=m_2(a_1^2)=m_2(a_2^2)=0.5$.
@@ -283,9 +283,9 @@ We considered until now that an order has to be chosen arbitrarily. However, spe
 \subsection{Copulas Applied to Belief Functions}\label{sec:aggregation_method}
 Another way of joining credal sets with a copula is by directly applying the copula to their lower envelope $\low_i$ for every event:
 \begin{definition}[Aggregated Credal Set]\label{def:aggregation_credal_set}
-    Given a copula $C$ and $n$ marginal credal sets whose lower probabilities are $\low_1,~\dots,~\low_n$, we define the credal set $\M_{agg}$ over the power set of $\X=\X_1\tdt X_n$ as\commanue{encore une fois tu ne mets qu'une borne alors que dans l'autre définition il y a deux}:
+    Given a copula $C$ and $n$ marginal credal sets whose lower probabilities are $\low_1 \enum \low_n$, we define the credal set $\M_{agg}$ over the power set of $\X=\X_1\tdt X_n$ as\commanue{encore une fois tu ne mets qu'une borne alors que dans l'autre définition il y a deux}:
     \begin{eqnarray}
-        \M_{agg} = CH(\{P ~|~\forall A_i\subseteq\X_i, P(A_1,\dots, A_n)\geqslant C(\low_1(A_1), \dots, \low_n(A_n)\})\label{eq:copula_on_lower_proba}
+        \M_{agg} = CH(\{P ~|~\forall A_i\subseteq\X_i, P(A_1 \enum  A_n)\geqslant C(\low_1(A_1) \enum \low_n(A_n)\})\label{eq:copula_on_lower_proba}
     \end{eqnarray}
     where $CH$ is the convex hull from definition \ref{def:convex_hull}.
 \end{definition}
@@ -334,22 +334,22 @@ In general, applying the copula directly to the lower probabilities as in \eqref
 \end{proposition}
 
 \begin{proof}
-    For $i\in\{1,\dots,n\}$, let $\low_i$ be a lower probability avoiding sure lost, \ie whose credal set $\M_i$ contains at least one probability distribution $P_i$. Let us define a multivariate probability $P$ on every $(A_1\tdt A_n)\subseteq\X$ as:
+    For $i\in\{1 \enum n\}$, let $\low_i$ be a lower probability avoiding sure lost, \ie whose credal set $\M_i$ contains at least one probability distribution $P_i$. Let us define a multivariate probability $P$ on every $(A_1\tdt A_n)\subseteq\X$ as:
     \begin{eqnarray*}
         P(A_1\tdt A_n) = P_1(A_1)\tdt P_n(A_n)
     \end{eqnarray*}
     Defining $P$ on $(A_1\tdt A_n)\subseteq\X$ is sufficient as those sets contain every atom of $\X$.
     Because $\forall i, P_i\in\M_i,~P_i\geqslant \low_i$, then:
     \begin{eqnarray*}
-        P(A_1\tdt A_n) \geqslant \low_1(A_1)\tdt \low_n(A_n) &=& C_\Pi(\low_1(A_1), \dots, \low_n(A_n))\\
+        P(A_1\tdt A_n) \geqslant \low_1(A_1)\tdt \low_n(A_n) &=& C_\Pi(\low_1(A_1) \enum \low_n(A_n))\\
         &=& \low_{C_\Pi}(A_1\tdt A_n)
     \end{eqnarray*}
 which means $P\in\M_{agg}(C_\Pi, \M_i)$. Therefore $\M_{agg}(C_\Pi, \M_i)$ avoids sure loss if every $\M_i$ avoids sure loss.
 
 Let $C$ be a copula dominated by $C_\Pi$ (\ie $C_\Pi\geqslant C$), and $\low_C$ the lower probability associated with $\M_{agg}(C, \M_i)$. Then it holds that for all $(A_1\tdt A_n)\subseteq\X$:
 \begin{eqnarray*}
-\low_{C_\Pi}(A_1\tdt A_n)&=&C_\Pi(\low_1(A_1), \dots, \low_n(A_n)) \\
-    &\geqslant& C(\low_1(A_1),\dots, \low_n(A_n)) = \low_C(A_1\tdt A_n)
+\low_{C_\Pi}(A_1\tdt A_n)&=&C_\Pi(\low_1(A_1) \enum \low_n(A_n)) \\
+    &\geqslant& C(\low_1(A_1) \enum  \low_n(A_n)) = \low_C(A_1\tdt A_n)
 \end{eqnarray*}
 which implies that $\M_{agg}(C_\Pi, \M_i)\subseteq \M_{agg}(C, \M_i)$.
 \end{proof}
@@ -359,9 +359,9 @@ which implies that $\M_{agg}(C_\Pi, \M_i)\subseteq \M_{agg}(C, \M_i)$.
 \end{proposition}
 
 \begin{proof}
-    Let $C$ be a copula strictly superior to the product. Then there exists $(u_1,\dots,u_n)\in[0,1]^2$ such that:
+    Let $C$ be a copula strictly superior to the product. Then there exists $(u_1 \enum u_n)\in[0,1]^2$ such that:
     \begin{eqnarray*}
-        C(u_1,\dots, u_n)~>~u_1\dots u_n
+        C(u_1 \enum  u_n)~>~u_1\dots u_n
     \end{eqnarray*}
     Let $\M_i$ be marginals credal sets such that $\low_i$ are \textit{precise} probabilities, and that:
     \begin{eqnarray*}
@@ -390,7 +390,7 @@ Section \ref{sec:methods_for_joining_credal_sets} presented three methods for jo
 
 \subsection{Using the Product Copula}\label{subsection:product_copula}
 In this section, we will consider the case of the product copula $C_\Pi$, representing independence between variables. Using this copula in the robust approach defined by equation \eqref{eq:robust_set} is referred as the strong product in \cite{kacprzyk_factorisation_2010}. Let us denote $\low_{robust}$ the infimum of $\M_{robust}(C_\Pi, \M_i)$ and $\mathcal{S}$ the set from which $\M_{robust}$ is computed (eq. \eqref{eq:robust_ancestor}).
-For cylindrical sets $(A_1, \dots, A_n)$ of $\X$, it holds that:
+For cylindrical sets $(A_1 \enum A_n)$ of $\X$, it holds that:
 \begin{eqnarray*}
     \low_{robust}(A_1\tdt A_n) &=& \inf\{P(A_1\tdt A_n)~|~P\in\mathcal{S}\}\\
     &=&\inf\{\low_1(A_1)\dots\low_n(A_n)~|~P_i\in\M_i\}\\
@@ -413,12 +413,12 @@ This result can also be found in \cite{couso_survey_2000}.
     Equation \eqref{eq:joint_mass_product} shows that the order on marginal focal sets does not matter in the case of the product copula. We thus show\commanue{have to show / need to show} that equation \eqref{eq:joint_mass_product} holds.
     For simplicity and coherence with the notations of equation \eqref{eq:hvolume}, we will note for all $i\in[0,n]$, $u^i=\sum_{k=0}^{k_i-1}m_i(a_k^i)$, $v^i_k=\sum_{k=0}^{k_i}m_i(a_k^i)$\commanue{il y a des trucs en indice et en exposant mais c'ets pas raccord avec la suite}. $\Pi_{i=1}^n\{u_i, v_i\}$ will refer to the Cartesian product $\{u_1, v_1\}\times\{u_2, v_2\}\tdt\{u_n, v_n\}$ and we will note $C_\Pi$ and $H$ as the product copula and its H-volume regardless of their number of marginals. Those notations established, it holds that:
     \begin{eqnarray*}
-        m_\times(a^1_{k_1}\tdt a^{n}_{k_{n}}) &=& H_{u_1, \dots, u_{n}}^{v_1, \dots, v_{n}}\\
-        &=&\sum_{\substack{(w_1, \dots, w_{n})\in\\\Pi_{i=1}^{n}\{u_i, v_i\}}}(-1)^{|\{k~|~w_k=u_k\}|}C_\Pi(w_1, \dots, w_{n})\\
-        &=&\sum_{\substack{(w_1, \dots, w_{n-1})\in\\\Pi_{i=1}^{n-1}\{u_i, v_i\}}}(-1)^{|\{k~|~w_k=\sum_{k=0}^{k_i-1}m_i(a^i_k)\}|}(w_1 \dots w_{n-1}v_{n})\\
-        && + \sum_{\substack{(w_1, \dots, w_{n-1})\in\\\Pi_{i=1}^{n-1}\{u_i, v_i\}}}(-1)^{|\{k~|~w_k=\sum_{k=0}^{k_i-1}m_i(a^i_k)\}|+1}(w_1 \dots w_{n-1}u_n)\commanue{je ne suis pas sure de comprendre cette ligne}\\
-        &=& v_{n}H_{u_1, \dots, u_{n-1}}^{v_1, \dots, v_{n-1}} - u_{n}H_{u_1, \dots, u_{n-1}}^{v_1, \dots, v_{n-1}}\\
-        &=& m_{n}(a^{n}_{k_{n}})H_{u_1, \dots, u_{n-1}}^{v_1, \dots, v_{n-1}}\commanue{pareil pas compris}
+        m_\times(a^1_{k_1}\tdt a^{n}_{k_{n}}) &=& H_{u_1 \enum u_{n}}^{v_1 \enum v_{n}}\\
+        &=&\sum_{\substack{(w_1 \enum w_{n})\in\\\Pi_{i=1}^{n}\{u_i, v_i\}}}(-1)^{|\{k~|~w_k=u_k\}|}C_\Pi(w_1 \enum w_{n})\\
+        &=&\sum_{\substack{(w_1 \enum w_{n-1})\in\\\Pi_{i=1}^{n-1}\{u_i, v_i\}}}(-1)^{|\{k~|~w_k=\sum_{k=0}^{k_i-1}m_i(a^i_k)\}|}(w_1 \dots w_{n-1}v_{n})\\
+        && + \sum_{\substack{(w_1 \enum w_{n-1})\in\\\Pi_{i=1}^{n-1}\{u_i, v_i\}}}(-1)^{|\{k~|~w_k=\sum_{k=0}^{k_i-1}m_i(a^i_k)\}|+1}(w_1 \dots w_{n-1}u_n)\commanue{je ne suis pas sure de comprendre cette ligne}\\
+        &=& v_{n}H_{u_1 \enum u_{n-1}}^{v_1 \enum v_{n-1}} - u_{n}H_{u_1 \enum u_{n-1}}^{v_1 \enum v_{n-1}}\\
+        &=& m_{n}(a^{n}_{k_{n}})H_{u_1 \enum u_{n-1}}^{v_1 \enum v_{n-1}}\commanue{pareil pas compris}
     \end{eqnarray*}
     Doing the same procedure for every variable leads to:
     \begin{eqnarray*}
@@ -427,10 +427,10 @@ This result can also be found in \cite{couso_survey_2000}.
     which concludes the proof.
 \end{proof}
 
-The mass $m_\times$ corresponds to the notion of random set independence presented in \cite{dempster_upper_1967, couso_survey_2000}. Let $\Bel_\times$ be the belief function associated to $m_\times$, and $\forall i\in[1,n], \Bel_i$ the mass function associated to $m_i$. Then for cylindrical sets $(A_1, \dots, A_n)$ of $\X$, it holds that:
+The mass $m_\times$ corresponds to the notion of random set independence presented in \cite{dempster_upper_1967, couso_survey_2000}. Let $\Bel_\times$ be the belief function associated to $m_\times$, and $\forall i\in[1,n], \Bel_i$ the mass function associated to $m_i$. Then for cylindrical sets $(A_1 \enum A_n)$ of $\X$, it holds that:
 \begin{eqnarray}
-    \Bel_\times(A_1\tdt A_n) &=& \sum_{(a^1\tdt a^n)\subseteq (A_1, \dots, A_n)}m_\times(a^1\tdt a^n)\nonumber\\
-    &=& \sum_{(a^1\tdt a^n)\subseteq (A_1, \dots, A_n)}m_1(a_1)\dots m_n(a^n)\nonumber\\
+    \Bel_\times(A_1\tdt A_n) &=& \sum_{(a^1\tdt a^n)\subseteq (A_1 \enum A_n)}m_\times(a^1\tdt a^n)\nonumber\\
+    &=& \sum_{(a^1\tdt a^n)\subseteq (A_1 \enum A_n)}m_1(a_1)\dots m_n(a^n)\nonumber\\
     &=& (\sum_{a^1\subseteq A_1}m_1(a^1))\dots(\sum_{a^n\subseteq A_n}m_n(a^n))\nonumber\\
     &=& \Bel_1(A_1)\dots \Bel_n(A_n)
 \end{eqnarray}
@@ -440,11 +440,11 @@ This means that in the case of the product copula $C_\Pi$ with marginals being b
     \M_{mass}\subseteq\M_{agg}
 \end{eqnarray*}
 
-\subsection{Using the Natural Ordering of Necessity Functions}\label{subsec:necessity_functions}
+\subsection{Using the Natural Ordering of Necessity Functions}\label{sec:necessity_functions}
 Necessity functions $\Nec$, also called minitive belief functions, are a special type of belief function verify $\Nec(A\cap B) =\min(\Nec(A), \Nec(B))$ for all events $A, B$ in their domain of definition. In the multivariate case, when a belief\commanue{function?} is only defined on cylindrical sets, then the minitive property becomes:
 \begin{eqnarray}
     &&\forall (A_1\tdt A_n)\subseteq\X, (B_1\tdt B_n)\subseteq\X,\nonumber\\
-    &&\Nec(A_1\cap B_1,\dots, A_n\cap B_n) = \min_{(S_1,\dots,S_n)\in\Pi_i\{A_i,B_i\}}(\Nec(S_1, \dots, S_n))
+    &&\Nec(A_1\cap B_1 \enum  A_n\cap B_n) = \min_{(S_1 \enum S_n)\in\Pi_i\{A_i,B_i\}}(\Nec(S_1 \enum S_n))
 \end{eqnarray}
 In \cite{schmelzer_joint_2015}, the author showed that in order to describe the relation between a multivariate belief function and its marginals, in the bivariate case, it is necessary to use a family of sub-copulas: one copula for each tuple of increasing family of events\commanue{je ne suis pas sure de voir ce que cela représente exactement et c'est dommage car tu te sers bcp du terma par la suite}. We remind that a sub-copula is a restriction of a copula to a subset of the unit hyper-cube $[0,1]$ as presented in section \ref{sec:copula_def}.
 
@@ -493,9 +493,9 @@ where $\Nec_1$ and $\Nec_2$ are the marginal necessity functions. The proof of t
 
 Proposition (\ref{prop:sklar_necessity}) considers two marginals. However, it still holds for $n$ marginals, not covered in \cite{schmelzer_sklars_2015}.
 \begin{proposition}
-   Joining $n$ marginal necessity functions $\Nec_1,~\dots,~\Nec_n$ with a n-copula $C$ as in \eqref{eq:sklar_on_necessity} or using the multivariate variate mass function as in \eqref{eq:joint_mass} with the natural inclusion ordering yields the same multivariate belief function. In other words, for every cylindrical set $(A_1, \dots, A_n)\subseteq\X$, it holds that:
+   Joining $n$ marginal necessity functions $\Nec_1 \enum \Nec_n$ with a n-copula $C$ as in \eqref{eq:sklar_on_necessity} or using the multivariate variate mass function as in \eqref{eq:joint_mass} with the natural inclusion ordering yields the same multivariate belief function. In other words, for every cylindrical set $(A_1 \enum A_n)\subseteq\X$, it holds that:
 \begin{eqnarray}
-    \Bel_\times(A_1\tdt A_n) = C\left(\Nec_1(A_1), \dots, \Nec_n(A_n)\right)
+    \Bel_\times(A_1\tdt A_n) = C\left(\Nec_1(A_1) \enum \Nec_n(A_n)\right)
 \end{eqnarray}
 \end{proposition}
 
@@ -672,12 +672,12 @@ As it is the case for necessity functions, it is possible to find cases where th
     The p-boxes from Table \ref{tab:example_pbox} lead to the same belief functions as in example \ref{ex:necessity}, thus leading to the same conclusions \ie $\M_{robust}\not\subseteq\M_{mass}$, $\M_{mass}\not\subseteq\M_{robust}$ and $\M_{agg}\not\subseteq\M_{robust}$\commanue{C'est pas les mêmes que dans la phrase juste avant l'example}.
 \end{example}
 
-As stated previously, p-boxes are very closely related to CDF which can motivate one to apply Sklar's theorem (Theorem \ref{theorem:sklar}) to the lower CDF and upper CDF respectively. Given $n$ p-boxes $[\underline{F}_1,~\overline{F}_1],~\dots,~[\underline{F}_n,~\overline{F}_n]$ defined over $\X_1,\dots,\X_n$ and a copula $C$, we can define the lower and upper bounds of a $n$ variate CDF as:
+As stated previously, p-boxes are very closely related to CDF which can motivate one to apply Sklar's theorem (Theorem \ref{theorem:sklar}) to the lower CDF and upper CDF respectively. Given $n$ p-boxes $[\underline{F}_1,~\overline{F}_1] \enum [\underline{F}_n,~\overline{F}_n]$ defined over $\X_1 \enum \X_n$ and a copula $C$, we can define the lower and upper bounds of a $n$ variate CDF as:
 \begin{align*}
-    \underline{F}_\times&=C(\underline{F}_1,\dots, \underline{F}_n)\\
-    \overline{F}_\times&=C(\overline{F}_1,\dots, \overline{F}_n)
+    \underline{F}_\times&=C(\underline{F}_1 \enum  \underline{F}_n)\\
+    \overline{F}_\times&=C(\overline{F}_1 \enum  \overline{F}_n)
 \end{align*}
-Sklar's theorem states that $\underline{F}_\times$ and $\overline{F}_\times$ are both CDF, which means that $[\underline{F}_\times, \overline{F}_\times]$ is a multivariate p-box \cite{pelessoni_bivariate_2016, montes_sklars_2015} over cylindrical sets, defining a credal set $\M$. Clearly, the bounds of $\M_{robust}$ on cumulative events are the same as those of the credal set $\M$ induced by the multivariate p-box $[C(\underline{F}_1,\dots, \underline{F}_n),~C(\overline{F}_1,\dots, \overline{F}_n)]$\commanue{Clearly pas pour mo mais bon c'est comme ça. Après c'est quoi cumulative event ? Après ce qui est parfois perturbant c'est que temps en temsp c'est sur des cylindrical sets et des fois non. C'ets pas toujours simple de suivre la succession de remarques}.
+Sklar's theorem states that $\underline{F}_\times$ and $\overline{F}_\times$ are both CDF, which means that $[\underline{F}_\times, \overline{F}_\times]$ is a multivariate p-box \cite{pelessoni_bivariate_2016, montes_sklars_2015} over cylindrical sets, defining a credal set $\M$. Clearly, the bounds of $\M_{robust}$ on cumulative events are the same as those of the credal set $\M$ induced by the multivariate p-box $[C(\underline{F}_1 \enum  \underline{F}_n),~C(\overline{F}_1 \enum  \overline{F}_n)]$\commanue{Clearly pas pour mo mais bon c'est comme ça. Après c'est quoi cumulative event ? Après ce qui est parfois perturbant c'est que temps en temsp c'est sur des cylindrical sets et des fois non. C'ets pas toujours simple de suivre la succession de remarques}.
 
 \begin{proposition}\label{prop:convexity_pbox}
     When joining masses with a copula $C$ using the natural order on p-boxes \eqref{eq:order_pbox}, it holds that:
@@ -688,29 +688,29 @@ Sklar's theorem states that $\underline{F}_\times$ and $\overline{F}_\times$ are
 \end{proposition}
 
 \begin{proof}
-    Consider $n$ p-boxes $[\underline{F}_1,~\overline{F}_1],~\dots,~[\underline{F}_n,~\overline{F}_n]$, a D-convex copula $C$ and the natural order on focal sets $(a^i_k)_{1\leqslant k \leqslant N_i}$ of each marginal p-box $[\underline{F}_i,~\overline{F}_i]$. We will denote $m_\times$ the joint mass functions obtained using equations \eqref{eq:joint_mass} and $\Bel_\times$ its associated belief function. We will also refer to $\underline{P}$ as the lower probability associated to $\M_{agg}$ from equation \eqref{eq:copula_on_lower_proba}.
+    Consider $n$ p-boxes $[\underline{F}_1,~\overline{F}_1] \enum [\underline{F}_n,~\overline{F}_n]$, a D-convex copula $C$ and the natural order on focal sets $(a^i_k)_{1\leqslant k \leqslant N_i}$ of each marginal p-box $[\underline{F}_i,~\overline{F}_i]$. We will denote $m_\times$ the joint mass functions obtained using equations \eqref{eq:joint_mass} and $\Bel_\times$ its associated belief function. We will also refer to $\underline{P}$ as the lower probability associated to $\M_{agg}$ from equation \eqref{eq:copula_on_lower_proba}.
 
-    When considering the natural order on focal sets of a p-box \eqref{eq:order_pbox}, it holds that for every focal set $a^i_p$, the set $\{k~|~a^i_k\subseteq a^i_p\}$ is composed of consecutive integers. In the following, we denote by $\underline{p}$ and $\overline{p}$ the lowest and highest indices of the focal sets included in $a^i_p$. This means that $\{a^i_{\underline{p}}, \dots, a^i_{\overline{p}}\}$ is the set of all focal sets included in $a^i_p$. 
+    When considering the natural order on focal sets of a p-box \eqref{eq:order_pbox}, it holds that for every focal set $a^i_p$, the set $\{k~|~a^i_k\subseteq a^i_p\}$ is composed of consecutive integers. In the following, we denote by $\underline{p}$ and $\overline{p}$ the lowest and highest indices of the focal sets included in $a^i_p$. This means that $\{a^i_{\underline{p}} \enum a^i_{\overline{p}}\}$ is the set of all focal sets included in $a^i_p$. 
 
-    Let $a^1_{p_1},\dots,a^n_{p_n}$ be focal sets of $m_1,\dots,m_n$. We note $u^i_p=\sum_{k=1}^p m_i(a^i_k)$. It then holds that:
+    Let $a^1_{p_1} \enum a^n_{p_n}$ be focal sets of $m_1 \enum m_n$. We note $u^i_p=\sum_{k=1}^p m_i(a^i_k)$. It then holds that:
     \begin{align*}
-        \Bel_\times(a^1_{p_1}, \dots, a^n_{p_n}) &= \sum_{a^1_{k_1}\subseteq a^1_{p_1}}\dots\sum_{a^n_{k_n}\subseteq a^n_{p_n}}m_\times(a^1_{k_1},\dots, a^n_{k_n})\\
-        &= \sum_{k_1=\underline{p}_1}^{\overline{p}_1}\dots\sum_{k_n=\underline{p}_n}^{\overline{p}_n}m_\times(a^1_{k_1},\dots, a^n_{k_n})\\
-        &= \sum_{k_1=\underline{p}_1}^{\overline{p}_1}\dots\sum_{k_n=\underline{p}_n}^{\overline{p}_n}H_{u^1_{k_1-1},\dots,u^n_{k_n-1}}^{u^1_{k_1},\dots,u^n_{k_n}}
+        \Bel_\times(a^1_{p_1} \enum a^n_{p_n}) &= \sum_{a^1_{k_1}\subseteq a^1_{p_1}}\dots\sum_{a^n_{k_n}\subseteq a^n_{p_n}}m_\times(a^1_{k_1} \enum  a^n_{k_n})\\
+        &= \sum_{k_1=\underline{p}_1}^{\overline{p}_1}\dots\sum_{k_n=\underline{p}_n}^{\overline{p}_n}m_\times(a^1_{k_1} \enum  a^n_{k_n})\\
+        &= \sum_{k_1=\underline{p}_1}^{\overline{p}_1}\dots\sum_{k_n=\underline{p}_n}^{\overline{p}_n}H_{u^1_{k_1-1} \enum u^n_{k_n-1}}^{u^1_{k_1} \enum u^n_{k_n}}
     \end{align*}
     As the H-volume is computed over a partitioning of $[u^1_{\underline{p}_1-1}, u^1_{\overline{p}_1}]\tdt[u^n_{\underline{p}_n-1} , u^n_{\overline{p}_n}]$, it is possible to greatly simplify the sums. The proof is the same as the proof of \eqref{eq:joint_mass} except that the CDF is computed over $[u^1_{\underline{p}_1-1}, u^1_{\overline{p}_1}]\tdt[u^n_{\underline{p}_n-1} , u^n_{\overline{p}_n}]$ and not $[0,1]^n$. This yields\commanue{Bon là je te crois, je laiss qqn d'autre vérifier les indices}:
     \begin{align*}
-        \Bel_\times(a^1_{p_1}, \dots, a^n_{p_n}) = H_{u^1_{\underline{p}_1-1},\dots,u^n_{\underline{p}_n-1}}^{u^1_{\overline{p}_1},\dots,u^n_{\overline{p}_n}}
+        \Bel_\times(a^1_{p_1} \enum a^n_{p_n}) = H_{u^1_{\underline{p}_1-1} \enum u^n_{\underline{p}_n-1}}^{u^1_{\overline{p}_1} \enum u^n_{\overline{p}_n}}
     \end{align*}
     On the other hand, it holds that:
     \begin{align*}
-        \underline{P}(a^1_{p_1}, \dots, a^n_{p_n}) &= C(\Bel_1(a^1_{p_1}),\dots,\Bel_n(a^n_{p_n}))\\
-        &= C(\sum_{k_1=\underline{p}_1}^{\overline{p}_1} m_1(a^1_{k_1}), \dots, \sum_{k_n=\underline{p}_n}^{\overline{p}_n} m_1(a^n_{k_n}))\\
-        &= C(u^1_{\overline{p}_1} - u^1_{\underline{p}_1-1}, \dots, u^n_{\overline{p}_n} - u^n_{\underline{p}_n-1})
+        \underline{P}(a^1_{p_1} \enum a^n_{p_n}) &= C(\Bel_1(a^1_{p_1}) \enum \Bel_n(a^n_{p_n}))\\
+        &= C(\sum_{k_1=\underline{p}_1}^{\overline{p}_1} m_1(a^1_{k_1}) \enum \sum_{k_n=\underline{p}_n}^{\overline{p}_n} m_1(a^n_{k_n}))\\
+        &= C(u^1_{\overline{p}_1} - u^1_{\underline{p}_1-1} \enum u^n_{\overline{p}_n} - u^n_{\underline{p}_n-1})
     \end{align*}
     Using equation \eqref{eq:convex_diff_hvol} yields:
     \begin{align*}
-        \Bel_\times(a^1_{p_1}, \dots, a^n_{p_n}) \geqslant \underline{P}(a^1_{p_1}, \dots, a^n_{p_n})
+        \Bel_\times(a^1_{p_1} \enum a^n_{p_n}) \geqslant \underline{P}(a^1_{p_1} \enum a^n_{p_n})
     \end{align*}
     The inequality is reversed if $C$ is D-concave, which concludes the proof.
 \end{proof}
@@ -779,7 +779,7 @@ Figure \ref{fig:copula_convex} illustrates the difference between $\Bel_\times$ 
 \end{figure}
 
 \subsection{Joining Different Types of Models}\label{subsec:multiple_models}\commanue{Je ne sais pas si on peut pas améliorer le titre, j'ai compris de ce dont on allait parler grâce à l'intro qui suit}
-Different models\commanue{juste le terme models tout seul ça fait un peu vague} can be used for\commanue{representing / characterizing ?} multiple sources of uncertainty. When some marginals are modeled using possibility distributions and other by p-boxes, it is still possible to derive results similar as those of sections \ref{subsec:necessity_functions} and \ref{subsec:pboxes} if we use natural orders on the marginal focal sets\commanue{On ne peut mixer que possiblity et p-boxes, ou on peut faire la cuisine que l'on veut si on a un ordre naturel. Je dirais que l'intro permet de comprendre ce dont tu vas parler donc c'est un point positif. Mais je trouve que tu pourrais détailler un peu plus, c'est un peu rapide.}. 
+Different models\commanue{juste le terme models tout seul ça fait un peu vague} can be used for\commanue{representing / characterizing ?} multiple sources of uncertainty. When some marginals are modeled using possibility distributions and other by p-boxes, it is still possible to derive results similar as those of sections \ref{sec:necessity_functions} and \ref{subsec:pboxes} if we use natural orders on the marginal focal sets\commanue{On ne peut mixer que possiblity et p-boxes, ou on peut faire la cuisine que l'on veut si on a un ordre naturel. Je dirais que l'intro permet de comprendre ce dont tu vas parler donc c'est un point positif. Mais je trouve que tu pourrais détailler un peu plus, c'est un peu rapide.}. 
 \begin{proposition}\commanue{C'est le retour du sort Apparition de proposition de la classe matheux, c'est un sort qui donne 2d6 de maux de tête si on rate sa sauvegarde aux tests de maths. C'est vraiment pas cool comme sort ! }
     When joining marginal credal sets induced by a mix of possibility distributions and p-boxes using a copula $C$ the following inclusion hold:
     \begin{itemize}

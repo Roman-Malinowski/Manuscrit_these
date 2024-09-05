@@ -7,7 +7,7 @@ This chapter takes some distance from the stereo vision problem presented previo
 We introduce here a few notations that will be used in the rest of this chapter. \todoroman{A ajouter au fur et à mesure, peut être déplacer au début de la thèse, à côté du glossaire.}
 \begin{itemize}
     \item \st means ``such that''
-    \item We will often present theorems or results with $n$ different variables, spaces, or Cartesian products of $n$ elements. Notations therefore quickly become quite heavy. We try our best to make them clear and readable, which is why we often use the contraction ``$\dots$'' to imply that we are enumerating all variables. For instance, if we apply a function $f$ to four variables $x_1, x_2, x_3, x_4$, we will write $f(x_1, \dots, x_4)$.
+    \item We will often present theorems or results with $n$ different variables, spaces, or Cartesian products of $n$ elements. Notations therefore quickly become quite heavy. We try our best to make them clear and readable, which is why we often use the contraction ``$\dots$'' to imply that we are enumerating all variables. For instance, if we apply a function $f$ to four variables $x_1, x_2, x_3, x_4$, we will write $f(x_1\enum x_4)$.
     \item When working with $n$ variables, the index $i$ will usually be used to refer to the $i$-th variable (or one of its attribute), and will be appended as a subscript when possible, otherwise as a superscript. For instance, if $x\in\mathbb{R}^n$, then $x_i$ will refer to the $i$-th component of $x$. If $m_\times\in\mathbb{R}^n$, then $m_\times^i$ will refer to $i$-th component of $m_\times$.
     \item $\opi\cdot,\cdot\cli$ refers to an interval of integers. For instance $\opi1,~4\cli=\{1,~2,~3,~4\}$. 
     \item CDF will refer to Cumulative Distribution Function\commanue{Tu n'as pas une section acronymes?}, \ie if $X$ is random variable in $\mathbb{R}$ and $P$ its associated probability, then the CDF of $X$ is $F(x)=P(X\leqslant x)$.
@@ -308,12 +308,14 @@ Another notion closely related to possibility distributions is that of \(\alpha\
     An \(\alpha\)-cut is thus the set of all elements of $\X$ whose possibility level is more that $\alpha$.
 \end{definition}
 
-\begin{definition}[Necessity and Plausibility\commanue{c'est pas possibility? Plausibility c'est déjà défini au-dessus}]
-    It has been proven in \cite{dubois_when_1992} that a possibility distribution defines a specific type of plausibility functions called \textit{possibility} function and noted \(\Pi\). It also defines a specific belief function by duality called \textit{necessity} function and noted \(\Nec\), as well as a credal set $\M(\pi)$. They are defined as\commanue{Tu veux pas direct mettre possiblity et necessity dans la définition du credal set}:
+\begin{definition}[Necessity and Possibility measures]
+    It has been proven in \cite{dubois_when_1992} that a possibility distribution defines a specific type of plausibility functions called \textit{possibility} function and noted \(\Pi\). It also defines a specific belief function by duality called \textit{necessity} function and noted \(\Nec\), as well as a credal set $\M(\pi)$. They are defined as:
     \begin{align}
         &\Pi(A) = \sup_{x\in A}\pi(x)\\
         &\Nec(A)=1-\sup_{x\in A^c}\pi(x)\label{eq:bel_pl}\\
-        &\M(\pi)=\{P~|~\forall A,~P(A)\leqslant \sup_{x\in A}\pi(x)\}\label{eq:credal_set_possibility}
+        &\M(\pi) &=\{P~|~\forall A,~P(A)\leqslant \sup_{x\in A}\pi(x)\}\\
+        &=\{P~|~\forall A,~P(A)\leqslant \Pi(A)\} \label{eq:credal_set_possibility}\\
+        &= \{P~|~\forall A,~P(A)\geqslant \Nec(A)\}
     \end{align}
 \end{definition}
 
@@ -381,7 +383,7 @@ Focal sets of necessity functions can be determined directly from the possibilit
     \mathcal{C} =& \{\alpha_\pi~|~\alpha\in[0,1]\}\\
     =& \{ ~\{x\in\X~|~\pi(x)\geqslant\alpha\}~|~\alpha\in[0,1]~\}
 \end{align*}
-With the way focal sets are defined, they form a nested family of sets with regards to inclusion. Indeed, if an element of \(\X\) belongs to an \(\alpha\)-cut, then its possibility is greater than \(\alpha\) and therefore belongs to any other \(\alpha'\)-cut with a lower \(\alpha'\). For simplicity, we will suppose that the focal sets \(a_1,\dots,a_n\) are already numbered using the inclusion order, \ie \( a_1\subset\dots\subset a_n\). In this case, we will refer to the inclusion order as the ``natural'' order.
+With the way focal sets are defined, they form a nested family of sets with regards to inclusion. Indeed, if an element of \(\X\) belongs to an \(\alpha\)-cut, then its possibility is greater than \(\alpha\) and therefore belongs to any other \(\alpha'\)-cut with a lower \(\alpha'\). For simplicity, we will suppose that the focal sets \(a_1\enum a_n\) are already numbered using the inclusion order, \ie \( a_1\subset\dots\subset a_n\). In this case, we will refer to the inclusion order as the ``natural'' order.
 
 \begin{remark}
     The fact that focal sets form a nested family of sets in the case of possibility distributions also implies than if $\X$ is finite and contains $n$ elements, then there can be \textit{at most} $n$ focal sets. For comparison, belief functions can have a maximum of $2^n-1$ focal sets (as the empty set cannot be a focal set). This means that necessity functions have less degrees of freedom than (some) belief functions and thus can express less uncertainty structures. This drawback comes with the advantage of being easier to construct, as we only need to specify the mass of $n$ focal sets (or the possibility of the $n$ elements of $\X$) instead of $2^n-1$. Indeed, when we think of a random variable like the outcome of a dice, it can seem more natural for someone to specify degrees of possibility for each side separately than it is to specify degrees of plausibility for different sets of outcomes. 
@@ -422,7 +424,7 @@ The credal set $\M$ induced by a p-box $[\underline{F}, ~\overline{F}]$ is:
 \end{align}
 
 \begin{definition}[Focal sets of p-boxes]
-    P-boxes are special cases of belief functions. It has been proven in \cite{destercke_unifying_2008} that focal sets of p-boxes have a specific form. Although focal sets shapes are reminiscent of possibilities' $\alpha$-cuts (see figure \ref{fig:p-box}), they are a bit more complex to express formally. If $\X=\{x_1, \dots, x_n\}$ with $x_1\leqslant\dots\leqslant x_n$, then focal sets $\alpha_{[\underline{F}, ~\overline{F}]}$ of $[\underline{F}, ~\overline{F}]$ are given for every $\alpha\in[0,~1]$ by the following expression:
+    P-boxes are special cases of belief functions. It has been proven in \cite{destercke_unifying_2008} that focal sets of p-boxes have a specific form. Although focal sets shapes are reminiscent of possibilities' $\alpha$-cuts (see figure \ref{fig:p-box}), they are a bit more complex to express formally. If $\X=\{x_1\enum x_n\}$ with $x_1\leqslant\dots\leqslant x_n$, then focal sets $\alpha_{[\underline{F}, ~\overline{F}]}$ of $[\underline{F}, ~\overline{F}]$ are given for every $\alpha\in[0,~1]$ by the following expression:
     \begin{align}
         \alpha_{[\underline{F}, ~\overline{F}]}= \opi \overline{F}^{-1}(\alpha),~\underline{F}^{-1}(\alpha)\cli\label{eq:pbox_focal_set}
     \end{align}
@@ -490,17 +492,23 @@ Given the shape of focal sets, there can be at most $2n-1$ in a frame of discern
 During previous sections, we presented different models of uncertainty that will be considered throughout this thesis. When we will aggregate and propagate multiple sources of uncertainty in chapters \ref{chap:joining_credal_sets}, \ref{chap:propagating} and \ref{chap:epistemic_uncertainty}, we will need to take into account the dependency between our uncertain sources. In this section, we will present dependency models called copulas, which are mathematical tools used to represent the dependency between multiple random variables. Copulas can represent many types of dependency, ranging from complete monotonicity to complete counter-monotonicity, including independence between variables. Section \ref{sec:copula_def} will present the mathematical definition of a copula as well as practical families of copulas and how they can model different dependencies. Section \ref{sec:dconvexity} will present a specific property shared by some copulas and a theoretical contribution that will used later in sections \ref{subsec:pboxes} and \ref{subsec:multiple_models}. Finally, we present how to generate multivariate samples from a copula, which will be used in section \ref{sec:montecarlo}.
 
 \subsection{Core Definitions and Examples}\label{sec:copula_def}
-In the following, let $n\in\mathbb{N}^*$ be the number of sources of uncertainty considered (either represented by random variables or random sets). Formally, a copula is a multivariate cumulative distribution function $C:[0,1]^{n}\rightarrow [0,1]$ whose marginals follow uniform distributions on $[0,1]$\commanue{Peut-être mettre la définition d'une copule dans une case définition pour que cela ressorte bien}. It can be interpreted as a joint cumulative distribution of $n$ random variables. For all $i\in\opi 1,n\cli $, we will refer to $u_i\in[0,1]$ as its $i$-th variable (or marginal). A copula verifies a number of properties:
+In the following, let $n\in\mathbb{N}^*$ be the number of sources of uncertainty considered (either represented by random variables or random sets). We first introduce copulas, which are mapping from $[0,1]^n\rightarrow [0,1]$ verifying a number of properties, and that can model dependencies when considering Sklar's theorem, which will be presented in theorem \ref{theorem:sklar}.
+
+\begin{definition}
+     A copula is a multivariate cumulative distribution function $C:[0,1]^{n}\rightarrow [0,1]$ whose marginals follow uniform distributions on $[0,1]$. It can be interpreted as a joint cumulative distribution of $n$ random variables. For all $i\in\opi 1,n\cli $, we will refer to $u_i\in[0,1]$ as its $i$-th variable (or marginal). A copula verifies a number of properties:
 \begin{align}
-    &\text{if }\exists j\in\opi 1,n\cli  \text{ \st }~u_j=0, \text{ then }C(u_1,\dots,u_j,\dots,u_n)=0\label{eq:zero_copula}\\
-    &\forall i\in\opi 1,n\cli ,~C(1,1,\dots,1,u_i,1,\dots,1)=u_i\label{eq:copula_ones}\\
-    &\forall (v_1,\dots,v_n)\in[0,1]^n \text{ \st }~\forall i\in\opi 1,n\cli ,~v_i\geqslant u_i\nonumber\\
-    &\sum_{(w_1, \dots, w_n)\in\Pi_{i=1}^n\{u_i, v_i\}}(-1)^{|\{i~|~w_i=u_i\}|}C(w_1, \dots, w_n)\geqslant 0\label{eq:cop_hvolume}
+    &\text{if }\exists j\in\opi 1,n\cli  \text{ \st }~u_j=0, \text{ then }C(u_1\enum u_j\enum u_n)=0\label{eq:zero_copula}\\
+    &\forall i\in\opi 1,n\cli ,~C(1,1\enum1,u_i,1\enum1)=u_i\label{eq:copula_ones}\\
+    &\forall (v_1\enum v_n)\in[0,1]^n \text{ \st }~\forall i\in\opi 1,n\cli ,~v_i\geqslant u_i\nonumber\\
+    &\sum_{(w_1\enum w_n)\in\Pi_{i=1}^n\{u_i, v_i\}}(-1)^{|\{i~|~w_i=u_i\}|}C(w_1\enum w_n)\geqslant 0\label{eq:cop_hvolume}
 \end{align}
-where $\Pi_{i=1}^n$ is the Cartesian product of $n$ elements, meaning that $(w_1, \dots, w_n)\in\Pi_{i=1}^n\{u_i, v_i\}$ is a tuple of $n$ elements, where each element is either $u_i$ or $v_i$. Additionally, $|\{i~|~w_i=u_i\}|$ refers to the cardinal of the set $\{i~|~w_i=u_i\}$. The first term in equation \eqref{eq:cop_hvolume} is also called H-volume or hyper-volume. It is used to compute joint probability mass assignments in the precise case (and also in the imprecise case, see section \ref{sec:joint_mass}). In the rest of this thesis, we will use the following notation to refer to the $H$-volume:
+where $\Pi_{i=1}^n$ is the Cartesian product of $n$ elements, meaning that $(w_1\enum w_n)\in\Pi_{i=1}^n\{u_i, v_i\}$ is a tuple of $n$ elements, where each element is either $u_i$ or $v_i$. Additionally, $|\{i~|~w_i=u_i\}|$ refers to the cardinal of the set $\{i~|~w_i=u_i\}$. 
+\end{definition}
+
+The first term in equation \eqref{eq:cop_hvolume} is also called H-volume or hyper-volume. It is used to compute joint probability mass assignments in the precise case (and also in the imprecise case, see section \ref{sec:joint_mass}). In the rest of this thesis, we will use the following notation to refer to the $H$-volume:
 \begin{eqnarray}\label{eq:hvolume}
     &&\forall i\in\opi 1,n\cli ,~\forall~0\leqslant u_i \leqslant v_i \leqslant 1,\nonumber\\
-    &&H^{v_1,\dots v_n}_{u_1,\dots,u_n}=\sum_{(w_1, \dots, w_n)\in\Pi_{i=1}^n\{u_i, v_i\}}(-1)^{|\{i~|~w_i=u_i\}|}C(w_1, \dots, w_n)
+    &&H^{v_1,\dots v_n}_{u_1\enum u_n}=\sum_{(w_1\enum w_n)\in\Pi_{i=1}^n\{u_i, v_i\}}(-1)^{|\{i~|~w_i=u_i\}|}C(w_1\enum w_n)
 \end{eqnarray}
 
 \begin{remark}
@@ -526,9 +534,9 @@ where $\Pi_{i=1}^n$ is the Cartesian product of $n$ elements, meaning that $(w_1
 
 A central theorem regarding copulas is Sklar's theorem \cite{sklar_fonctions_1959}:
 \begin{theorem}[Sklar's Theorem]\label{theorem:sklar}
-    Let $F:\X_1\tdt\X_n\rightarrow[0,1]$ be a multivariate cumulative distribution function, where $\X_i\subseteq\overline{\mathbb{R}}$. The marginals $F_i$ of $F$ are defined as $\forall i\in\opi 1,n\cli , \forall x\in\X_i, F_i(x) = F( +\infty, \dots,  +\infty, x,  +\infty, \dots, +\infty)$ where $x$ is the $i$-th component of $F$. If all $F_i$ are continuous, then a unique copula $C$ exists:
+    Let $F:\X_1\tdt\X_n\rightarrow[0,1]$ be a multivariate cumulative distribution function, where $\X_i\subseteq\overline{\mathbb{R}}$. The marginals $F_i$ of $F$ are defined as $\forall i\in\opi 1,n\cli , \forall x\in\X_i, F_i(x) = F( +\infty\enum  +\infty, x,  +\infty\enum +\infty)$ where $x$ is the $i$-th component of $F$. If all $F_i$ are continuous, then a unique copula $C$ exists:
     \begin{eqnarray}
-        \forall (x_1,\dots,x_n)\in \overline{\mathbb{R}}^n, F(x_1,\dots,x_n)=C(F_1(x_1),\dots, F_n(x_n))\label{eq:sklar_equality}
+        \forall (x_1\enum x_n)\in \overline{\mathbb{R}}^n, F(x_1\enum x_n)=C(F_1(x_1)\enum F_n(x_n))\label{eq:sklar_equality}
     \end{eqnarray}
     If some $F_i$ are not continuous, then $C$ is unique on the product of the ranges of all $F_i$.
     
@@ -576,18 +584,18 @@ Copulas are very useful to represent the dependency between multiple sources of 
 It follows from \eqref{eq:cop_hvolume} that a copula is a component-wise increasing mapping. All copulas are actually dominating and dominated by two bounds (called lower and upper Fréchet–Hoeffding bounds):
 \begin{align}
     &\forall u_i \in [0,1]^n,\nonumber\\
-    &\max(0, 1-n+\sum_{i=1}^n u_i) \leqslant C(u_1,\dots,u_n) \leqslant \min(u_1, \dots, u_n)
+    &\max(0, 1-n+\sum_{i=1}^n u_i) \leqslant C(u_1\enum u_n) \leqslant \min(u_1\enum u_n)
 \end{align}
 The upper bound is a copula, usually called the Minimum copula $C_M$. It is used to model co-monotonic variables, \ie variables where high values occur at the same time (or similarly, where low values tend to occur simultaneously). Co-monotony implies a maximal covariance between variables.
 
-The lower bound is a copula only in the case $n=2$, called the \L ukasiewicz copula $C_L$\commanue{Peut-être mettre la formule car tu mets celle pour plus de 2 dimensions}. It is used to model counter-monotonic variables, \ie variables with a perfect negative dependence between them. This explain why the lower bound is not a copula in dimensions higher that $2$ \commanue{Peut-être à reformuler, il existe toujours un copula qui atteint la borne inf mais aux dimensions supérieures c'est plus le même. Là on a l'impression que la borne inf ne peut pas être atteinte avec une copule}. Indeed, if $X$ has a perfect negative dependence with $Y$ and $Z$, then $Y$ and $Z$ cannot share a perfect negative dependence. However, for every $u_1,\dots,u_n$, there always exists a copula $C$ attaining the lower bound:
+The lower bound is a copula only in the case $n=2$, called the \L ukasiewicz copula $C_L$\commanue{Peut-être mettre la formule car tu mets celle pour plus de 2 dimensions}. It is used to model counter-monotonic variables, \ie variables with a perfect negative dependence between them. This explain why the lower bound is not a copula in dimensions higher that $2$ \commanue{Peut-être à reformuler, il existe toujours un copula qui atteint la borne inf mais aux dimensions supérieures c'est plus le même. Là on a l'impression que la borne inf ne peut pas être atteinte avec une copule}. Indeed, if $X$ has a perfect negative dependence with $Y$ and $Z$, then $Y$ and $Z$ cannot share a perfect negative dependence. However, for every $u_1\enum u_n$, there always exists a copula $C$ attaining the lower bound:
 \begin{eqnarray*}
-    \forall (u_1,\dots,u_n)\in[0,1]^n,~\exists C \text{ \st }~C(u_1,\dots,u_n) = \max(0, 1-n+\sum_{i=1}^n u_i)
+    \forall (u_1\enum u_n)\in[0,1]^n,~\exists C \text{ \st }~C(u_1\enum u_n) = \max(0, 1-n+\sum_{i=1}^n u_i)
 \end{eqnarray*}
  
 Independence between variables is modeled by the product copula $C_\Pi$\commanue{je mettrais des $\times$ dans la formule ou la symbole produit}:
 \begin{equation*}
-    C_\Pi(u_1, \dots, u_n)=u_1\dots u_n
+    C_\Pi(u_1\enum u_n)=u_1\dots u_n
 \end{equation*}
 which will be used later in subsection \ref{subsection:product_copula}. Graphical representations of the product copula and of the lower and upper Fréchet–Hoeffding bounds are represented in figure \ref{fig:copulas}\commanue{Dans la figure c'est en dimension 2 donc c'est Product, Minimum and \L ukasiewicz copulas. En tout cas c'est ce qui est indiqué}. Example \ref{ex:copulas} presents a setting where the Product, Minimum and \L ukasiewicz copulas are used to model dependency between random variables.
 
@@ -649,8 +657,22 @@ To complete this overview of copulas, let us present other copulas that can be g
 
 Another important family of copulas is the family of Gaussian copulas. Each Gaussian copula is generated with a correlation matrix $R\in[-1,1]^{(n,n)}$:
 \begin{align}
-    C_R=\Phi_R(\Phi^{-1}(u_1), \dots, \Phi^{-1}(u_n)) \label{eq:gaussian_copula}
-\end{align} where $\Phi_R$ is the joint multivariate cumulative distribution function of a Gaussian variable with correlation matrix $R$, and $\Phi^{-1}$ is the inverse cumulative distribution function of a univariate Gaussian variable. This family of copulas will be used in section \ref{sec:sources_of_uncertainty} to model the dependency between the random intensities of pixels of stereo-images for instance.
+    C_R(u_1\enum u_n)=\Phi_R(\Phi^{-1}(u_1)\enum \Phi^{-1}(u_n))
+\end{align} where $\Phi_R$ is the joint multivariate cumulative distribution function of a Gaussian variable with correlation matrix $R$, and $\Phi^{-1}$ is the inverse cumulative distribution function of a univariate Gaussian variable. We do not know an exact form for $\Phi_R$, but we can compute it by integrating its associated Gaussian probability density function:
+\begin{align}
+   \Phi_R&(\Phi^{-1}(u_1)\enum \Phi^{-1}(u_n)) =\nonumber\\ &\int_{-\infty}^{\Phi^{-1}(u_1)}\dots\int_{-\infty}^{\Phi^{-1}(u_n)}\frac{1}{\sqrt{(2\pi)^{n}|R|}}\exp(-\frac{1}{2}\begin{bmatrix}x_1 & \dots & x_{n}\end{bmatrix}R^{-1}\begin{bmatrix}x_1 \\ \dots \\ x_{n}\end{bmatrix})dx_1\dots dx_n
+\end{align}
+Where $|R|$ is the determinant of $R$. This family of copulas will be used in section \ref{sec:sources_of_uncertainty} to model the dependency between the random intensities of pixels of stereo-images for instance. 
+\begin{remark}
+    The product copula is actually a Gaussian copula with the identity matrix $\mathbb{I}_n$ as its covariance matrix:
+    \begin{align*}
+        \Phi_R&(\Phi^{-1}(u_1)\enum \Phi^{-1}(u_n)) =\\ &\int_{-\infty}^{\Phi^{-1}(u_1)}\dots\int_{-\infty}^{\Phi^{-1}(u_n)}\frac{1}{\sqrt{(2\pi)^{n}|\mathbb{I}_n|}}\exp(-\frac{1}{2}\begin{bmatrix}x_1 & \dots & x_{n}\end{bmatrix}\mathbb{I}_n^{-1}\begin{bmatrix}x_1 \\ \dots \\ x_{n}\end{bmatrix})dx_1\dots dx_n\\
+        =& \int_{-\infty}^{\Phi^{-1}(u_1)}\dots\int_{-\infty}^{\Phi^{-1}(u_n)}\frac{1}{\sqrt{(2\pi)^{n}}}\exp(-\frac{1}{2}\sum_{i=1}^nx_i^2)dx_1\dots dx_n\\
+        =& \int_{-\infty}^{\Phi^{-1}(u_1)}\frac{1}{\sqrt{(2\pi)}}\exp(-\frac{1}{2}x_1^2)dx_1\dots\int_{-\infty}^{\Phi^{-1}(u_n)}\frac{1}{\sqrt{(2\pi)}}\exp(-\frac{1}{2}x_n^2)dx_n\\
+        =& \int_{-\infty}^{\Phi^{-1}(u_1)}\Phi'(x_1)dx_1\dots\int_{-\infty}^{\Phi^{-1}(u_n)}\Phi'(x_n)dx_n\\
+        =& ~u_1\dots u_n
+    \end{align*}
+\end{remark}
 
 \begin{figure}
     \centering
@@ -761,10 +783,10 @@ Another important family of copulas is the family of Gaussian copulas. Each Gaus
 This section will investigate a property shared by some copulas called directional convexity/concavity. This is more of a theoretical contribution, as we do not exploit them in the applications to stereo-photogrammetry in chapters \ref{chap:propagating} and \ref{chap:epistemic_uncertainty}. However, we will see that those properties are shared by many common families of copulas. We also use them to prove a specific relationship between multivariate uncertainty models in sections \ref{subsec:pboxes} and \ref{subsec:multiple_models}. For readers that do not want to dive into details regarding directional convexity/concavity, we advise to consider only definition \ref{def:convex} and the main result of this section which is presented in equation \eqref{eq:convex_diff_hvol}.
 
 \begin{definition}[D-convexity, D-concavity]\label{def:convex}
-    A copula $C$ is called directionally convex (D-convex) \cite{alvoni_dierent_2007} if for every $(u_1,\dots,u_n)\in[0,1]^n$, $(v_1, \dots, v_n)\in[0,1]^n$, $i\in\opi1,n\cli$ and $t\in[0,1]$ it verifies:
+    A copula $C$ is called directionally convex (D-convex) \cite{alvoni_dierent_2007} if for every $(u_1 \enum u_n)\in[0,1]^n$, $(v_1\enum v_n)\in[0,1]^n$, $i\in\opi1,n\cli$ and $t\in[0,1]$ it verifies:
     \begin{align}
-        C(u_1,\dots, tu_i+(1-t)v_i,\dots, u_n) ~\leqslant~&t\cdot C(u_1,\dots, u_i,\dots, u_n)\nonumber\\
-        &+ (1-t)\cdot C(u_1,\dots, v_i,\dots, u_n)\label{eq:convex_copula}
+        C(u_1\enum tu_i+(1-t)v_i\enum u_n) ~\leqslant~&t\cdot C(u_1\enum u_i\enum u_n)\nonumber\\
+        &+ (1-t)\cdot C(u_1\enum v_i\enum u_n)\label{eq:convex_copula}
     \end{align}
     In other words, the copula is convex when fixing all but one of its variables. A copula is called directionally concave (D-concave) if the inequality is reversed.
 \end{definition}
@@ -836,66 +858,66 @@ The rest of this section will present different results regarding D-convex and D
 \begin{remark}
     All D-convex copulas $C$ are dominated by the product copula. Similarly, all D-concave copulas dominate the product copula.
 
-    Consider a D-convex copula $C$, and let $(u_1, \dots, u_n)\in[0,1]^n$.
+    Consider a D-convex copula $C$, and let $(u_1\enum u_n)\in[0,1]^n$.
     \begin{eqnarray*}
-        C(u_1,\dots, u_n) &=& C((1-u_1)\cdot0+u_1\cdot 1, u_2, \dots, u_n)\\
-        &\leqslant& (1-u_1)C(0, u_2,\dots, u_n)+u_1C(1, u_2, \dots, u_n)\\
-        &=& u_1C(1, u_2,\dots, u_n)\commanue{alors moi je laisserais le symbole $\leqslant$ et pas $=$}
+        C(u_1\enum u_n) &=& C((1-u_1)\cdot0+u_1\cdot 1, u_2\enum u_n)\\
+        &\leqslant& (1-u_1)C(0, u_2\enum u_n)+u_1C(1, u_2\enum u_n)\\
+        &=& u_1C(1, u_2\enum u_n)\commanue{alors moi je laisserais le symbole $\leqslant$ et pas $=$}
     \end{eqnarray*}
-    Doing the same for $u_2,\dots,u_n$ yields:
+    Doing the same for $u_2\enum u_n$ yields:
     \begin{eqnarray*}
-        C(u_1,\dots, u_n) &\leqslant& u_1\dots u_nC(1,\dots,1) = u_1\dots u_n = C_\Pi(u_1,\dots,u_n)
+        C(u_1\enum u_n) &\leqslant& u_1\dots u_nC(1\enum1) = u_1\dots u_n = C_\Pi(u_1\enum u_n)
     \end{eqnarray*}
     The proof for D-convexity is similar.
 \end{remark}
 
 \begin{proposition}\label{prop:sup_additivity}
-    If $C$ is a D-convex copula, then it verifies for all $(u_1,\dots,u_n)\in[0,1]^n$, $(v_1,\dots,v_n)\in[0,1]^n$ \st $\forall i\in\opi1,n\cli$, $u_i+v_i\leqslant 1$:
+    If $C$ is a D-convex copula, then it verifies for all $(u_1\enum u_n)\in[0,1]^n$, $(v_1\enum v_n)\in[0,1]^n$ \st $\forall i\in\opi1,n\cli$, $u_i+v_i\leqslant 1$:
     \begin{eqnarray}
-        C(u_1,\dots,u_i+v_i,\dots,u_n)\geqslant& &C(u_1,\dots,u_i,\dots,u_n)\nonumber\\
-        &+ &C(u_1,\dots,v_i,\dots,u_n)\label{eq:convex_sum}
+        C(u_1\enum u_i+v_i\enum u_n)\geqslant& &C(u_1\enum u_i\enum u_n)\nonumber\\
+        &+ &C(u_1\enum v_i\enum u_n)\label{eq:convex_sum}
     \end{eqnarray}
     Similarly, if $\forall i\in\opi1,n\cli$, $u_i-v_i\geqslant 0$, it verifies:
     \begin{eqnarray}
-        C(u_1,\dots,u_i-v_i,\dots,u_n)\leqslant& &C(u_1,\dots,u_i,\dots,u_n)\nonumber\\
-        &- &C(u_1,\dots,v_i,\dots,u_n)\label{eq:convex_diff}
+        C(u_1\enum u_i-v_i\enum u_n)\leqslant& &C(u_1\enum u_i\enum u_n)\nonumber\\
+        &- &C(u_1\enum v_i\enum u_n)\label{eq:convex_diff}
     \end{eqnarray}
     The inequalities are reversed for D-concave copulas.
 \end{proposition}
 
 \begin{proof}
-    Let $(u_1,\dots,u_n)\in[0,1]^n$, $(v_1,\dots,v_n)\in[0,1]^n$ \st $\forall i\in\opi1,n\cli$, $u_i+v_i\leqslant 1$. Let $i\in\opi1,n\cli$. Applying the definition of convexity \eqref{eq:convex_copula} with $v_i=0$ yields:
+    Let $(u_1\enum u_n)\in[0,1]^n$, $(v_1\enum v_n)\in[0,1]^n$ \st $\forall i\in\opi1,n\cli$, $u_i+v_i\leqslant 1$. Let $i\in\opi1,n\cli$. Applying the definition of convexity \eqref{eq:convex_copula} with $v_i=0$ yields:
     \begin{eqnarray*}
-        \forall t\in[0,1],~C(u_1,\dots,tu_i,\dots, u_n) \leqslant tC(u_1,\dots, u_n)
+        \forall t\in[0,1],~C(u_1\enum tu_i\enum u_n) \leqslant tC(u_1\enum u_n)
     \end{eqnarray*}
     
     Let $w_i=u_i+v_i\in ]0,1]$ (the case where $u_i=0$ or $v_i=0$ is trivial). It is possible to write $u_i=tw_i$ and $v_i=(1-t)w_i$, with $t=\frac{u_i}{w_i}\in[0,1]$. Then it holds that:
     \begin{eqnarray*}
-            C(u_1,\dots,u_i,\dots,u_n) =& C(u_1, \dots, tw_i,\dots, u_n) &\leqslant tC(u_1, \dots, w_i, \dots, u_n)\\
-            C(u_1,\dots,v_i,\dots,u_n) =& C(u_1, \dots, (1-t)w_i,\dots, u_n) &\leqslant (1-t)C(u_1, \dots, w_i, \dots, u_n)
+            C(u_1\enum u_i\enum u_n) =& C(u_1\enum tw_i\enum u_n) &\leqslant tC(u_1\enum w_i\enum u_n)\\
+            C(u_1\enum v_i\enum u_n) =& C(u_1\enum (1-t)w_i\enum u_n) &\leqslant (1-t)C(u_1\enum w_i\enum u_n)
     \end{eqnarray*}
     Summing the above equations yields:
     \begin{eqnarray*}
-        C(u_1,\dots,u_i,\dots,u_n) + C(u_1,\dots,v_i,\dots,u_n) &\leqslant& C(u_1, \dots, w_i, \dots, u_n)\\
-        &\leqslant& C(u_1, \dots, u_i+v_i, \dots, u_n)
+        C(u_1\enum u_i\enum u_n) + C(u_1\enum v_i\enum u_n) &\leqslant& C(u_1\enum w_i\enum u_n)\\
+        &\leqslant& C(u_1\enum u_i+v_i\enum u_n)
     \end{eqnarray*}
     which proves equation \eqref{eq:convex_sum}.
 
     Let $w_i=u_i-v_i\in [0,1]$, clearly $w_i+v_i\leqslant1$. Using equation \eqref{eq:convex_sum}, it holds that:
     \begin{align*}
-        &C(u_1,\dots,w_i,\dots,u_n) + C(u_1,\dots,v_i,\dots,u_n) &\leqslant~&C(u_1, \dots, w_i+v_i, \dots, u_n)\\
-        \Leftrightarrow~ &C(u_1,\dots,w_i,\dots,u_n) &\leqslant~&C(u_1, \dots, w_i+v_i, \dots, u_n)\\
-        &&&-C(u_1,\dots,v_i,\dots,u_n)\\
-        \Leftrightarrow~ &C(u_1,\dots,u_i-v_i,\dots,u_n) &\leqslant~&C(u_1, \dots, u_i, \dots, u_n)\\
-        &&&-C(u_1,\dots,v_i,\dots,u_n)
+        &C(u_1\enum w_i\enum u_n) + C(u_1\enum v_i\enum u_n) &\leqslant~&C(u_1\enum w_i+v_i\enum u_n)\\
+        \Leftrightarrow~ &C(u_1\enum w_i\enum u_n) &\leqslant~&C(u_1\enum w_i+v_i\enum u_n)\\
+        &&&-C(u_1\enum v_i\enum u_n)\\
+        \Leftrightarrow~ &C(u_1\enum u_i-v_i\enum u_n) &\leqslant~&C(u_1\enum u_i\enum u_n)\\
+        &&&-C(u_1\enum v_i\enum u_n)
     \end{align*}
     which proves equation \eqref{eq:convex_diff}.
 \end{proof} 
 
 \begin{proposition}\label{prop:convex_diff_hvol}
-    If $C$ is a D-convex copula, then it verifies for all $(u_1,\dots,u_n)\in[0,1]^n$, $(v_1,\dots,v_n)\in[0,1]^n$ \st $\forall i\in\opi1,n\cli$, $u_i-v_i\geqslant 0$:
+    If $C$ is a D-convex copula, then it verifies for all $(u_1\enum u_n)\in[0,1]^n$, $(v_1\enum v_n)\in[0,1]^n$ \st $\forall i\in\opi1,n\cli$, $u_i-v_i\geqslant 0$:
     \begin{eqnarray}
-        C(u_1-v_1,\dots,u_i-v_i,\dots,u_n-v_n)\leqslant& &H^{u_1,\dots,u_i,\dots,u_n}_{v_1,\dots,v_i,\dots,v_n}\label{eq:convex_diff_hvol}
+        C(u_1-v_1\enum u_i-v_i\enum u_n-v_n)\leqslant& &H^{u_1\enum u_i\enum u_n}_{v_1\enum v_i\enum v_n}\label{eq:convex_diff_hvol}
     \end{eqnarray}
     where $H$ is the H-volume of $C$. The inequality is reversed for D-concave copulas.
 \end{proposition}
@@ -917,10 +939,10 @@ As a copula represent the CDF of a multivariate random variable, it is possible 
 We do not present the $n$-dimensional general case here as it is a bit more complex, but it can be found in \cite{cherubini_copula_2004}. However, drawing samples from a Gaussian $n$-copula with a correlation matrix $R$ are simpler to obtain:
 \begin{itemize}
     \item Compute the Cholesky decomposition $A$ of the correlation matrix $R$
-    \item Draw $n$ independent random samples $u=(u_1, \dots, u_n)'$ from $\mathcal{N}(0,1)$, where $\mathcal{N}$ is the normal distribution.
+    \item Draw $n$ independent random samples $u=(u_1\enum u_n)'$ from $\mathcal{N}(0,1)$, where $\mathcal{N}$ is the normal distribution.
     \item Set $v=Au$
     \item Set $w_k=\Phi(v_k)$ where $\Phi$ is the univariate normal cumulative distribution function
-    \item The desired draw is $(x_1,\dots, x_n)=(F^{-1}_1(w_1), \dots, F^{-1}_n(w_n))$ with $F_i^{-1}$, being the quasi-inverse of the $i$-th marginal CDF.
+    \item The desired draw is $(x_1\enum x_n)=(F^{-1}_1(w_1)\enum F^{-1}_n(w_n))$ with $F_i^{-1}$, being the quasi-inverse of the $i$-th marginal CDF.
 \end{itemize}
 \commanue{Alors il manque une conclusion un truc, là ça termine un peu de manière abrupte, transition donc ;)}
 
