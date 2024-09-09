@@ -1,7 +1,7 @@
 \chapter{Mathematical Representations of Uncertainty}\label{chap:representation_of_uncertainty}
 
 \section{Introduction}
-This chapter takes some distance from the stereo vision problem presented previously, and instead describe more formally different representations of uncertainty and the tools that can be used to manipulate them. In this thesis, we consider classical probabilities (section \ref{sec:probabilities}), possibility distributions (section \ref{sec:possibilities}) and p-boxes (secction \ref{sec:pboxes}) to model uncertainty. We also consider the case where we consider multiple sources of uncertainty simultaneously. In this setting, the dependency between the different sources must be taken into account. We thus present a dependency model called copulas in section \ref{sec:copulas}, and some of its properties. The thorough presentation of those concepts will then be put into relations in chapter \ref{chap:joining_credal_sets}. 
+This chapter takes some distance from the stereo vision problem presented previously, and instead describe more formally different representations of uncertainty and the tools that can be used to manipulate them. In this thesis, we consider classical probabilities (\Cref{sec:probabilities}), possibility distributions (\Cref{sec:possibilities}) and p-boxes (secction \ref{sec:pboxes}) to model uncertainty. We also consider the case where we consider multiple sources of uncertainty simultaneously. In this setting, the dependency between the different sources must be taken into account. We thus present a dependency model called copulas in \Cref{sec:copulas}, and some of its properties. The thorough presentation of those concepts will then be put into relations in \Cref{chap:joining_credal_sets}. 
 
 \section{Notations}
 We introduce here a few notations that will be used in the rest of this chapter. \todoroman{A ajouter au fur et à mesure, peut être déplacer au début de la thèse, à côté du glossaire.}
@@ -21,7 +21,7 @@ Assessing the reliability of an engineering system requires to quantify the unce
     \item intervals \cite{jaulin_applied_2001}, where no preferences are given inside a specific range of possible values
     \item imprecise probabilities which tries to extend the concept of probabilities in order to model epistemic uncertainty
 \end{itemize}
-This list is not exhaustive. Additionally, those different models can sometimes be equivalent. Choosing to use one or another depends on the nature of the problem and of the available data. In this chapter, we will mainly consider probability distributions (section \ref{sec:probabilities}) and imprecise probabilities (section \ref{sec:imprecise_probabilities}). Two specific cases of imprecise probabilities will be detailed, namely possibility distributions in section \ref{sec:possibilities} and p-boxes in section \ref{sec:pboxes}.
+This list is not exhaustive. Additionally, those different models can sometimes be equivalent. Choosing to use one or another depends on the nature of the problem and of the available data. In this chapter, we will mainly consider probability distributions (\Cref{sec:probabilities}) and imprecise probabilities (\Cref{sec:imprecise_probabilities}). Two specific cases of imprecise probabilities will be detailed, namely possibility distributions in \Cref{sec:possibilities} and p-boxes in \Cref{sec:pboxes}.
 
 \begin{remark}
     Distinguishing between stochastic and epistemic uncertainty is a model accepted by many to distinguish between different situations of uncertainty. One could argue that stochastic uncertainty is, to a certain degree, the same thing as epistemic uncertainty. Indeed, if we had enough knowledge on initial conditions of a dice throw for instance (force and torque applied on the dice, its exact shape and mass distribution \etc), as well as the exact physics model, one could predict with certainty on which side it would land. There would therefore be no aleatoric process at stake here. The question of whether or not we should make the distinction between aleatoric and epistemic uncertainty is of interest regarding theoretical aspects of the nature of uncertainty. For real-life applications however, differentiating between the two seems reasonable as we cannot know every parameter and exact model at stake for every quantity of interest. 
@@ -76,7 +76,7 @@ Other useful concepts regarding probability distributions are cumulative distrib
     \end{equation*}
     In the continuous case, the density $f$ is also the derivative of the CDF of $X$\commanue{Je mettrais la remarque avant la partie discrète}.
 \end{definition}
-%For instance, the uniform distribution on the interval $[1,100]$ has a density function $f(x)=\frac{1}{100-1}$ if $x\in[1,100]$ and $0$ elsewhere. Its CDF is thus $0$ if $x<1$, $\frac{x}{100-1}$ if $x\in[1,100]$ and $1$ elsewhere. The concept of a CDF for multiple variables will be explored in section \ref{sec:copulas}.
+%For instance, the uniform distribution on the interval $[1,100]$ has a density function $f(x)=\frac{1}{100-1}$ if $x\in[1,100]$ and $0$ elsewhere. Its CDF is thus $0$ if $x<1$, $\frac{x}{100-1}$ if $x\in[1,100]$ and $1$ elsewhere. The concept of a CDF for multiple variables will be explored in \Cref{sec:copulas}.
 
 In the rest of the chapter, we consider random variables $X$ on discrete spaces $\X$. If $\X=\{x_1,~\dots,~x_n\}$, we call $\{x_i\}$ an atom of $\X$, and the probability distribution $P$ of $X$ on $\X$ is completely determined by its density, which is the value of $P$ on atoms. For simplicity of notation, we will not always use braces around atoms when computing their probability. So we will sometimes write $P(x_1)$ instead of $P(X=\{x_1\})$.
 
@@ -111,7 +111,7 @@ As stated previously, probability measures are fitted to represent stochastic un
 \end{example}
 
 \subsection{Imprecise Probabilities}\label{sec:imprecise_probabilities}
-As highlighted in example \ref{ex:proba_limitations}, uncertainty cannot always be correctly modeled by probabilities, especially in a context where data is sparse. To overcome this problem, a generalization of probabilities have been introduced, called \textit{imprecise probabilities}. Imprecise probabilities (sometimes abbreviated IP) provide a general framework for working with both aleatoric and epistemic uncertainty with the concept of lower and upper probabilities. Lower and upper probabilities are quite  generic and flexible, and can be derived in more specific models. Here is a brief scope of the relevant tools it compasses: the special case of \textit{belief functions}, themselves containing specific sub-categories such as possibility distributions \ref{sec:possibilities} and probability boxes \ref{sec:pboxes} \etc\commanue{Je mettrais pas le etc} It also contains probabilities presented in section \ref{sec:probabilities}, which we will call \textit{precise} probabilities by opposition to \textit{imprecise} probabilities. Figure \ref{fig:diagram_IP} sums up the relationship and specificity of each imprecise model.
+As highlighted in example \ref{ex:proba_limitations}, uncertainty cannot always be correctly modeled by probabilities, especially in a context where data is sparse. To overcome this problem, a generalization of probabilities have been introduced, called \textit{imprecise probabilities}. Imprecise probabilities (sometimes abbreviated IP) provide a general framework for working with both aleatoric and epistemic uncertainty with the concept of lower and upper probabilities. Lower and upper probabilities are quite  generic and flexible, and can be derived in more specific models. Here is a brief scope of the relevant tools it compasses: the special case of \textit{belief functions}, themselves containing specific sub-categories such as possibility distributions \ref{sec:possibilities} and probability boxes \ref{sec:pboxes} \etc\commanue{Je mettrais pas le etc} It also contains probabilities presented in \Cref{sec:probabilities}, which we will call \textit{precise} probabilities by opposition to \textit{imprecise} probabilities. \Cref{fig:diagram_IP} sums up the relationship and specificity of each imprecise model.
 
 \begin{remark}
     At its more generic, IP can be described by sets of acceptable gambles, and by lower and upper expectations \cite{walley_statistical_1991,augustin_introduction_2014}. Although very interesting, we did not use them in our applications and thus do not consider them in this thesis.
@@ -119,7 +119,7 @@ As highlighted in example \ref{ex:proba_limitations}, uncertainty cannot always 
 \begin{figure}[ht]
     {\centering
     \includegraphics[width=0.8\linewidth]{Images/Chap_2/Diagramme_IP_Bel.png}
-    \caption{Diagram representing the relationship between different Imprecise Probabilities models presented throughout section \ref{sec:different_models_of_uncertainty}.}
+    \caption{Diagram representing the relationship between different Imprecise Probabilities models presented throughout \Cref{sec:different_models_of_uncertainty}.}
     \label{fig:diagram_IP}}
 \end{figure}\commanue{La figure est bien pour voir les liens après je ne sais pas s'il faut garder les éléments en gris clair, c'est un peu déroutant pour le lecteur qui découvre les éléments}
 
@@ -130,7 +130,7 @@ As stated previously, a core concept of imprecise probabilities are lower and up
     \begin{equation}
         \forall A,B\in\mathcal{A}, \text{ if } A\cap B\neq\emptyset, ~\low(A\cup B)\geqslant \low(A)+\low(B) \label{eq:super_additivity}
     \end{equation}
-    Conversely, an upper probability is sub-additive, meaning that it verifies the same property than equation \eqref{eq:super_additivity} but with the inequality reversed.
+    Conversely, an upper probability is sub-additive, meaning that it verifies the same property than \cref{eq:super_additivity} but with the inequality reversed.
     
     Those properties are less constraining than their equivalent for precise probabilities in definition \ref{def:probability_space}, so lower and upper probabilities are generally \textit{not} precise probabilities. The only case where they are precise probabilities is when $\low=\overline{P}$, because $\low$ is then additive as it is both super and sub-additive. In this case, imprecise probabilities are actually a single precise probability. This illustrates the fact that precise probabilities are special cases of imprecise probabilities. 
 \end{remark}
@@ -196,7 +196,7 @@ When constructing credal sets, it is common to possess a non convex set of proba
         &\overline{P}(X=1) = \overline{P}(X=2)= \overline{P}(X=3) = 1\\
         &\low(X\in\{1,2,3\}) = \overline{P}(X\in\{1,2,3\}) = 1
     \end{align*}
-    We can use equation \eqref{eq:lower_proba_complement} for computing the bounds of remaining events.
+    We can use \cref{eq:lower_proba_complement} for computing the bounds of remaining events.
     
     Here, the credal set is the largest credal set possible as its bounds are always $0$ and $1$ for events that are not $\emptyset$ or $\{1,2,3\}$. We say that it is the vacuous credal set, as it does not encode any information. It however solves the problem of a contradicting probability when evaluating the value of the card and its parity.\commanue{J'aime bien le fait de présneter l'exemple. Après j'ai des difficultés à comprendre les deux dernières phrases.}
 \end{example}
@@ -220,8 +220,8 @@ There are multiple ways of interpreting $m(a)$, presented bellow so as to be mor
 \end{itemize}
 
 \begin{remark}
-    Equation \eqref{eq:mass_emptyset} translates the fact than there is no evidence that the uncertain variable belongs to the empty set, \ie that it is not defined. Releasing this constraint allows to accept a certain amount of contradiction in our model.
-    Equation \eqref{eq:mass_whole_set} is a convention, which states that the total amount of evidence equals $1$. It is similar to probabilities which cannot be more than $1$. 
+    \Cref{eq:mass_emptyset} translates the fact than there is no evidence that the uncertain variable belongs to the empty set, \ie that it is not defined. Releasing this constraint allows to accept a certain amount of contradiction in our model.
+    \Cref{eq:mass_whole_set} is a convention, which states that the total amount of evidence equals $1$. It is similar to probabilities which cannot be more than $1$. 
 \end{remark}
 
 \begin{definition}[Focal set]\label{def:focal_set}
@@ -333,7 +333,7 @@ Another notion closely related to possibility distributions is that of \(\alpha\
         \item Values $3.5$ and $5.5$ are unlikely but not impossible, we can say that $\pi(3.5)=\pi(5.5)=0.3$
         \item Other values are impossible, and thus have a possibility of $0$.
     \end{itemize}
-    The possibility distribution $\pi$ is represented in figure \ref{fig:possibility_distribution}
+    The possibility distribution $\pi$ is represented in \Cref{fig:possibility_distribution}
     Based on this, we are no able to express the degree of necessity and of possibility for all events. For instance:
     \begin{itemize}
         \item The degree of necessity that the pressure lies between $4$ and $5$ bar is $\Nec([4, 5])=1-\sup_{\rho\not\in[4,5]}\pi(\rho)=0.7$
@@ -388,7 +388,7 @@ With the way focal sets are defined, they form a nested family of sets with rega
 \begin{remark}
     The fact that focal sets form a nested family of sets in the case of possibility distributions also implies than if $\X$ is finite and contains $n$ elements, then there can be \textit{at most} $n$ focal sets. For comparison, belief functions can have a maximum of $2^n-1$ focal sets (as the empty set cannot be a focal set). This means that necessity functions have less degrees of freedom than (some) belief functions and thus can express less uncertainty structures. This drawback comes with the advantage of being easier to construct, as we only need to specify the mass of $n$ focal sets (or the possibility of the $n$ elements of $\X$) instead of $2^n-1$. Indeed, when we think of a random variable like the outcome of a dice, it can seem more natural for someone to specify degrees of possibility for each side separately than it is to specify degrees of plausibility for different sets of outcomes. 
     
-    As such, possibility distribution have been used to model experts opinion  \cite{baudrit_joint_2007}. Following the same philosophy, we will use possibility distributions in chapter \ref{chap:epistemic_uncertainty} to model the uncertainty of a measure of similarity between two image patches.
+    As such, possibility distribution have been used to model experts opinion  \cite{baudrit_joint_2007}. Following the same philosophy, we will use possibility distributions in \Cref{chap:epistemic_uncertainty} to model the uncertainty of a measure of similarity between two image patches.
 \end{remark}
 
 Specifying a probability distribution often comes down to specifying the probability mass function over all atoms of the frame of discernment. In a way, possibility distributions are constructed the same way, as we specify the possibility (or the upper bounds) of every atom. One important difference is that the condition ``the sum of all masses must be equal to $1$'' is relaxed into a less constraining condition ``the possibility distribution must be equal to $1$ at least once''. In that respect, it is easier to construct a well defined possibility distribution than it is to construct a well defined probability distribution. However the comparison stops there, as the two models does not represent the same uncertainty at all.
@@ -415,7 +415,7 @@ Another special type of belief function that is commonly used is that of \textit
 \end{definition}
 
 \begin{remark}
-    A probability distribution can be both determined by specifying its values on every atom or by specifying its values on cumulative events. We saw in section \ref{sec:possibilities} that possibility distributions define bounds on atoms. Because p-boxes define bounds on cumulative events, we could say that a p-box is the ``imprecise way'' of defining a probability using cumulative events, and a possibility distribution is the ``imprecise way'' of defining a probability using atoms.
+    A probability distribution can be both determined by specifying its values on every atom or by specifying its values on cumulative events. We saw in \Cref{sec:possibilities} that possibility distributions define bounds on atoms. Because p-boxes define bounds on cumulative events, we could say that a p-box is the ``imprecise way'' of defining a probability using cumulative events, and a possibility distribution is the ``imprecise way'' of defining a probability using atoms.
 \end{remark}
 
 The credal set $\M$ induced by a p-box $[\underline{F}, ~\overline{F}]$ is:
@@ -424,7 +424,7 @@ The credal set $\M$ induced by a p-box $[\underline{F}, ~\overline{F}]$ is:
 \end{align}
 
 \begin{definition}[Focal sets of p-boxes]
-    P-boxes are special cases of belief functions. It has been proven in \cite{destercke_unifying_2008} that focal sets of p-boxes have a specific form. Although focal sets shapes are reminiscent of possibilities' $\alpha$-cuts (see figure \ref{fig:p-box}), they are a bit more complex to express formally. If $\X=\{x_1\enum x_n\}$ with $x_1\leqslant\dots\leqslant x_n$, then focal sets $\alpha_{[\underline{F}, ~\overline{F}]}$ of $[\underline{F}, ~\overline{F}]$ are given for every $\alpha\in[0,~1]$ by the following expression:
+    P-boxes are special cases of belief functions. It has been proven in \cite{destercke_unifying_2008} that focal sets of p-boxes have a specific form. Although focal sets shapes are reminiscent of possibilities' $\alpha$-cuts (see \Cref{fig:p-box}), they are a bit more complex to express formally. If $\X=\{x_1\enum x_n\}$ with $x_1\leqslant\dots\leqslant x_n$, then focal sets $\alpha_{[\underline{F}, ~\overline{F}]}$ of $[\underline{F}, ~\overline{F}]$ are given for every $\alpha\in[0,~1]$ by the following expression:
     \begin{align}
         \alpha_{[\underline{F}, ~\overline{F}]}= \opi \overline{F}^{-1}(\alpha),~\underline{F}^{-1}(\alpha)\cli\label{eq:pbox_focal_set}
     \end{align}
@@ -441,11 +441,11 @@ The credal set $\M$ induced by a p-box $[\underline{F}, ~\overline{F}]$ is:
     With the convention that $\max(\overline{F}(x_{i-1}), \underline{F}(x_{j-1}))=0$ if $x_{i}$ is the first element and thus $x_{i-1}$ is ill-defined. 
 \end{definition}
 
-Because of their shape, focal sets of p-boxes form a lattice on $\X$, and can be ordered. It can be easily seen by looking at figure \ref{fig:p-box}. If $a$ and $b$ are two focal sets of the same p-box $[\underline{F}, ~\overline{F}]$, then they are ordered as follows:
+Because of their shape, focal sets of p-boxes form a lattice on $\X$, and can be ordered. It can be easily seen by looking at \Cref{fig:p-box}. If $a$ and $b$ are two focal sets of the same p-box $[\underline{F}, ~\overline{F}]$, then they are ordered as follows:
 \begin{align}
     a\leqslant b \Leftrightarrow \min(a)\leqslant\min(b) \text{ and } \max(a)\leqslant \max(b)
 \end{align}
-As $\underline{F}\leqslant\overline{F}$, we are assured that there can't be any case where $\min(a)<\min(b) \text{ and } \max(a)> \max(b)$\commanue{Tu t'es pas trompé de signe pour le min ?}. We can also define the order on focal sets using the definition of equation \eqref{eq:pbox_focal_set} for every $\alpha,~\beta\in[0,1]^2$:
+As $\underline{F}\leqslant\overline{F}$, we are assured that there can't be any case where $\min(a)<\min(b) \text{ and } \max(a)> \max(b)$\commanue{Tu t'es pas trompé de signe pour le min ?}. We can also define the order on focal sets using the definition of \cref{eq:pbox_focal_set} for every $\alpha,~\beta\in[0,1]^2$:
 \begin{align*}
     \opi\overline{F}^{-1}(\alpha), ~\underline{F}^{-1}(\alpha)\cli \leqslant \opi\overline{F}^{-1}(\beta), ~\underline{F}^{-1}(\beta)\cli \Leftrightarrow \alpha\leqslant\beta
 \end{align*}
@@ -489,10 +489,10 @@ Given the shape of focal sets, there can be at most $2n-1$ in a frame of discern
 
 
 \section{Dependency Models: Copulas}\label{sec:copulas}
-During previous sections, we presented different models of uncertainty that will be considered throughout this thesis. When we will aggregate and propagate multiple sources of uncertainty in chapters \ref{chap:joining_credal_sets}, \ref{chap:propagating} and \ref{chap:epistemic_uncertainty}, we will need to take into account the dependency between our uncertain sources. In this section, we will present dependency models called copulas, which are mathematical tools used to represent the dependency between multiple random variables. Copulas can represent many types of dependency, ranging from complete monotonicity to complete counter-monotonicity, including independence between variables. Section \ref{sec:copula_def} will present the mathematical definition of a copula as well as practical families of copulas and how they can model different dependencies. Section \ref{sec:dconvexity} will present a specific property shared by some copulas and a theoretical contribution that will used later in sections \ref{subsec:pboxes} and \ref{subsec:multiple_models}. Finally, we present how to generate multivariate samples from a copula, which will be used in section \ref{sec:montecarlo}.
+During previous sections, we presented different models of uncertainty that will be considered throughout this thesis. When we will aggregate and propagate multiple sources of uncertainty in chapters \ref{chap:joining_credal_sets}, \ref{chap:propagating} and \ref{chap:epistemic_uncertainty}, we will need to take into account the dependency between our uncertain sources. In this section, we will present dependency models called copulas, which are mathematical tools used to represent the dependency between multiple random variables. Copulas can represent many types of dependency, ranging from complete monotonicity to complete counter-monotonicity, including independence between variables. \Cref{sec:copula_def} will present the mathematical definition of a copula as well as practical families of copulas and how they can model different dependencies. \Cref{sec:dconvexity} will present a specific property shared by some copulas and a theoretical contribution that will used later in sections \ref{subsec:pboxes} and \ref{subsec:multiple_models}. Finally, we present how to generate multivariate samples from a copula, which will be used in \Cref{sec:montecarlo}.
 
 \subsection{Core Definitions and Examples}\label{sec:copula_def}
-In the following, let $n\in\mathbb{N}^*$ be the number of sources of uncertainty considered (either represented by random variables or random sets). We first introduce copulas, which are mapping from $[0,1]^n\rightarrow [0,1]$ verifying a number of properties, and that can model dependencies when considering Sklar's theorem, which will be presented in theorem \ref{theorem:sklar}.
+In the following, let $n\in\mathbb{N}^*$ be the number of sources of uncertainty considered (either represented by random variables or random sets). We first introduce copulas, which are mapping from $[0,1]^n\rightarrow [0,1]$ verifying a number of properties, and that can model dependencies when considering \hyperref[theorem:sklar]{Sklar's Theorem}, which will be presented in this section.
 
 \begin{definition}
      A copula is a multivariate cumulative distribution function $C:[0,1]^{n}\rightarrow [0,1]$ whose marginals follow uniform distributions on $[0,1]$. It can be interpreted as a joint cumulative distribution of $n$ random variables. For all $i\in\opi 1,n\cli $, we will refer to $u_i\in[0,1]$ as its $i$-th variable (or marginal). A copula verifies a number of properties:
@@ -505,7 +505,7 @@ In the following, let $n\in\mathbb{N}^*$ be the number of sources of uncertainty
 where $\Pi_{i=1}^n$ is the Cartesian product of $n$ elements, meaning that $(w_1\enum w_n)\in\Pi_{i=1}^n\{u_i, v_i\}$ is a tuple of $n$ elements, where each element is either $u_i$ or $v_i$. Additionally, $|\{i~|~w_i=u_i\}|$ refers to the cardinal of the set $\{i~|~w_i=u_i\}$. 
 \end{definition}
 
-The first term in equation \eqref{eq:cop_hvolume} is also called H-volume or hyper-volume. It is used to compute joint probability mass assignments in the precise case (and also in the imprecise case, see section \ref{sec:joint_mass}). In the rest of this thesis, we will use the following notation to refer to the $H$-volume:
+The first term in \cref{eq:cop_hvolume} is also called H-volume or hyper-volume. It is used to compute joint probability mass assignments in the precise case (and also in the imprecise case, see \Cref{sec:joint_mass}). In the rest of this thesis, we will use the following notation to refer to the $H$-volume:
 \begin{eqnarray}\label{eq:hvolume}
     &&\forall i\in\opi 1,n\cli ,~\forall~0\leqslant u_i \leqslant v_i \leqslant 1,\nonumber\\
     &&H^{v_1,\dots v_n}_{u_1\enum u_n}=\sum_{(w_1\enum w_n)\in\Pi_{i=1}^n\{u_i, v_i\}}(-1)^{|\{i~|~w_i=u_i\}|}C(w_1\enum w_n)
@@ -532,22 +532,23 @@ The first term in equation \eqref{eq:cop_hvolume} is also called H-volume or hyp
     or in other words, the probability that $(U_1, U_2)$ is in the hyper rectangle $[u_1,v_1]\times[u_2,v_2]$ (the intervals can be open or closed in the continuous case, the probability remains the same). Verifying this result can easily to the $n$-dimensional case can be done similarly. Example \ref{ex:hvolume} illustrates how the H-volume can be used to compute the discrete joint mass distribution function in the two-dimensional case. 
 \end{remark}
 
-A central theorem regarding copulas is Sklar's theorem \cite{sklar_fonctions_1959}:
+A central theorem regarding copulas is \hyperref[theorem:sklar]{Sklar's Theorem} \cite{sklar_fonctions_1959}:
 \begin{theorem}[Sklar's Theorem]\label{theorem:sklar}
     Let $F:\X_1\tdt\X_n\rightarrow[0,1]$ be a multivariate cumulative distribution function, where $\X_i\subseteq\overline{\mathbb{R}}$. The marginals $F_i$ of $F$ are defined as $\forall i\in\opi 1,n\cli , \forall x\in\X_i, F_i(x) = F( +\infty\enum  +\infty, x,  +\infty\enum +\infty)$ where $x$ is the $i$-th component of $F$. If all $F_i$ are continuous, then a unique copula $C$ exists:
-    \begin{eqnarray}
+    \begin{align}
         \forall (x_1\enum x_n)\in \overline{\mathbb{R}}^n, F(x_1\enum x_n)=C(F_1(x_1)\enum F_n(x_n))\label{eq:sklar_equality}
-    \end{eqnarray}
+    \end{align}
     If some $F_i$ are not continuous, then $C$ is unique on the product of the ranges of all $F_i$.
     
     The reverse is also true: any copula applied to univariate cumulative distribution functions yields a multivariate cumulative distribution function whose marginals are the univariate CDFs.
 \end{theorem}
-
+\hyperref[theorem:sklar]{Sklar's Theorem} thus allow to express any multivariate CDF by means of its marginal CDFs. Conversely, we can join multiple CDF with a copula to create a multivariate CDF. A copula thus express the dependency between a multivariate CDF and its marginals.
+ 
 \begin{remark}
-    For marginals $F_i$ that are not continuous, then there can exist multiple copula $C$ verifying equation \ref{eq:sklar_equality}. However, if we note $F_i(\X_i)$ the image of $X_i$ through $F_i$, then there exists a unique copula $C$ on the ranges of images $F_1(\X_1)\tdt F_n(\X_n)$. The restriction of a copula a subset of $I^n$ containing $0$ and $1$ is called a sub-copula. Because we work in discrete spaces, we will mostly work with sub-copulas but the difference will be mostly transparent.
+    For marginals $F_i$ that are not continuous, then there can exist multiple copula $C$ verifying \cref{eq:sklar_equality}. However, if we note $F_i(\X_i)$ the image of $X_i$ through $F_i$, then there exists a unique copula $C$ on the ranges of images $F_1(\X_1)\tdt F_n(\X_n)$. The restriction of a copula a subset of $I^n$ containing $0$ and $1$ is called a sub-copula. Because we work in discrete spaces, we will mostly work with sub-copulas but the difference will be mostly transparent.
 \end{remark}
 
-Copulas are very useful to represent the dependency between multiple sources of uncertainty. As such, they can play a key role in uncertainty propagation problems. 
+Copulas are very useful to represent the dependency between multiple sources of uncertainty. As such, they can play a key role in uncertainty propagation problems, explored in \Cref{chap:propagating}.
 
 \begin{example}[Usefulness of the H-Volume]\label{ex:hvolume}
     This example will illustrate how the H-volume of a copula can be used to compute the probability mass function of a multivariate probability. Let us imagine a game where a dealer throws two coins, and we are are interested in the joint result of the throws. We consider the two random variables $X_1$ and $X_2$ indicating the results of each throw:
@@ -566,7 +567,7 @@ Copulas are very useful to represent the dependency between multiple sources of 
         P(X_1 = 1, X_2=1) =& ~P(F_1(X_1)= 1, F_2(X_2) = 1)\\
         =& ~P(F_1(0) < F_1(X_1)\leqslant F_1(1), ~F_2(0) < F_2(X_2)\leqslant F_2(1))
     \end{align*}
-    A common result in statistics states that random variables of the form $U_1=F_1(X_1)$ and $U_2=F_2(X_2)$ are uniform on $[0,1]$. We can thus apply the result from equation \eqref{eq:hvol_link_with_proba}, which yields
+    A common result in statistics states that random variables of the form $U_1=F_1(X_1)$ and $U_2=F_2(X_2)$ are uniform on $[0,1]$. We can thus apply the result from \cref{eq:hvol_link_with_proba}, which yields
     \begin{align*}
         P(X_1 = 1, X_2=1) =& ~P(F_1(0) < U_1 \leqslant F_1(1), ~F_2(0) < U_2 \leqslant F_2(1))\\
         =& ~H^{F_1(1),~F_2(1)}_{F_1(0),~F_2(0)}
@@ -597,7 +598,7 @@ Independence between variables is modeled by the product copula $C_\Pi$\commanue
 \begin{equation*}
     C_\Pi(u_1\enum u_n)=u_1\dots u_n
 \end{equation*}
-which will be used later in subsection \ref{subsection:product_copula}. Graphical representations of the product copula and of the lower and upper Fréchet–Hoeffding bounds are represented in figure \ref{fig:copulas}\commanue{Dans la figure c'est en dimension 2 donc c'est Product, Minimum and \L ukasiewicz copulas. En tout cas c'est ce qui est indiqué}. Example \ref{ex:copulas} presents a setting where the Product, Minimum and \L ukasiewicz copulas are used to model dependency between random variables.
+which will be used later in subsection \ref{subsection:product_copula}. Graphical representations of the product copula and of the lower and upper Fréchet–Hoeffding bounds are represented in \Cref{fig:copulas}\commanue{Dans la figure c'est en dimension 2 donc c'est Product, Minimum and \L ukasiewicz copulas. En tout cas c'est ce qui est indiqué}. Example \ref{ex:copulas} presents a setting where the Product, Minimum and \L ukasiewicz copulas are used to model dependency between random variables.
 
 \begin{example}[Different copulas for different dependencies]\label{ex:copulas}
     Let us try to illustrate how different copulas can represent different dependencies. 
@@ -653,7 +654,7 @@ which will be used later in subsection \ref{subsection:product_copula}. Graphica
 	Those three cases indicate how copulas can represent very different dependency structures from the same marginals. It also intuitiates the fact that the \L ukasiewicz copula only allows values that are ``opposite'', whereas the Minimum copula only allows values that are similar. In those examples, the dependency is so important that knowing the result of one coin throw determines the result of the second, which is therefore modeled by extreme copulas, \ie the upper and lower Fréchet-Hoeffding bounds.  We will see in the following that there are other families of copula that allow less ``extreme'' dependencies.
 \end{example}
 
-To complete this overview of copulas, let us present other copulas that can be generated using a single parameter $\theta$ in the case $n=2$. Such famous families of copulas are presented in table \ref{tab:familiy_of_copula}. Those families are quite common in the literature, but this list is not exhaustive.\commanue{Peut-être ajouter une colonne où tu expliques leur intérêt}
+To complete this overview of copulas, let us present other copulas that can be generated using a single parameter $\theta$ in the case $n=2$. Such famous families of copulas are presented in \Cref{tab:familiy_of_copula}. Those families are quite common in the literature, but this list is not exhaustive.\commanue{Peut-être ajouter une colonne où tu expliques leur intérêt}
 
 Another important family of copulas is the family of Gaussian copulas. Each Gaussian copula is generated with a correlation matrix $R\in[-1,1]^{(n,n)}$:
 \begin{align}
@@ -662,7 +663,7 @@ Another important family of copulas is the family of Gaussian copulas. Each Gaus
 \begin{align}
    \Phi_R&(\Phi^{-1}(u_1)\enum \Phi^{-1}(u_n)) =\nonumber\\ &\int_{-\infty}^{\Phi^{-1}(u_1)}\dots\int_{-\infty}^{\Phi^{-1}(u_n)}\frac{1}{\sqrt{(2\pi)^{n}|R|}}\exp(-\frac{1}{2}\begin{bmatrix}x_1 & \dots & x_{n}\end{bmatrix}R^{-1}\begin{bmatrix}x_1 \\ \dots \\ x_{n}\end{bmatrix})dx_1\dots dx_n
 \end{align}
-Where $|R|$ is the determinant of $R$. This family of copulas will be used in section \ref{sec:sources_of_uncertainty} to model the dependency between the random intensities of pixels of stereo-images for instance. 
+Where $|R|$ is the determinant of $R$. This family of copulas will be used in \Cref{sec:sources_of_uncertainty} to model the dependency between the random intensities of pixels of stereo-images for instance. 
 \begin{remark}
     The product copula is actually a Gaussian copula with the identity matrix $\mathbb{I}_n$ as its covariance matrix:
     \begin{align*}
@@ -771,16 +772,16 @@ Where $|R|$ is the determinant of $R$. This family of copulas will be used in se
         Gumbel & $u_1u_2\exp(-\theta \ln{u_1}\ln{u_2})$ & $(0,1]$ & $\theta\in(0,1]$  & Never \\
         \hline
     \end{tabular}
-    \caption{Examples of families of copulas in the case $n=2$ which can be generated using a parameter \( \theta \). D-convexity/concavity is detailed in section \ref{sec:dconvexity}}
+    \caption{Examples of families of copulas in the case $n=2$ which can be generated using a parameter \( \theta \). D-convexity/concavity is detailed in \Cref{sec:dconvexity}}
     \label{tab:familiy_of_copula}
 \end{table}}\commanue{alors la notation $0\leqslant\theta$ c'est pas la plus lisible disons qu'on a plutôt tendance à mettre $\theta\geqslant 0$ }
 
 \begin{remark}
-	As a copula is also a multivariate CDF, one can imagine an ``imprecise'' copula similarly to what can be done with univariate probability distribution (see section \ref{sec:imprecise_probabilities}). Imprecise copula allow to model partially known dependencies, but can be hard to manipulate at times, as for instance the lower and upper bounds of an imprecise copula are not necessarily copulas themselves. In this thesis, we will not consider imprecise copulas.
+	As a copula is also a multivariate CDF, one can imagine an ``imprecise'' copula similarly to what can be done with univariate probability distribution (see \Cref{sec:imprecise_probabilities}). Imprecise copula allow to model partially known dependencies, but can be hard to manipulate at times, as for instance the lower and upper bounds of an imprecise copula are not necessarily copulas themselves. In this thesis, we will not consider imprecise copulas.
 \end{remark}
 
 \subsection{Directional convexity/concavity for copulas}\label{sec:dconvexity}
-This section will investigate a property shared by some copulas called directional convexity/concavity. This is more of a theoretical contribution, as we do not exploit them in the applications to stereo-photogrammetry in chapters \ref{chap:propagating} and \ref{chap:epistemic_uncertainty}. However, we will see that those properties are shared by many common families of copulas. We also use them to prove a specific relationship between multivariate uncertainty models in sections \ref{subsec:pboxes} and \ref{subsec:multiple_models}. For readers that do not want to dive into details regarding directional convexity/concavity, we advise to consider only definition \ref{def:convex} and the main result of this section which is presented in equation \eqref{eq:convex_diff_hvol}.
+This section will investigate a property shared by some copulas called directional convexity/concavity. This is more of a theoretical contribution, as we do not exploit them in the applications to stereo-photogrammetry in chapters \ref{chap:propagating} and \ref{chap:epistemic_uncertainty}. However, we will see that those properties are shared by many common families of copulas. We also use them to prove a specific relationship between multivariate uncertainty models in sections \ref{subsec:pboxes} and \ref{subsec:multiple_models}. For readers that do not want to dive into details regarding directional convexity/concavity, we advise to consider only definition \ref{def:convex} and the main result of this section which is presented in \cref{eq:convex_diff_hvol}.
 
 \begin{definition}[D-convexity, D-concavity]\label{def:convex}
     A copula $C$ is called directionally convex (D-convex) \cite{alvoni_dierent_2007} if for every $(u_1 \enum u_n)\in[0,1]^n$, $(v_1\enum v_n)\in[0,1]^n$, $i\in\opi1,n\cli$ and $t\in[0,1]$ it verifies:
@@ -792,8 +793,8 @@ This section will investigate a property shared by some copulas called direction
 \end{definition}
 
 \begin{remark}
-    D-convexity/D-concavity is quite common in known families of copulas. The following paragraphs details this property for copulas presented in table \ref{tab:familiy_of_copula}, in the case $n=2$.
-    As the copulas presented are symmetric regarding their variables, D-convexity/D-concavity is only detailed for $u_1$. We assume that \( \theta \) always belong to the domain of definition detailed in table \ref{tab:familiy_of_copula}, and that \(u_1, u_2\) are in \([0, 1]\). Finally, for the Clayton and Gumbel family, the copula is defined by continuous extension in cases $u_1=0$ and $u_2=0$. 
+    D-convexity/D-concavity is quite common in known families of copulas. The following paragraphs details this property for copulas presented in \Cref{tab:familiy_of_copula}, in the case $n=2$.
+    As the copulas presented are symmetric regarding their variables, D-convexity/D-concavity is only detailed for $u_1$. We assume that \( \theta \) always belong to the domain of definition detailed in \Cref{tab:familiy_of_copula}, and that \(u_1, u_2\) are in \([0, 1]\). Finally, for the Clayton and Gumbel family, the copula is defined by continuous extension in cases $u_1=0$ and $u_2=0$. 
     \begin{description}
         \item[Ali-Mikhail-Haq copula] This copula is two times differentiable, and its second order partial derivative is
         $$\frac{\partial^2 C}{\partial {u_1}^2}=u_2(1-\theta(1-u_2))\frac{-2\theta(1-u_2)}{(1-\theta(1-u_1)(1-u_2))^3}$$
@@ -825,7 +826,7 @@ This section will investigate a property shared by some copulas called direction
     It holds that for all $\theta\in(0,1]$, $\frac{\partial^2 C}{\partial {u_1}^2}\geqslant0$. By continuity, $C$ is always D-convex.
     \end{description}
     
-    As there is no explicit formula for the family of multivariate Gaussian copulas, it is difficult to prove its D-concavity or D-convexity. However, numerical approximations in the case $n=2$ seem to indicate that a Gaussian copula would be D-convex if its marginals are positively correlated, and D-concave if they are negatively correlated. Figure \ref{fig:gaussian_copula_simu} present those observations, with solid lines representing positive correlation, and dashed lines representing negative correlations. In the case $n>2$, the copula can be neither D-convex nor D-concave depending on the value of the correlation matrix. An example of this statement is provided in figure \ref{fig:gaussian_copula_simu_n3}.
+    As there is no explicit formula for the family of multivariate Gaussian copulas, it is difficult to prove its D-concavity or D-convexity. However, numerical approximations in the case $n=2$ seem to indicate that a Gaussian copula would be D-convex if its marginals are positively correlated, and D-concave if they are negatively correlated. \Cref{fig:gaussian_copula_simu} present those observations, with solid lines representing positive correlation, and dashed lines representing negative correlations. In the case $n>2$, the copula can be neither D-convex nor D-concave depending on the value of the correlation matrix. An example of this statement is provided in \Cref{fig:gaussian_copula_simu_n3}.
 \end{remark}
 
 \begin{figure}
@@ -901,9 +902,9 @@ The rest of this section will present different results regarding D-convex and D
         C(u_1\enum u_i\enum u_n) + C(u_1\enum v_i\enum u_n) &\leqslant& C(u_1\enum w_i\enum u_n)\\
         &\leqslant& C(u_1\enum u_i+v_i\enum u_n)
     \end{eqnarray*}
-    which proves equation \eqref{eq:convex_sum}.
+    which proves \cref{eq:convex_sum}.
 
-    Let $w_i=u_i-v_i\in [0,1]$, clearly $w_i+v_i\leqslant1$. Using equation \eqref{eq:convex_sum}, it holds that:
+    Let $w_i=u_i-v_i\in [0,1]$, clearly $w_i+v_i\leqslant1$. Using \cref{eq:convex_sum}, it holds that:
     \begin{align*}
         &C(u_1\enum w_i\enum u_n) + C(u_1\enum v_i\enum u_n) &\leqslant~&C(u_1\enum w_i+v_i\enum u_n)\\
         \Leftrightarrow~ &C(u_1\enum w_i\enum u_n) &\leqslant~&C(u_1\enum w_i+v_i\enum u_n)\\
@@ -911,7 +912,7 @@ The rest of this section will present different results regarding D-convex and D
         \Leftrightarrow~ &C(u_1\enum u_i-v_i\enum u_n) &\leqslant~&C(u_1\enum u_i\enum u_n)\\
         &&&-C(u_1\enum v_i\enum u_n)
     \end{align*}
-    which proves equation \eqref{eq:convex_diff}.
+    which proves \cref{eq:convex_diff}.
 \end{proof} 
 
 \begin{proposition}\label{prop:convex_diff_hvol}
@@ -923,7 +924,7 @@ The rest of this section will present different results regarding D-convex and D
 \end{proposition}
 
 \begin{proof}
-    The result is straightforward by induction using equation \eqref{eq:convex_diff}.
+    The result is straightforward by induction using \cref{eq:convex_diff}.
 \end{proof}
 
 \subsection{Sampling from a Copula}\label{sec:sampling_copula}

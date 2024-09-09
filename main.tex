@@ -8,6 +8,7 @@
 \usepackage[T1]{fontenc}  % Zotero must export bib.tex in Western instead of UTF to avoid problem for \THORN characters
 
 \usepackage[hidelinks, breaklinks]{hyperref} % Cick on citations, allow line breaking
+
 \usepackage[skip=10pt, indent=20pt]{parskip}  % Paragraph spacing
 \usepackage{setspace} % Line spacing
 \usepackage[hypcap=false]{caption} % When using hypcap=false, hyperref will link to the caption and not the float environment. This is because using \captionof outside a float env, it generates warnings
@@ -42,13 +43,13 @@
 
 \usepackage[margin,index]{fixme}
 
+\usepackage[noabbrev,nameinlink]{cleveref} % For \cref. noabbrev: No "fig. 1", only "figure 1". nameinlink: "chapter" is clickable in "chapter 3"
 \usepackage{menukeys} % For accessing characters from the keyboard, such as Alt or Ctrl
 
 %Import the natbib package and sets a bibliography  and citation styles
 \bibliographystyle{apalike}
 
 %=============================== Commands ===================================
-
 \newcommand{\todoroman}[1]{{\color{purple}TODO: #1}}
 
 \newcommand{\comseb}[1]{{\color{red}\footnote{\color{red}Seb: \textit{#1}}}}
@@ -62,20 +63,19 @@
 %\let\oldtextcolor\textcolor
 %\renewcommand{\textcolor}[2]{\oldtextcolor{black}{#2}}
 
-\newcommand{\RPC}{{\mathrm{RPC}}}
-\newcommand{\M}{{\mathfrak{M}}}
-\newcommand{\X}{{\mathcal{X}}}
-\newcommand{\low}{{\underline{P}}}
-\newcommand{\tdt}{{\times\dots\times}}
-\newcommand{\enum}{{, ~\dots, ~}}
-\newcommand{\opi}{{[\![}}
-\newcommand{\cli}{{]\!]}}
-\newcommand{\Bel}{{\mathrm{Bel}}}
-\newcommand{\Pl}{{\mathrm{Pl}}}
-\newcommand{\Nec}{{\mathrm{Nec}}}
-\newcommand{\AD}{{\mathrm{AD}}}
-\newcommand{\SAD}{{\mathrm{SAD}}}
-
+\newcommand{\RPC}{\mathrm{RPC}}
+\newcommand{\M}{\mathfrak{M}}
+\newcommand{\X}{\mathcal{X}}
+\newcommand{\low}{\underline{P}}
+\newcommand{\tdt}{\times\dots\times}
+\newcommand{\enum}{, ~\dots, ~}
+\newcommand{\opi}{[\![}
+\newcommand{\cli}{]\!]}
+\newcommand{\Bel}{\mathrm{Bel}}
+\newcommand{\Pl}{\mathrm{Pl}}
+\newcommand{\Nec}{\mathrm{Nec}}
+\newcommand{\AD}{\mathrm{AD}}
+\newcommand{\SAD}{\mathrm{SAD}}
 
 \DeclareMathOperator{\CDF}{cdf}
 \tikzset{
@@ -96,7 +96,7 @@
 \newcounter{theor}
 \renewcommand{\thetheor}{\arabic{theor}}
 \newenvironment{theorem}[1][]{%
- \refstepcounter{theor}%
+  \refstepcounter{theor}%
   \ifstrempty{#1}%
   {\mdfsetup{%
     frametitle={%
@@ -117,7 +117,7 @@
              roundcorner=10pt,}
    \begin{mdframed}[]\relax%
    }{\end{mdframed}}
- 
+
 %% Definition environment
 \newcounter{definition}
 \renewcommand{\thedefinition}{\arabic{definition}}
@@ -267,7 +267,7 @@
     \setkeys{Gin}{draft=true}
     \input{Chapters/3_joining_credal_sets_using_copulas}
     
-    \setkeys{Gin}{draft=false}
+    \setkeys{Gin}{draft=true}
     \input{Chapters/4_propragating_the_uncertainty_to_stereo_images}
     
     \setkeys{Gin}{draft=true}
