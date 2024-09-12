@@ -1,22 +1,26 @@
-\chapter{Propagating the Epistemic Uncertainty of the Cost Volume to the DSM}\label{chap:epistemic_uncertainty}
+\chapter{Computing Disparity Intervals and Propagate them to the DSM}\label{chap:epistemic_uncertainty}
 \todoroman{Citer la publication d'origine pour les figure (license IEEE ``Copyright 2024 IEEE. Published in the 2024 IEEE International Geoscience and Remote Sensing Symposium (IGARSS 2024), scheduled for 7 - 12 July, 2024 in Athens, Greece. Personal use of this material is permitted. However, permission to reprint/republish this material for advertising or promotional purposes or for creating new collective works for resale or redistribution to servers or lists, or to reuse any copyrighted component of this work in other works, must be obtained from the IEEE. Contact: Manager, Copyrights and Permissions / IEEE Service Center / 445 Hoes Lane / P.O. Box 1331 / Piscataway, NJ 08855-1331, USA. Telephone: + Intl. 908-562-3966.'')}
 
 The previous chapter detailed the propagation of  uncertainty in a stereo matching problem, using the $\SAD$ function to compute the cost volume. However, real cases of stereo matching usually do not use such simple cost functions, but rather more complex ones. In particular, the CARS pipeline that will process the \acrshort{co3d} data will use the CENSUS and MC-CNN cost functions  \cite{zabih_non-parametric_1994,zbontar_stereo_2016} to compute the cost volume, followed by a \acrshort{sgm} regularization. Those methods produce far better results and are thus favored for stereo pipelines. Unfortunately, we are not able to propagate the uncertainty to those cost functions and regularization as we did in the previous chapter as it would be too complex and computationally heavy. The same observation can be made for any deep leaning method \cite{laga_survey_2022} as the data is processed through many consecutive layers. Furthermore, the previous chapter was restricted to the propagation of the uncertainty from input images to the cost volume, but did not attempt to quantify the uncertainty of the stereo matching process itself, \ie the algorithm ability to correctly\commanue{properly? c'est pour éviter la répétition avec correct, à moins que ce soit voulu} identify the correct disparity. A bad performing stereo matching algorithm can produce errors of great magnitude regardless of the uncertainty on input images, while more advanced algorithm may even present good performance despite noised input images. Using the semantics of this thesis, we will refer to the uncertainty of the stereo algorithm itself as its epistemic uncertainty. Indeed, it does not result form any aleatoric process, but rather a lack of knowledge on how to correctly and automatically identify the correct disparity\commanue{pareil tu as une répétition entre correctly et correct dans la phrase}.
 
-This aforementioned epistemic uncertainty\commanue{alors moi perso je mettrais This aforementioned epistemic uncertainty modeling in stereo matching mais c'est pas une obligation} has been the subject of many works in the literature \cite{hu_quantitative_2012,  poggi_confidence_2021,wang_uncertainty_2022}, designed for so-called ``classical methods'' using cost volumes obtained from cost functions, or for learning-based methods. This uncertainty is quantified using ``confidence measures'', associating a value between $0$ and $1$ to each predicted disparity, $0$ meaning that the prediction should be questioned,  and $1$ meaning that the prediction is most certainly correct. We refer to \Cref{sec:uncertainty_pandora} for more details on confidence measures in stereo matching pipelines. In this chapter, we will study how possibility distributions are able to model the epistemic uncertainty associated with a cost volume, and then deduce disparity confidence intervals from the possibility distribution. This approach is complementary to classical confidence estimations as it is not meant to indicate whether or not we trust a prediction but rather to provide information on \textit{where} the correct disparity should be. We then propagate those disparity confidence intervals in the rest of the stereo pipeline to obtain height confidence intervals, and evaluate their performances\commanue{Est-ce que dans l'intro de ce chapitre il ne faudrait pas aussi que tu rappelles que les utilisateurs veulent un intervalle à 90\% et donc blabla comme tu es gentil, tu vas chercher à répondre à ce besoin et donc construction à fournir un intervalle de disparité à 90\%}.
+This aforementioned epistemic uncertainty\commanue{alors moi perso je mettrais This aforementioned epistemic uncertainty modeling in stereo matching mais c'est pas une obligation} has been the subject of many works in the literature \cite{hu_quantitative_2012,  poggi_confidence_2021,wang_uncertainty_2022}, designed for so-called ``classical methods'' using cost volumes obtained from cost functions, or for learning-based methods. This uncertainty is quantified using ``confidence measures'', associating a value between $0$ and $1$ to each predicted disparity, $0$ meaning that the prediction should be questioned,  and $1$ meaning that the prediction is most certainly correct. We refer to \Cref{sec:uncertainty_pandora} for more details on confidence measures in stereo matching pipelines. In this chapter, we will study how possibility distributions are able to model the epistemic uncertainty associated with a cost volume, and then deduce disparity confidence intervals from the possibility distribution. This approach is complementary to classical confidence estimations as it is not meant to indicate whether or not we trust a prediction but rather to provide information on \textit{where} the correct disparity should be. We then propagate those disparity confidence intervals in the rest of the stereo pipeline to obtain height confidence intervals, and evaluate their performances. Following discussions with users and experts working at CNES, IGN and more generally in the AI4GEO consortium, we decided to fix ourselves an objective of $90\%$ of correct confidence intervals.
 
 \todoroman{Vérifier que dans le chapitre 1 j'insiste bien sur ce que c'est une cost curve}
 \section{Producing Confidence Intervals}
+This section will detail the method developed to create disparity confidence intervals in the stereo matching step of the pipeline. We will use possibility distributions to model the uncertainty associated with the available information and deduce confidence intervals from it.
+
+It is important to keep in mind that we want intervals as precise as possible, while staying relatively small. Indeed, it would be easy to reach a $100\%$ precision by simply extending the intervals to the whole range of considered disparities. However, the intervals would not contain any relevant information. We therefore must maintain a trade-off between the precision of the intervals and their size. As stated previously, we fixed ourselves a $90\%$ precision objective. As for the criteria of maintaining small intervals, we will introduce in \Cref{sec:metrics} different metrics to quantify their size for further evaluation. Different parameters will be introduced in our method, and we chose their values accordingly with the precision/size trade-off mentioned above. We will also study different configuration of those parameters in annex. \todoroman{Mettre les analyses en annexe}
+
 \subsection{Possibility Distributions as Uncertain Models for Cost Curves}
 In this section, we will detail how possibility distributions can be used to model the epistemic uncertainty associated with cost curves. We first present a quick reminder of concepts and notations regarding cost volumes presented in \Cref{sec:stereo_matching}, as we will base our model on them. Cost volume based approaches, considered here, compare every pixel from the left image $I_L$ to pixels from the same row in the right image $I_R$, in a given disparity range. The comparison is done using a cost function $f$, measuring the dissimilarity between two windows centered around pixel $p$ and $q$. All evaluations using this cost function are stored in a cost volume $C_V$:
 \begin{align}
-	C_V(row, ~col, ~d) = f(I_L(row, ~col), I_R(row, ~col+d))
+	C_V(\rowcol, ~d) = f(I_L(\rowcol), I_R(\rowcol+d))
 \end{align}
 where $d$ is the considered disparity. In this chapter, we consider that the cost volume then\commanue{je mettrais pas le then} undergoes a \acrshort{sgm} regularization step, which modifies the cost values\commanue{its values} to take into account more global information. Based on the observation that the disparity map is usually piece-wise regular in a scene, \acrshort{sgm} regularization has been designed to increase the cost of disparities for which no consensus exist among neighbouring pixels. This way, only disparities that seem plausible and relatively regular compared to neighbouring disparities are favored in the cost volume.
 
-For every pixel $(row, ~col)$ from the left image, we refer to its cost curve as the cost volume at coordinates $(row,~col)$ for every considered disparity $d$, \ie the cost volume for which we fixed the first two variables. Cost curves are of much importance as we estimate the disparity of a pixel solely based on its cost curve. Indeed, we define the predicted disparity $\tilde{d}$ of a pixel $(row, ~col)$ as:
+For every pixel $(\rowcol)$ from the left image, we refer to its cost curve as the cost volume at coordinates $(row,~col)$ for every considered disparity $d$, \ie the cost volume for which we fixed the first two variables. Cost curves are of much importance as we estimate the disparity of a pixel solely based on its cost curve. Indeed, we define the predicted disparity $\tilde{d}$ of a pixel $(\rowcol)$ as:
 \begin{align}
-	\tilde{d} = \argmin_d C_V(row, ~col, ~d)
+	\tilde{d} = \argmin_d C_V(\rowcol, ~d)
 \end{align} 
 \Cref{fig:tuto_dense_matching} presents a cost curve and its true disparity. We can see that the true disparity can be correctly estimated by looking at the minimum of the cost curve.
 
@@ -52,11 +56,11 @@ In the following, we propose to consider possibility distributions to model the 
 
 In order to use possibility distributions, we first need to transform the available information, in our case the values contained in the cost curves, into degrees of possibility. \Cref{eq:possibility}\commanue{Plutôt que de faire référence à une équation située 100 pages avant, tu pourrais juste dire The definition of possibility distribution ou un truc équivalent} imposes that the values must lie between $0$ and $1$, and that the value $1$ must be attained at least once. We therefore propose to normalize each cost curve so that its minimal dissimilarity value equals a possibility degree of $1$, and that greater dissimilarity values are closer to $0$ in possibility. However, simply normalizing the values of each cost curve between $0$ and $1$ would artificially stretch the cost curve as seen in \Cref{fig:cost_curves_b}. It is especially blatant in the case for the orange dashed curve from \Cref{fig:cost_curves_a} as the range of its values is quite narrow compared to the blue curve, but they are both stretched to $[0,~1]$ in \Cref{fig:cost_curves_b}. In order to avoid this effect, we instead normalize every cost curve using the global minimum and global maximum of the cost volume, as:
 \begin{align}
-	C_V^{norm}(row, ~col, ~d) = \frac{C_V(row, ~col, ~d) - \max_{r,c,\delta}C_V(r,~c,~\delta)}{\min_{r,c,\delta}C_V(r,~c,~\delta) - \max_{r,c,\delta}C_V(r,~c,~\delta)}\label{eq:normalized_cost_curve}
+	C_V^{norm}(\rowcol, ~d) = \frac{C_V(\rowcol, ~d) - \max_{r,c,\delta}C_V(r,~c,~\delta)}{\min_{r,c,\delta}C_V(r,~c,~\delta) - \max_{r,c,\delta}C_V(r,~c,~\delta)}\label{eq:normalized_cost_curve}
 \end{align}
 Minima of the cost curve become maxima with this normalization. One problem remains, it is that unless the global maximum of the cost volume is attained in a cost curve, the normalized cost curve will never reach $1$. Therefore, it will not be a possibility distribution. This problem can be observed in \Cref{fig:cost_curves_c}. We thus add a constant to the normalized cost curve to obtain a possibility distribution $\pi_{row,~col}(d)$:
 \begin{align}
-	\pi_{row,~col}(d) = C_V^{norm}(row, ~col, ~d) + 1 - \max_\delta C_V^{norm}(row, ~col, ~\delta)\label{eq:possibility_cost_curve}
+	\pi_{row,~col}(d) = C_V^{norm}(\rowcol, ~d) + 1 - \max_\delta C_V^{norm}(\rowcol, ~\delta)\label{eq:possibility_cost_curve}
 \end{align}
 \Cref{fig:cost_curves_d} displays the possibility distributions obtained from the cost curves of \Cref{fig:cost_curves_a}.
 
@@ -90,19 +94,19 @@ Minima of the cost curve become maxima with this normalization. One problem rema
     \label{fig:cost_curves_to_possibility}
 \end{figure}
 
-As stated previously, global extrema in \cref{eq:normalized_cost_curve} are employed to minimize the stretching effect when converting cost curves into possibility distributions. However, we also could have used the theoretical extrema of a cost curve instead. For instance, the CENSUS cost function on a $5\times5$ window provides values between $0$ and $C_{max}=24$. Adding \acrshort{sgm} regularization with penalty $P_2$ on $8$ directions yields cost volumes values between $0$ and $8\times(C_{max}+P_2)$ \cite{hirschmuller_accurate_2005}. However, this maximal cost is rarely attained in real case scenarios, and\commanue{je remplacerais and par therefore it} is too pessimistic and tends to over-compress the normalized cost curves. It is instead preferred to use global extrema of the cost volume for the normalization, as we suppose the best and worst match should have similar cost values across different scenes. This hypothesis is not restrictive for the images we consider in our stereo matching problem, as the size and diversity inside each scene lead to similar extrema. 
+As stated previously, global extrema in \cref{eq:normalized_cost_curve} are employed to minimize the stretching effect when converting cost curves into possibility distributions. However, we also could have used the theoretical extrema of a cost curve instead. For instance, the CENSUS cost function on a $5\times5$ window provides values between $0$ and $C_{max}=24$. Adding \acrshort{sgm} regularization with penalty $P_2$ on $8$ directions yields cost volumes values between $0$ and $8\times(C_{max}+P_2)$ \cite{hirschmuller_accurate_2005}. However, this maximal cost is rarely attained in real case scenarios, and\commanue{je remplacerais and par therefore it} is too pessimistic and tends to over-compress the normalized cost curves. It is instead preferred to use global extrema of the cost volume for the normalization, as we suppose the best and worst match should have similar cost values across different scenes. This hypothesis is not restrictive for the images we consider in our stereo matching problem, as the size and diversity inside each scene lead to similar extrema. \todoroman{Faire relire la fin à Manue car le Balrog ne l'a pas lu} When processing very large images, CARS uses divide the image in smaller tiles that are process in parallel. We are not guaranteed that the cost volume extrema of each tile would be the same, but as they all come from the same image, it is not far-stretched to suppose differences in extrema are negligible. 
 
 \subsection{From Possibilities to Disparity Confidence Intervals}
-With the possibility distributions defined, our next objective is to establish a set of most possible disparities. We decided to aim for sets containing the true disparity $90\%$ of the time. This \( 90\%\) value was chosen following discussions with users and other experts working at CNES, IGN and more generally in the AI4GEO consortium\commanue{moi j'aurais introduit cette info avant dans l'intro et là tu peux le rappeler. Mais là c'est toi qui voit}. To define this set of most possible disparities, we compute the $\alpha$-cut (\cref{eq:alpha_cut}\commanue{tu fais un renvoi à l'équation, moi je renverrais à la définition. Bon c'est au même endroit de toute façon}) of the possibilities, or in other words, the set of all disparities $D_\alpha$ whose possibility is superior than $\alpha$:
+With the possibility distributions defined, our next objective is to establish a set of most possible disparities. We decided to aim for sets containing the true disparity $90\%$ of the time. This $90\%$ value was chosen following discussions with users and other experts working at CNES, IGN and more generally in the AI4GEO consortium. To define this set of most possible disparities, we compute the $\alpha$-cut (\cref{eq:alpha_cut}\commanue{tu fais un renvoi à l'équation, moi je renverrais à la définition. Bon c'est au même endroit de toute façon}) of the possibilities, or in other words, the set of all disparities $D_\alpha$ whose possibility is superior than $\alpha$:
 \begin{align}
-    D_\alpha=\{~ d ~|~ \pi_{row,col}(d)\geqslant\alpha\}\label{eq:set_of_possible_disparities}
+    D_\alpha=\{~ d ~|~ \pi_{\rowcol}(d)\geqslant\alpha\}\label{eq:set_of_possible_disparities}
 \end{align}
 By looking at possibility distributions obtained from different cost curves for which we know the true disparity, we first fixed the value $\alpha$ at $0.9$. In depth study of this parameter will be tested later, in order to see if it depends on the cost function, the type of scene considered, and to provide general guidelines on its optimal value. In the following, when the value of $\alpha$ is not specified, it will always be set at $0.9$. The fact that its value is the same as the $90\%$ confidence objective is a coincidence and one should not suppose that $\alpha$ and the confidence objective should be the same. Indeed raising the $\alpha$ value would decrease the size of the set $D_\alpha$ and therefore decrease the proportion of sets containing the true disparity, \ie the global confidence rate of intervals. \Cref{fig:disparity_intervals_a,fig:disparity_intervals_b} graphically represent $D_\alpha$ for the cost curves of \Cref{fig:cost_curves_to_possibility}.
 
 \begin{remark}
     We are modelling the epistemic uncertainty of the cost curves using possibility distributions. In the rest of this chapter, we use a possibility distribution for each cost curve because we think it is a correct model in itself for the uncertainty we encounter. It is however possible to have a probabilistic interpretation of possibilities, which we will share in this remark as it may be of interest for people thinking the underlying uncertainty can be modeled by probabilities.
     
-    We saw in \cref{eq:credal_set_possibility} from \Cref{chap:representation_of_uncertainty} that one way of interpreting $\pi_{row,col}$ is that it defines a set of probability distributions, \ie a credal set $\M$. We can also define $D_\alpha$ using this set $\M$, as:
+    We saw in \cref{eq:credal_set_possibility} from \Cref{chap:representation_of_uncertainty} that one way of interpreting $\pi_{\rowcol}$ is that it defines a set of probability distributions, \ie a credal set $\M$. We can also define $D_\alpha$ using this set $\M$, as:
     \begin{align}
         D_\alpha=\{~ d ~|~ \exists P\in\M ~\st~ P(d)\geqslant \alpha\}
     \end{align}
@@ -117,7 +121,7 @@ By looking at possibility distributions obtained from different cost curves for 
 \end{align}
 \Cref{fig:disparity_intervals_c,fig:disparity_intervals_d} graphically represent how $I_\alpha$ is determined for the two possibility distributions of the cost curves in \Cref{fig:cost_curves_to_possibility}. In the rest of this section, we will not make any distinction between disparity confidence intervals, disparity intervals, confidence intervals or simply intervals. A disparity interval is the convex envelope of its disparity set $D_\alpha$, which is a conservative approach as observed in \Cref{fig:disparity_intervals_b,fig:disparity_intervals_d}.
 
-Considering intervals thus presents the advantage of working with convex sets and only requiring two scalars to describe the set. Users of the \acrshort{dsm}s produces by stereo photogrammetry are also used to consider confidence intervals \cite{oksanen_digital_2006, wang_robust_2015, panagiotakis_validation_2018, deschamps-berger_apport_2021, hugonnet_uncertainty_2022}. This will also facilitate further processing in the rest of the stereo pipeline, as we only need to take into account $2$ bounds to characterize the possible disparities, instead of a set of arbitrary shape.
+Considering intervals thus presents the advantage of working with convex sets and only requiring two scalars to describe the set. Users of the \acrshort{dsm}s produces by stereo photogrammetry are also used to consider confidence intervals \cite{oksanen_digital_2006, wang_robust_2015, panagiotakis_validation_2018, deschamps-berger_apport_2021, hugonnet_uncertainty_2022}. This will also facilitate further processing in the rest of the stereo pipeline, as we only need to take into account $2$ bounds to characterize the possible disparities, instead of a set of arbitrary shape. In the following figures, we use the same configuration for the correlator, \ie CENSUS cost function with \acrshort{sgm} regularization. We will study the influence of the cost function later\commanue{alors c'est bien de mentionner la conf utilisée. Après tant que tu utilises les figures juste à des fins explicatives c'est pas trop grave. Donc soit tu remontes cette info plus haut quand tu commences à faire des courbdes de coût. Soit tu gardes cette info quand tu en auras vraiment besoin pour valider ton approche. Histoire d'être sûr qu'entre temps les relecteurs n'aient pas oublié l'info. Là ça tombe un peu comme un cheveu sur la soupe dans ce paragraphe.}.
 
 \begin{figure}
     \centering
@@ -149,14 +153,14 @@ Considering intervals thus presents the advantage of working with convex sets an
     \label{fig:disparity_sets_and_intervals}
 \end{figure}
 
-To qualitatively evaluate the behaviour of disparity confidence intervals $I_\alpha$, we will look at their values for different pixels of the same row. The rows considered are presented in \Cref{fig:cones_with_rows}: the upper row ($80$) is smaller so more details can be observed, while other rows provide broader estimations of the intervals. By construction, $I_\alpha$ will always contain the predicted disparity $\tilde{d}$, and we want to see if it can contain the true disparity $d_{true}$ even when the predicted disparity is far from it. \Cref{fig:intervals_ambiguous_row_80_1,fig:intervals_ambiguous_row_180_1,fig:intervals_ambiguous_row_240_1,fig:intervals_ambiguous_row_290_1} 
-
 \begin{figure}
     \centering
     \includegraphics[width=0.5\linewidth]{Images/Chap_5/cones_with_rows.png}
     \caption{Left stereo image from Middlebury Cones. Disparity intervals $I_\alpha$ along orange lines are detailed in \Cref{fig:intervals_ambiguous_row_80,fig:intervals_ambiguous_row_180,fig:intervals_ambiguous_row_240,fig:intervals_ambiguous_row_290}}
     \label{fig:cones_with_rows}
 \end{figure}
+
+To qualitatively evaluate the behaviour of disparity confidence intervals $I_\alpha$, we will look at their values for consecutive pixels of the same row. Considered rows\commanue{Rows selected for this analysis?} are presented in \Cref{fig:cones_with_rows}: the upper row ($80$) is smaller than the others so more details can be observed, while other rows allows for a broader view of the intervals\commanue{peut-être préciser si tu as pris les lignes au pif ou non.}.
 
 \begin{figure}
     \centering
@@ -193,6 +197,11 @@ To qualitatively evaluate the behaviour of disparity confidence intervals $I_\al
     \label{fig:intervals_ambiguous_row_180}
 \end{figure}
 
+By construction, $I_\alpha$ will always contain the predicted disparity $\tilde{d}$ as the maximum of each possibility curve will also be selected as the predicted disparity by winner-takes-all strategy. However, We are interested to see if intervals can contain the true disparity $d_{true}$ even when the predicted disparity is far from it. \Cref{fig:intervals_ambiguous_row_80_1,fig:intervals_ambiguous_row_180_1,fig:intervals_ambiguous_row_240_1,fig:intervals_ambiguous_row_290_1} represent the disparity intervals $I_\alpha$, predicted disparity $\tilde{d}$ and true disparity $d_{true}$ for the different rows. A first observation is that intervals correctly contain the true disparity in regions were there are no strong variations of disparities. In  \Cref{fig:intervals_ambiguous_row_180_1}, the intervals in columns $50$ to $75$ and around $175$ are much larger than in the rest of the figure. In those areas, the predicted disparity is also far from the ground truth. This translates the fact that the method for creating intervals is able to detect the difficulties encountered by the correlator when predicting a disparity, and to adapt the intervals size consequently. On the downside, we can see that near strong variations of the disparity, the intervals tend to ``miss'' the discontinuities. Indeed, they do not contain the true disparity around those areas, as observed near columns $215$ and $250$ of \Cref{fig:intervals_ambiguous_row_80_1}, columns $95$, $125$ of \Cref{fig:intervals_ambiguous_row_180_1}, columns $100$, $115$, $150$, $200$, $250$ of \Cref{fig:intervals_ambiguous_row_240_1} 
+and finally columns $90$, $200$ and $210$ of \Cref{fig:intervals_ambiguous_row_290_1}. The intervals and gray area presented in \Cref{fig:intervals_ambiguous_row_80_2,fig:intervals_ambiguous_row_180_2,fig:intervals_ambiguous_row_240_2,fig:intervals_ambiguous_row_290_2} will be explained in \Cref{sec:regularization_of_intervals}.
+
+The method presented in this section seems to offer a good estimation of the error in the disparity estimation step. Some errors remain near disparity discontinuities, which we will try to rectify in \Cref{sec:regularization_of_intervals}.
+
 \begin{figure}
     \centering
     \begin{subfigure}[t]{\linewidth}
@@ -207,7 +216,7 @@ To qualitatively evaluate the behaviour of disparity confidence intervals $I_\al
         \caption{$I_\alpha$ with regularization in low confidence areas}
         \label{fig:intervals_ambiguous_row_240_2}
     \end{subfigure}
-    \caption{$I_\alpha$ with and without regularization in low confidence area, for row $240$ of the image of \Cref{fig:cones_with_rows}. Low confidence areas are indicated by the gray areas.}
+    \caption{$I_\alpha$ with and without regularization in low confidence area, for row $240$ of the image of \Cref{fig:cones_with_rows}. Low confidence areas are indicated by the gray areas.}\commanue{bah j'avoue que c'est bizarre d'avoir ici les courbes avace regularisation dans les zones peu confiante vu que maintenant tu en parles bcp plus loin.}
     \label{fig:intervals_ambiguous_row_240}
 \end{figure}
 
@@ -225,35 +234,212 @@ To qualitatively evaluate the behaviour of disparity confidence intervals $I_\al
         \caption{$I_\alpha$ with regularization in low confidence areas}
         \label{fig:intervals_ambiguous_row_290_2}
     \end{subfigure}
-    \caption{$I_\alpha$ with and without regularization in low confidence area, for row $290$ of the image of \Cref{fig:cones_with_rows}. Low confidence areas are indicated by the gray areas.}
+    \caption{$I_\alpha$ with and without regularization in low confidence area, for row $290$ of the image of \Cref{fig:cones_with_rows}. Low confidence areas are indicated by the gray areas.}\commanue{même remarque que pour la figure précédente}
     \label{fig:intervals_ambiguous_row_290}
 \end{figure}
 
+\subsection{Insuring Coherence Between the Predicted Disparity and Confidence Intervals}\label{sec:coherence_disparity_intervals}\commanue{alors tu as ajouté ce paragraphe avant le partie sur les zones peu confiantes}
+We detailed a method for creating confidence intervals that should include the true disparity at least $90\%$ of the time\commanue{j'ai un pb avec la phrase au passé. Tu es en train de proposer, c'est tout le sujet de ce début de chapitre}. It should however always include the predicted disparity $\tilde{d}$. Indeed, it would not make much sense to provide a confidence interval and a prediction that is not included in the interval. As $\tilde{d}$ is the maximum of each possibility curve, it will also be selected as the predicted disparity by winner-takes-all strategy and thus belong in the confidence intervals. However, the disparity map $\tilde{d}$ is often post-processed to improve its quality, mainly using a filtering and a refinement step. Those step modify the disparity map, and we must insure we modify the confidence intervals accordingly so that they remain coherent with the predicted disparity. 
+
+As detailed in \Cref{sec:stereo_matching}, a filtering step is carried out on the disparity map in order to remove potential outliers. The filter applied in our experiments and in many other pipelines is a median filter \cite{scharstein_taxonomy_2001}. Applying the filter only to the disparity map without processing the intervals accordingly can result in inconsistencies, as illustrated in \Cref{fig:median_filtering}. However\commanue{je ne sais pas pour la transition, j'ai tendance à l'utiliser comme synonyme de but. Je mettrais presque fortunately}, separately applying the same median filter to the lower bounds and upper bounds of the intervals is sufficient to insure coherence. Indeed, because for all pixels $p_1\enum p_n$ considered in the filtering, it holds:
+\begin{align}
+    \underline{I}_\alpha(p_i)\leqslant \tilde{d}(p_i) \leqslant \overline{I}_\alpha(p_i)
+\end{align}
+then it is possible to prove that
+\begin{align}
+    \median_{p_1\enum p_n} \underline{I}_\alpha(p_i)\leqslant \median_{p_1\enum p_n}\tilde{d}(p_i) \leqslant \median_{p_1\enum p_n}\overline{I}_\alpha(p_i)
+\end{align}
+The proof of this result can be found in the \hyperref[chap:annex]{Annex}, using \Cref{prop:median_consistency}.
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{0.32\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_5/Median_filtering_1.png}
+        \caption{Without filtering}
+        \label{fig:median_filtering_1}
+    \end{subfigure}
+    \hfill\begin{subfigure}[t]{0.32\linewidth}
+        \includegraphics[width=1\linewidth]{Images/Chap_5/Median_filtering_2.png}
+        \caption{Filtering only $\tilde{d}$}
+        \label{fig:median_filtering_2}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.32\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_5/Median_filtering_3.png}
+        \caption{Filtering $\tilde{d}$ and $I_\alpha$}
+        \label{fig:median_filtering_3}
+    \end{subfigure}
+    \caption{Effect of a median filter on the predicted disparity $\tilde{d}$ and confidence intervals $I_\alpha$. For the sake of the example, we only filter the middle point by looking at its neighbours. \Cref{fig:median_filtering_1} contains the unfiltered curves. \Cref{fig:median_filtering_2} contains unfiltered intervals, and filtered $\tilde{d}$. \Cref{fig:median_filtering_3} filtered intervals and filtered $\tilde{d}$.}
+    \label{fig:median_filtering}
+\end{figure}
+
+Another processing applied to the disparity map is the sub-pixel refinement of its values, presented in \Cref{sec:stereo_matching} and \Cref{fig:sub-pixel_refinement}. The idea is to slightly modify the value of the disparity by interpolation of the cost curve, in order to obtain sub-integers disparity values. The modification cannot change a disparity more than a pixel away from its original value. If the predicted disparity $\tilde{d}$ equals one of the bounds of its confidence interval $I_\alpha$, the sub-pixel refinement step can shift the predicted disparity to a value slightly outside the confidence intervals. In this case, we simply extend the interval by one pixel. For instance, if $\tilde{d}=\underline{I}_\alpha$, then the new confidence interval $I_\alpha'$ equals:
+\begin{align}
+    I_\alpha'=[\underline{I}_\alpha-1,~\overline{I}_\alpha]
+\end{align}
+This stretching is simple, and also presents the advantage of working with different\commanue{any} type of sub-pixel refinement (\ie V-fit, parabola \etc).
+
+\subsection{Regularization of Intervals in Low Confidence Areas}\label{sec:regularization_of_intervals}
+We saw that disparity intervals have\commanue{disparity interval estimation has?} the potential to perform well even when the predicted disparity is far away from the ground truth\commanue{A voir, si ce ne serait pas intéressant de donner une métrique du genre avec cette première version de méthode on atteint pas les 90\% on est plutôt à XX\% donc blabla super Roman est là pour trouver une solution}. This model however encounters some performance issues near depth discontinuities. This can be explained as follows: as the \acrshort{sgm} regularization attempts to impose continuity on disparities, it results in cost curves that do not favor the correct disparity in the region where the continuity hypothesis is not valid. Considering that cost curves are equivalent to experts' opinions in those areas can be over-optimistic, and the resulting intervals thus cannot be completely trusted. We will now present how we can adapt the model on those regions, in order to correct those flaws.
+
+The first challenge to tackle is to determine if we are able to detect regions where discontinuities occur, in order to process intervals differently there\commanue{there differently plutôt ?}. Using the predicted disparity map might be a lead, but we saw in \Cref{fig:intervals_ambiguous_row_80,fig:intervals_ambiguous_row_180,fig:intervals_ambiguous_row_240,fig:intervals_ambiguous_row_290} that there is usually a shift between predicted disparity discontinuities and true disparity discontinuities. Instead, we can consider confidence measures\commanue{we could consider to use confidence measures?} computed alongside the disparity map, which are usually good candidates to detect discontinuities. In particular, we consider\commanue{choose car trop de consider tue le consider} the confidence from ambiguity measure $c_{Amb}$ presented in \cref{eq:confidence_from_ambiguity} from \Cref{chap:stereophotogrammetry}. Note that other confidence measures could be considered instead of the ambiguity, but this confidence measure has the advantage of performing well, being explainable (which is not always the case for learning-based measures) and being already implemented in the stereo pipeline we use. \Cref{fig:wrong_intervals_and_ambiguity} shows that pixels with wrong intervals $I_\alpha$ usually present a low confidence from ambiguity as well, meaning that we should be able to use this confidence measure to process confidence intervals differently.
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{0.3\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_5/wrong_intervals_no_reg.png}
+        \caption{Left stereo image. Pixels where $d_{true}\not\in I_\alpha$ appear in orange.}
+        \label{fig:wrong_intervals}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.3\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_5/ambiguity_cones.png}
+        \caption{Confidence from ambiguity $c_{Amb}$. Dark pixels have a low confidence, bright pixels have a high confidence.}
+        \label{fig:ambiguity_cones}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.3\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_5/ambiguity_mask_cones.png}
+        \caption{Binary mask, low confidence areas are indicated by black pixels.}
+        \label{fig:ambiguity_mask_cones}
+    \end{subfigure}
+    \caption{Position of wrong intervals in the left image, the corresponding confidence map and the low confidence area mask obtained using \cref{eq:low_confidence_area}}
+    \label{fig:wrong_intervals_and_ambiguity}
+\end{figure}
+
+\begin{remark}\commanue{j'ai rien contre la remarque elle-même mais alors elles arrivent jamais au bout moment par rapport à ce qui est développé dans le corps principal du texte. Peut-être fait une paragarphe dédié au debut sur l'image que tu considères. Il me semble que tu as une phrase ou deux sur les cônes et ensuite tu places cette info direct dans le texte sans faire un encart. J'ai parfois l'impression que l'encart remark te permet de dire qqch que tu as oublié de mentionner avant, plutôt que quelque chose d'annexe.}
+    In all of our experiments, we do not consider pixels where the whole range of considered disparities cannot be explored. For instance, in the case of the Cones image from the Middlebury dataset, the range of considered disparities is $[-60,0]$ which means that we do not the consider the 60 left-most pixels of the image.
+    
+    We proceed this way because for the most part, the true disparity of those pixels do not exist\commanue{peut-être dire que tu le sais car tu as la vérité terrain qui le confirme et par conséquent tu sais que le point homologue qui serait nécessaire est en fait absent de l'image de droite}. Additionally, the \acrshort{sgm} regularization will also predict a false disparity (as the true disparity does not exist) and base the regularization of the neighbouring disparities based on this false prediction. This greatly compromises the disparity prediction, the quality of intervals \etc Those pixels are thus masked.
+\end{remark}
+
+The method developed for detecting low confidence areas is to apply a simple threshold $\tau_{Amb}$ on the confidence from ambiguity $c_{amb}$. However, $c_{Amb}$ is computed pixel-wise, which can lead to high-frequency spatial variations of the confidence. To smooth the ambiguity curve, a minitive kernel of size $(1, ~2\times k_{Amb}+1)$ is applied. A pixel $(\rowcol)$ is thus considered to be in a low confidence area if it verifies:
+\begin{align}\label{eq:low_confidence_area}
+    \min_{-k_{Amb}~\leqslant~ k~\leqslant ~k_{Amb}}c_{Amb}(\rowcol+k)\leqslant \tau_{Amb}
+\end{align}
+We used $k_{Amb}=2$ and $\tau_{Amb}=0.6$ in our experiments. For simplicity, we will refer to $\min c_{Amb}$ instead of $min_{-k_{Amb}~\leqslant~ k~\leqslant ~k_{Amb}}c_{Amb}$ in the following. Additional investigations on those parameters are presented in annex \todoroman{Mettre les ablation study en annexe}. \Cref{fig:ambiguity_kernel} illustrates the impact of smoothing the confidence from ambiguity, and displays the threshold used to detect low confidence areas. We can see around columns $185$ and $320$ that the kernel smooths isolated confidence values that would not be detected by the threshold otherwise. \Cref{fig:ambiguity_mask_cones} presents the position of pixels in low confidence areas over the whole left image. As a quick indicator of this method performances, $83\%$ of intervals that do not contain the ground truth (orange pixels in \Cref{fig:wrong_intervals}) are also contained in low confidence areas. Once again, it is possible to use any other confidence measure to detect areas where intervals perform badly. The choice of this method in particular lies on its good performances while remaining simple in comprehension and implementation.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{Images/Chap_5/ambiguity_kernel_row_110.png}
+    \caption{Confidence from ambiguity $c_{Amb}$, smoothed confidence $\min c_{Amb}$ from \eqref{eq:low_confidence_area} for row $110$ of the Middlebury Cones image. Low confidence areas, where $\min c_{Amb}$ is less than $\tau_{Amb}$ are highlighted in gray.}
+    \label{fig:ambiguity_kernel}
+\end{figure}
+
+Having computed regions of low confidence, we can now process the intervals differently in those areas. The main idea here is that information contained in low confidence cost curves should be handled with care. The hypothesis that a cost curve can be interpreted as an expert stating his opinion on which disparities are most probable is questionable in those areas. We also cannot infer the confidence intervals from intervals in neighbouring high confidence areas as there is no guarantee the disparities are the same as their high confident neighbours. We instead chose to proceed in two steps. First, we compute a neighbouring set of intervals for each low confidence pixel. Then, we use the information from this set to determine a new disparity interval by consensus. We modify the value of the considered pixel with that of this\commanue{c'est bizarre comme formulation} consensual interval.
+
+We first detail how the set of neighbouring pixels is determined. Let $(\rowcol)$ be a low confidence pixel. We define a segment $S(\rowcol)$ as the set containing $(\rowcol)$ and all adjacent low confidence pixels from the same row. An example of $S(\rowcol)$ is presented in \Cref{fig:low_confidence_segments} as an orange rectangle. Two segments $S(\rowcol)$ and $S(row+1, ~col')$ are considered adjacent if two of their pixels are directly on top of one another. The low confidence neighbouring $\N(row,~col)$ is defined as the set of low confidence pixels in segment $S(\rowcol)$ or in adjacent segments within $n$ rows. In practice, we use $n=3$. The formal definition of $S(\rowcol)$ and $\N(row,~col)$ introduced next can be a bit heavy on notations, so we refer to \Cref{fig:low_confidence_segments} for a graphical example of what they represent. $S(\rowcol)$ is formally defined as:
+\begin{align}
+    S(\rowcol) = \{~ (row,~col') \text{ \st }~\forall c\in\opi col, col'\cli,~\min c_{Amb}(row, ~c+k)\leqslant \tau_{Amb}~\}
+\end{align}
+where $\opi col, col'\cli$ supposes that $col\leqslant col'$, and is replaced by $\opi col', col\cli$ if not. The formal definition of $\N(row,~col)$ is then:
+\begin{align}
+    \N(row,~col) = \{ p\in &\bigcup_{-n\leqslant k\leqslant n}S(row+k, ~col_k)\nonumber\\
+    &\st~S(row + (k+1), ~col_{k+1})\text{ is adjacent to }S(row+k, ~col_{k})\}
+\end{align}
+with $col_0=col$, and $n$ the number of consecutive rows considered.\commanue{dans mes souvenirs c'était plus clair dans CVPR et le schéma aussi}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.7\linewidth]{Images/Chap_5/low_confidence_segments.png}
+    \caption{Segment $S(row, ~ col)$ and its adjacent segments over $3$ rows above and below. The image is an extract of the binary mask from \Cref{fig:ambiguity_mask_cones}, where low confidence pixels appear in black and high confidence pixels appear in white.}
+    \label{fig:low_confidence_segments}
+\end{figure}
+
+The value of the regularized interval $I^{reg}_\alpha$ of $(\rowcol)$ is obtained by consensus between the confidence intervals of $\N(\rowcol)$. Its upper and lower bounds are respectively the $q$\ith quantile of upper bounds of $\N(\rowcol)$ and the $(1-q)$\ith quantile of lower bounds of $\N(\rowcol)$:
+\begin{align}
+    I^{reg}_\alpha=[\mathcal{Q}_\N(1-q), ~\mathcal{Q}_\N(q)]
+\end{align}
+where $\mathcal{Q}_\N(q)$ refers to the $q$\ith quantile of $\N(\rowcol)$. In practice, we use $q=90\%$. This way, the lower bound of $I^{reg}_\alpha$ is lower than that of $90\%$ of intervals in $\N(\rowcol)$, and its upper bound is larger than that of $90\%$ of intervals in $\N(\rowcol)$. 
+
+\begin{remark}
+    It does not necessarily mean that $I^{reg}_\alpha$ includes $90\%$ of intervals of $\N(\rowcol)$. Indeed, there can be intervals whose lower bound is greater than the $(1-q)$\ith lower bounds quantile while also being greater than the $q$\ith upper bounds quantile. The intervals will then overlap while not being included in one another.
+\end{remark}
+
+We can notice that it is possible, although unlikely, that the $q$\ith quantile of the upper bounds of $\N(\rowcol)$ is lesser than the predicted disparity $\tilde{d}(\rowcol)$ (or similarly, the $(1-q)$\ith quantile of lower bounds can be greater than $\tilde{d}(\rowcol)$). In that case, in order to insure the coherence of the predicted disparity with the confidence intervals, the bounds of the intervals are extended until they include $\tilde{d}$.
+
+With the way $\N(\rowcol)$ is defined, every pixel of $S(\rowcol)$ will have the same value for their regularized interval $I^{reg}_\alpha$. This can be observed in \Cref{fig:intervals_ambiguous_row_80_2,fig:intervals_ambiguous_row_180_2,fig:intervals_ambiguous_row_240_2,fig:intervals_ambiguous_row_290_2}\commanue{je suis pas fan d'avoir les figures 4 pages avant}, where positions of low confidence pixels that are regularized are indicated with gray areas. As we regularize every intervals in low confidence areas, we will refer to them simply as $I_\alpha$ in the following.
+
+In theory, it is possible to perform the regularization of intervals before the filtering and refinement steps, but we chose to always regularize the intervals after those steps\commanue{ok ça explique l'ordre des paragraphe}. This prevent outliers removed by the filtering step to influence values of regularized intervals. \Cref{fig:intervals_ambiguous_row_80,fig:intervals_ambiguous_row_180,fig:intervals_ambiguous_row_240,fig:intervals_ambiguous_row_290} allow to visualize the impact of the regularization of intervals after the filtering and refinement steps. We can see that the regularization allows to create correct confidence intervals in \Cref{fig:intervals_ambiguous_row_80_2} near column $215$. In \Cref{fig:intervals_ambiguous_row_180}, columns $70$ and $175$ also create correct intervals, in regions where the predicted disparity $\tilde{d}$ is far away from the ground truth. Because\commanue{alors je ne suis pas sure de comprendre comment la justification explique le reste de la phrase} intervals are constant in low confidence areas (gray areas in the figure), we can say that the intervals are (almost) as small as possible so as to both contain $\tilde{d}$ and the true disparity $d_{true}$. Column $175$ of \Cref{fig:intervals_ambiguous_row_180} also shows that filtering and regularization methods are able to discard outliers: bounds of non-regularized intervals reach values between $-60$ and $0$ near column $175$, while the bounds of regularized intervals stay between $-42$ and $-15$. However, this method is not perfect, as it sometimes over estimates the size of intervals as in \Cref{fig:intervals_ambiguous_row_290_2} near column $110$, or do not predict correct intervals at all, as observed around column $450$.
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{0.49\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_5/comparison_wrong_intervals_no_reg.png}
+        \caption{Without regularization, filtering and refinement}
+        \label{fig:comparison_wrong_intervals_no_reg}
+    \end{subfigure}
+    \hfill\begin{subfigure}[t]{0.49\linewidth}
+        \includegraphics[width=1\linewidth]{Images/Chap_5/comparison_wrong_intervals_reg.png}
+        \caption{With regularization, filtering and refinement}
+        \label{fig:comparison_wrong_intervals_reg}
+    \end{subfigure}
+    \caption{Left image from Middlebury cones. Confidence intervals that do not contain the ground truth appear in orange.}
+    \label{fig:comparison_wrong_intervals}
+\end{figure}
+
+\Cref{fig:comparison_wrong_intervals} allows to visualize the position of wrong intervals in the left stereo image. We can see clear improvements between the method with and without regularization, especially in the bottom right corner of images near the sticks inside the cup, or in general near cones borders. Quantitatively, wrong intervals represent around $5\%$ of pixels without regularization, and $1.6\%$ with regularization. Those numbers are presented for information purposes only, as further scores will be computed on different scenes, allowing for more in-depth analysis\commanue{peut-être que ça vaut le coup de mettre les réultats sur pandora ici. Là tu es parti pour mettre toute la théorie et ensuite les évaluations.}.
+
+This concludes the method for computing confidence disparity intervals in the dense stereo matching part of the photogrammetry pipeline. We will see in the following how those intervals can be propagated into confidence intervals for the \acrshort{dsm}s.
+
+\marquepage
 \todoroman{Attention Manue je m'en suis arrêté là :) }
-Simple seuil mais avec une base théorique
-
-\todoroman{Déplacer la phrase qui suit:} This model will however encounter some limitations in regions near depth discontinuities: as the \acrshort{sgm} regularization attempts to impose continuity on disparities, it results in cost curves that do not favor the correct disparity. Considering that the cost curves are equivalent to experts opinion in those areas can be over optimistic. We will see how we can adapt the model on those regions later in this section.
-
-Ambiguity et régularization dans les zones de faibles confiance etc
-
-\todoroman{Utilisation de l'ambiguité. Montrer differentes zones d'aggrégation avec différents paramètres. Dire qu'on pourrait utiliser toute bonne mesure de confiance, mais celle-ci à l'avantage d'être explicable, efficace, et déjà implémentée et utilisée dans la chaine CARS. Filtrage de la carte de disparité.}
-\todoroman{Soit je mets les résultats des tests de disparité ici, soit je les mets après avoir fait tout le pipeline CARS.}
-\todoroman{Expliquer aussi comment on peut remonter le LiDAR HD en géométrie Epi + rasterization.}
+\begin{center}
+    \includegraphics[width=5cm]{tmp/gandalf.png}
+\end{center}
 
 \subsection{Propagation in the CARS Pipeline}
-Rasterization and small ideas with Gabriela?
-Impact of tiling : cost volume min and max is not the same from one tile to another (statistically it should be close, provided that the tile is big enough and the disparity interval is also large enough)
+We computed confidence disparity intervals alongside each predicted disparity $\tilde{d}$. It is this disparity which is triangulated and filtered (\Cref{sec:triangulation}) and then rasterized (\Cref{sec:rasterization}) to obtain the final \acrshort{dsm}. We will see in this section how we can propagate the disparity confidence intervals into height confidence intervals associated with the \acrshort{dsm} values.
+
+As indicated by their name, disparity confidence intervals are expressed in disparities. Disparities are use to create pairs of line of sight from different sensors, which are then triangulated to obtain a 3D point. With confidence intervals, we now have 3 pairs of line of sight for each pixel instead of just one:
+\begin{itemize}
+    \item The pair composed using the predicted disparity $\tilde{d}$
+    \item The two pairs composed using the upper and lower disparities from $I_\alpha=[\underline{I}_\alpha, ~\overline{I}_\alpha]$.
+\end{itemize}
+Intersecting each pair of line of sight yields $3$ 3D points, as presented in \Cref{fig:pairs_of_line_of_sight}. We deduce the first point $(x, ~y, ~z)$ from predicted disparity $\tilde{d}$, and the two other points $(\underline{x}, ~\underline{y}, ~\underline{z})$, $(\overline{x}, ~\overline{y}, ~\overline{z})$ deduced from $\underline{I}_\alpha$ and $\overline{I}_\alpha$ respectively.
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{Images/Chap_5/Pairs_of_line_of_sight.png}
+    \caption{Triangulation of the three pairs of line of sight. The angle between lines of sight is exaggerated for the purpose of this illustration.}
+    \label{fig:pairs_of_line_of_sight}
+\end{figure}
+
+Depending on the disposition of satellites, as well as which image is selected as the reference image, it is both possible that $\overline{z}\leqslant z \leqslant \underline{z}$ or $\underline{z}\leqslant z \leqslant \overline{z}$. In the following, and for simplicity, we will consider that $\underline{z}\leqslant z \leqslant \overline{z}$. This is not constraining, as we can just change the notations to unsure this inequality holds. We therefore have a 3D confidence ``interval'', defined as every point from the reference line of sight between $(\underline{x}, ~\underline{y}, ~\underline{z})$ and $(\overline{x}, ~\overline{y}, ~\overline{z})$. For instance in \Cref{fig:pairs_of_line_of_sight}, the reference line of sight is the one originating from the left satellite, and the confidence ``interval'' is the portion of this line of sight between the two orange crosses. It is not an interval \textit{per se}, as \acrshort{rpc} are polynomials and not straight line, but they are approximated by straight line in the computations so the distinction is superfluous. 
+
+The point cloud obtained from the triangulation of the disparity map is then filtered, as detailed in \Cref{sec:rasterization}. If a 3D point is filtered, then we naturally also filter its interval with it. 
+
+The final step of the pipeline is the rasterization part. We want to produce height confidence intervals associated with every value contained in the \acrshort{dsm}. However, rasterizing the confidence intervals as it stands raises an issue: we are not guaranteed that the rasterized intervals will remain coherent with the final \acrshort{dsm} when projected on the regular grid. A solution to circumvent this issue is to consider 
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{Images/Chap_5/Planimetric_shift.png}
+    \caption{Aligning the confidence interval bounds.}
+    \label{fig:planimetric_shift}
+\end{figure}
 
 \subsection{Unexplored leads}
 Patatoides sur les lignes de visées. Un pixel est représenté par des coordonées précises mais est en fait l'aggrégation d'information radiométriques issues d'une surface au sol. On pourrait donc imaginer que les lignes de visées ne sont pas une ligne mais plus un cône/cylindre (approx), et donc qu'on pourrait donc représenter la position d'un point 3D comme l'intersection de deux volumes (cône + intervalles de disparité).   
 
-\section{Coregistration}
+Filtrer les points si la distance planimétrique en x et en y est trop grande. 
+Filtrage non gaussien 
+
+
+\section{Evaluation}
+\subsection{Metrics for Evaluating the Precision and Size}\label{sec:metrics}
+\todoroman{Montrer differentes zones d'aggrégation avec différents paramètres.}
+\todoroman{Soit je mets les résultats des tests de disparité ici, soit je les mets après avoir fait tout le pipeline CARS.}
+\todoroman{Expliquer aussi comment on peut remonter le LiDAR HD en géométrie Epi + rasterization.}
+
+\subsection{Coregistration}
 DEM Compare 
 
-
-\section{Evaluation of Disparity Intervals}
-\section{Ablation Studies}
-\section{Elevation Confidence Intervals}
+\subsection{Evaluation of Disparity Intervals}
+\subsection{Ablation Studies}
+\todoroman{A mettre en annexe ?}
+\subsection{Elevation Confidence Intervals}
 \begin{table}[ht]
     \centering
     \begin{tabular}{|c||c|c|c|c|}

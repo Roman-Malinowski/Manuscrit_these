@@ -58,6 +58,8 @@
 \newcommand{\commanue}[1]{{\color{blue}\footnote{\color{blue}Manue: \textit{#1}}}}
 \newcommand{\comloic}[1]{{\color{orange}\footnote{\color{orange}Loïc: \textit{#1}}}}
 
+\newcommand{\marquepage}{{\color{violet}Manue, tu t'es arrêtée de lire ici la dernière fois.}\\\begin{center}\includegraphics[width=5cm]{tmp/balrog.png}\end{center}}
+
 % We use colors in equations to help readability.
 % Un-comment next lines if you want just black text.
 %\let\oldtextcolor\textcolor
@@ -74,8 +76,13 @@
 \newcommand{\Bel}{\mathrm{Bel}}
 \newcommand{\Pl}{\mathrm{Pl}}
 \newcommand{\Nec}{\mathrm{Nec}}
+
+\newcommand{\rowcol}{row, ~col}
 \newcommand{\AD}{\mathrm{AD}}
 \newcommand{\SAD}{\mathrm{SAD}}
+
+\newcommand{\N}{\mathcal{N}}
+\newcommand{\ith}{\textsuperscript{th}~}
 
 \DeclareMathOperator{\CDF}{cdf}
 \tikzset{
@@ -86,7 +93,7 @@
 \DeclareMathOperator*{\argmin}{arg\,min} % thin space, limits underneath in displays
 \DeclareMathOperator*{\argmax}{arg\,max} % thin space, limits underneath in displays
 \DeclareMathOperator*{\mean}{mean}
-
+\DeclareMathOperator*{\median}{median}
 
 %%%%%%%%%%%%%%%%% Defining the properties of the frames for theorems etc %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mdfsetup{skipabove=\topskip, skipbelow=\topskip}  % Define Skips between the frames and text above and bellow
@@ -275,6 +282,10 @@
     
     \setkeys{Gin}{draft=true}
     \input{Chapters/Conclusion}
+    
+    \pagenumbering{roman}
+    \setkeys{Gin}{draft=true}
+    \input{Chapters/X_annnex}
     
     \singlespace
     \bibliography{thesis}

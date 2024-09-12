@@ -1,0 +1,40 @@
+\appendix\addcontentsline{toc}{chapter}{Annex}
+\chapter{Annex}\label{chap:annex}
+\section{Consistency of the Median Filtering}
+This section demonstrates a result used in \Cref{sec:coherence_disparity_intervals}. We define the median of a set of $n$ sorted values $X=\{x_1\enum x_n\}$ is defined as
+    \begin{align}
+        &\text{if }n=2l+1,\qquad \median X =& x_{l+1}\\
+        &\text{if }n=2l,\qquad \median X =& \frac{x_{l}+x_{l+1}}{2}
+    \end{align}
+    where $l$ is an integer.
+where $l$ is an integer.
+
+\begin{proposition}\label{prop:median_consistency}
+    Let $n\in\mathbb{N}^*$. Let $X=\{x_1\enum x_n\}$ and $Y=\{y_1\enum y_n\}$ be two sets of integers such that for all $i$ in $\opi1,n\cli$, $x_i\leqslant y_i$. Then:
+    \begin{align}
+        \median X \leqslant \median Y
+    \end{align}
+\end{proposition}
+
+\begin{proof}
+    Let $\sigma_X:\opi1,n\cli\rightarrow\opi1,n\cli$ be a bijection sorting $X$, \ie:
+    \begin{align}
+        x_{\sigma_X(1)}\leqslant\dots\leqslant x_{\sigma_X(i)}\leqslant\dots\leqslant x_{\sigma_X(n)}
+    \end{align}
+    We define $\sigma_Y:\opi1,n\cli\rightarrow\opi1,n\cli$ similarly, this time sorting $Y$. Notice that it does not necessarily holds that $x_{\sigma_X(i)}\leqslant y_{\sigma_Y(i)}$, but only that $x_{\sigma_Y(i)}\leqslant y_{\sigma_Y(i)}$ 
+    
+    Suppose that $n=2l+1$ were l is an integer. Then the median of $X$ equals $x_{\sigma_X(l+1)}$ and the median of $Y$ equals $y_{\sigma_Y(l+1)}$ 
+    It holds that for all $i\in\opi1,l+1\cli$:
+    \begin{align}
+        y_{\sigma_Y(l+1)}\geqslant y_{\sigma_Y(i)}\geqslant x_{\sigma_Y(i)}
+    \end{align}
+    The median of $Y$ is thus greater than at least $l+1$ elements of $X$. Because the $(l+1)$\ith smallest element of $X$ is the median of $X$, then the median of $Y$ is necessarily greater than the median of $X$.
+    
+    The case $n=2l$, is somehow similar. With the same arguments, we can say that $y_{\sigma_Y(l+1)}$ is greater than $l+1$ elements of $X$, thus it is greater than its $(l+1)$\ith smallest element $x_{\sigma_X(l+1)}$. Similarly, $y_{\sigma_Y(l)}$ is greater than $l$ elements of $X$, thus it is greater than its $l$\ith smallest element $x_{\sigma_X(l)}$. Therefore it holds that:
+    \begin{align}
+        \frac{y_{\sigma_Y(l)}+y_{\sigma_Y(l+1)}}{2}\geqslant\frac{x_{\sigma_X(l)}+x_{\sigma_X(l+1)}}{2}
+    \end{align}
+    Which also means that the median of $Y$ is necessarily greater than the median of $X$.
+\end{proof}
+
+\pagebreak
