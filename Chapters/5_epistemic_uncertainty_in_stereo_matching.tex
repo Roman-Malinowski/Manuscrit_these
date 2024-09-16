@@ -16,7 +16,7 @@ In this section, we will detail how possibility distributions can be used to mod
 \begin{align}
 	C_V(\rowcol, ~d) = f(I_L(\rowcol), I_R(\rowcol+d))
 \end{align}
-where $d$ is the considered disparity. In this chapter, we consider that the cost volume then\commanue{je mettrais pas le then} undergoes a \acrshort{sgm} regularization step, which modifies the cost values\commanue{its values} to take into account more global information. Based on the observation that the disparity map is usually piece-wise regular in a scene, \acrshort{sgm} regularization has been designed to increase the cost of disparities for which no consensus exist among neighbouring pixels. This way, only disparities that seem plausible and relatively regular compared to neighbouring disparities are favored in the cost volume.
+where $d$ is the considered disparity. In this chapter, we consider that the cost volume then\commanue{je mettrais pas le then} undergoes a \acrshort{sgm} regularization step, which modifies the cost values\commanue{its values} to take into account more global information. Based on the observation that the disparity map is usually piece-wise regular in a scene, \acrshort{sgm} regularization has been designed to increase the cost of disparities for which no consensus exist among neighboring pixels. This way, only disparities that seem plausible and relatively regular compared to neighboring disparities are favored in the cost volume.
 
 For every pixel $(\rowcol)$ from the left image, we refer to its cost curve as the cost volume at coordinates $(row,~col)$ for every considered disparity $d$, \ie the cost volume for which we fixed the first two variables. Cost curves are of much importance as we estimate the disparity of a pixel solely based on its cost curve. Indeed, we define the predicted disparity $\tilde{d}$ of a pixel $(\rowcol)$ as:
 \begin{align}
@@ -56,7 +56,7 @@ In the following, we propose to consider possibility distributions to model the 
 
 In order to use possibility distributions, we first need to transform the available information, in our case the values contained in the cost curves, into degrees of possibility. \Cref{eq:possibility}\commanue{Plutôt que de faire référence à une équation située 100 pages avant, tu pourrais juste dire The definition of possibility distribution ou un truc équivalent} imposes that the values must lie between $0$ and $1$, and that the value $1$ must be attained at least once. We therefore propose to normalize each cost curve so that its minimal dissimilarity value equals a possibility degree of $1$, and that greater dissimilarity values are closer to $0$ in possibility. However, simply normalizing the values of each cost curve between $0$ and $1$ would artificially stretch the cost curve as seen in \Cref{fig:cost_curves_b}. It is especially blatant in the case for the orange dashed curve from \Cref{fig:cost_curves_a} as the range of its values is quite narrow compared to the blue curve, but they are both stretched to $[0,~1]$ in \Cref{fig:cost_curves_b}. In order to avoid this effect, we instead normalize every cost curve using the global minimum and global maximum of the cost volume, as:
 \begin{align}
-	C_V^{norm}(\rowcol, ~d) = \frac{C_V(\rowcol, ~d) - \max_{r,c,\delta}C_V(r,~c,~\delta)}{\min_{r,c,\delta}C_V(r,~c,~\delta) - \max_{r,c,\delta}C_V(r,~c,~\delta)}\label{eq:normalized_cost_curve}
+	C_V^{norm}(\rowcol, ~d) = \dfrac{C_V(\rowcol, ~d) - \max_{r,c,\delta}C_V(r,~c,~\delta)}{\min_{r,c,\delta}C_V(r,~c,~\delta) - \max_{r,c,\delta}C_V(r,~c,~\delta)}\label{eq:normalized_cost_curve}
 \end{align}
 Minima of the cost curve become maxima with this normalization. One problem remains, it is that unless the global maximum of the cost volume is attained in a cost curve, the normalized cost curve will never reach $1$. Therefore, it will not be a possibility distribution. This problem can be observed in \Cref{fig:cost_curves_c}. We thus add a constant to the normalized cost curve to obtain a possibility distribution $\pi_{row,~col}(d)$:
 \begin{align}
@@ -158,7 +158,7 @@ Considering intervals thus presents the advantage of working with convex sets an
     \includegraphics[width=0.5\linewidth]{Images/Chap_5/cones_with_rows.png}
     \caption{Left stereo image from Middlebury Cones. Disparity intervals $I_\alpha$ along orange lines are detailed in \Cref{fig:intervals_ambiguous_row_80,fig:intervals_ambiguous_row_180,fig:intervals_ambiguous_row_240,fig:intervals_ambiguous_row_290}}
     \label{fig:cones_with_rows}
-\end{figure}
+\end{figure}\todoroman{Mettre qu'une seule ligne pour la théorie et rajouter les figures restantes dans la partie résultat}
 
 To qualitatively evaluate the behaviour of disparity confidence intervals $I_\alpha$, we will look at their values for consecutive pixels of the same row. Considered rows\commanue{Rows selected for this analysis?} are presented in \Cref{fig:cones_with_rows}: the upper row ($80$) is smaller than the others so more details can be observed, while other rows allows for a broader view of the intervals\commanue{peut-être préciser si tu as pris les lignes au pif ou non.}.
 
@@ -270,7 +270,7 @@ The proof of this result can be found in the \hyperref[chap:annex]{Annex}, using
         \caption{Filtering $\tilde{d}$ and $I_\alpha$}
         \label{fig:median_filtering_3}
     \end{subfigure}
-    \caption{Effect of a median filter on the predicted disparity $\tilde{d}$ and confidence intervals $I_\alpha$. For the sake of the example, we only filter the middle point by looking at its neighbours. \Cref{fig:median_filtering_1} contains the unfiltered curves. \Cref{fig:median_filtering_2} contains unfiltered intervals, and filtered $\tilde{d}$. \Cref{fig:median_filtering_3} filtered intervals and filtered $\tilde{d}$.}
+    \caption{Effect of a median filter on the predicted disparity $\tilde{d}$ and confidence intervals $I_\alpha$. For the sake of the example, we only filter the middle point by looking at its neighbors. \Cref{fig:median_filtering_1} contains the unfiltered curves. \Cref{fig:median_filtering_2} contains unfiltered intervals, and filtered $\tilde{d}$. \Cref{fig:median_filtering_3} filtered intervals and filtered $\tilde{d}$.}
     \label{fig:median_filtering}
 \end{figure}
 
@@ -312,7 +312,7 @@ The first challenge to tackle is to determine if we are able to detect regions w
 \begin{remark}\commanue{j'ai rien contre la remarque elle-même mais alors elles arrivent jamais au bout moment par rapport à ce qui est développé dans le corps principal du texte. Peut-être fait une paragarphe dédié au debut sur l'image que tu considères. Il me semble que tu as une phrase ou deux sur les cônes et ensuite tu places cette info direct dans le texte sans faire un encart. J'ai parfois l'impression que l'encart remark te permet de dire qqch que tu as oublié de mentionner avant, plutôt que quelque chose d'annexe.}
     In all of our experiments, we do not consider pixels where the whole range of considered disparities cannot be explored. For instance, in the case of the Cones image from the Middlebury dataset, the range of considered disparities is $[-60,0]$ which means that we do not the consider the 60 left-most pixels of the image.
     
-    We proceed this way because for the most part, the true disparity of those pixels do not exist\commanue{peut-être dire que tu le sais car tu as la vérité terrain qui le confirme et par conséquent tu sais que le point homologue qui serait nécessaire est en fait absent de l'image de droite}. Additionally, the \acrshort{sgm} regularization will also predict a false disparity (as the true disparity does not exist) and base the regularization of the neighbouring disparities based on this false prediction. This greatly compromises the disparity prediction, the quality of intervals \etc Those pixels are thus masked.
+    We proceed this way because for the most part, the true disparity of those pixels do not exist\commanue{peut-être dire que tu le sais car tu as la vérité terrain qui le confirme et par conséquent tu sais que le point homologue qui serait nécessaire est en fait absent de l'image de droite}. Additionally, the \acrshort{sgm} regularization will also predict a false disparity (as the true disparity does not exist) and base the regularization of the neighboring disparities based on this false prediction. This greatly compromises the disparity prediction, the quality of intervals \etc Those pixels are thus masked.
 \end{remark}
 
 The method developed for detecting low confidence areas is to apply a simple threshold $\tau_{Amb}$ on the confidence from ambiguity $c_{amb}$. However, $c_{Amb}$ is computed pixel-wise, which can lead to high-frequency spatial variations of the confidence. To smooth the ambiguity curve, a minitive kernel of size $(1, ~2\times k_{Amb}+1)$ is applied. A pixel $(\rowcol)$ is thus considered to be in a low confidence area if it verifies:
@@ -328,9 +328,9 @@ We used $k_{Amb}=2$ and $\tau_{Amb}=0.6$ in our experiments. For simplicity, we 
     \label{fig:ambiguity_kernel}
 \end{figure}
 
-Having computed regions of low confidence, we can now process the intervals differently in those areas. The main idea here is that information contained in low confidence cost curves should be handled with care. The hypothesis that a cost curve can be interpreted as an expert stating his opinion on which disparities are most probable is questionable in those areas. We also cannot infer the confidence intervals from intervals in neighbouring high confidence areas as there is no guarantee the disparities are the same as their high confident neighbours. We instead chose to proceed in two steps. First, we compute a neighbouring set of intervals for each low confidence pixel. Then, we use the information from this set to determine a new disparity interval by consensus. We modify the value of the considered pixel with that of this\commanue{c'est bizarre comme formulation} consensual interval.
+Having computed regions of low confidence, we can now process the intervals differently in those areas. The main idea here is that information contained in low confidence cost curves should be handled with care. The hypothesis that a cost curve can be interpreted as an expert stating his opinion on which disparities are most probable is questionable in those areas. We also cannot infer the confidence intervals from intervals in neighboring high confidence areas as there is no guarantee the disparities are the same as their high confident neighbors. We instead chose to proceed in two steps. First, we compute a neighboring set of intervals for each low confidence pixel. Then, we use the information from this set to determine a new disparity interval by consensus. We modify the value of the considered pixel with that of this\commanue{c'est bizarre comme formulation} consensual interval.
 
-We first detail how the set of neighbouring pixels is determined. Let $(\rowcol)$ be a low confidence pixel. We define a segment $S(\rowcol)$ as the set containing $(\rowcol)$ and all adjacent low confidence pixels from the same row. An example of $S(\rowcol)$ is presented in \Cref{fig:low_confidence_segments} as an orange rectangle. Two segments $S(\rowcol)$ and $S(row+1, ~col')$ are considered adjacent if two of their pixels are directly on top of one another. The low confidence neighbouring $\N(row,~col)$ is defined as the set of low confidence pixels in segment $S(\rowcol)$ or in adjacent segments within $n$ rows. In practice, we use $n=3$. The formal definition of $S(\rowcol)$ and $\N(row,~col)$ introduced next can be a bit heavy on notations, so we refer to \Cref{fig:low_confidence_segments} for a graphical example of what they represent. $S(\rowcol)$ is formally defined as:
+We first detail how the set of neighboring pixels is determined. Let $(\rowcol)$ be a low confidence pixel. We define a segment $S(\rowcol)$ as the set containing $(\rowcol)$ and all adjacent low confidence pixels from the same row. An example of $S(\rowcol)$ is presented in \Cref{fig:low_confidence_segments} as an orange rectangle. Two segments $S(\rowcol)$ and $S(row+1, ~col')$ are considered adjacent if two of their pixels are directly on top of one another. The low confidence neighboring $\N(row,~col)$ is defined as the set of low confidence pixels in segment $S(\rowcol)$ or in adjacent segments within $n$ rows. In practice, we use $n=3$. The formal definition of $S(\rowcol)$ and $\N(row,~col)$ introduced next can be a bit heavy on notations, so we refer to \Cref{fig:low_confidence_segments} for a graphical example of what they represent. $S(\rowcol)$ is formally defined as:
 \begin{align}
     S(\rowcol) = \{~ (row,~col') \text{ \st }~\forall c\in\opi col, col'\cli,~\min c_{Amb}(row, ~c+k)\leqslant \tau_{Amb}~\}
 \end{align}
@@ -346,7 +346,7 @@ with $col_0=col$, and $n$ the number of consecutive rows considered.\commanue{da
     \includegraphics[width=0.7\linewidth]{Images/Chap_5/low_confidence_segments.png}
     \caption{Segment $S(row, ~ col)$ and its adjacent segments over $3$ rows above and below. The image is an extract of the binary mask from \Cref{fig:ambiguity_mask_cones}, where low confidence pixels appear in black and high confidence pixels appear in white.}
     \label{fig:low_confidence_segments}
-\end{figure}
+\end{figure}\todoroman{Split la figure pour que ça corresponde à chaque étape de la description (avec un seul segemnt, puis les lignes +-1 etc}
 
 The value of the regularized interval $I^{reg}_\alpha$ of $(\rowcol)$ is obtained by consensus between the confidence intervals of $\N(\rowcol)$. Its upper and lower bounds are respectively the $q$\ith quantile of upper bounds of $\N(\rowcol)$ and the $(1-q)$\ith quantile of lower bounds of $\N(\rowcol)$:
 \begin{align}
@@ -386,12 +386,217 @@ In theory, it is possible to perform the regularization of intervals before the 
 This concludes the method for computing confidence disparity intervals in the dense stereo matching part of the photogrammetry pipeline. We will see in the following how those intervals can be propagated into confidence intervals for the \acrshort{dsm}s.
 
 \marquepage
-\todoroman{Attention Manue je m'en suis arrêté là :) }
-\begin{center}
-    \includegraphics[width=5cm]{tmp/gandalf.png}
-\end{center}
 
-\subsection{Propagation in the CARS Pipeline}
+
+\section{Evaluation of Disparity Intervals}
+\subsection{Metrics for Evaluating the Precision and Size}\label{sec:metrics}
+In order to evaluate the performances of the disparity confidence intervals, we will now introduce some metrics. The objective of this section is to propose a range of tools able to quantify the trade-off between accuracy and size of intervals. For all metrics, we do not consider pixels for which the ground truth does not exist, or pixels for which the predicted disparity $\tilde{d}$ has been removed by a cross-checking test (\cref{eq:cross-checking}). Also, many metrics are defined using the $\median$ of a set, instead of the mean, in order to be less sensitive to outliers.
+
+The first and most obvious metric is the proportion of correct intervals, which we call accuracy $acc$:
+\begin{align}
+    acc = \dfrac{\#\{I_\alpha ~|~ \st ~d_{true}\in I_\alpha\}}{\#\{I_\alpha\}}
+\end{align}
+We want to maximize the accuracy, but fixed ourselves a minimal objective of $90\%$ accuracy for our method.
+
+The second metric introduced is the relative size of intervals, with regards to the size of the considered disparity range:
+\begin{align}
+    s_{rel}=\median(\dfrac{\overline{I}_\alpha-\underline{I}_\alpha}{d_{max}-d_{min}})
+\end{align}
+where $[d_{min}, ~d_{max}]$ is the considered disparity range. Dividing by the range of disparities allows to compare images with various range of disparities. For instance in the 2003 Middlebury ``Cones'' dataset, the disparity range is $[-60, ~0]$, while in the 2014 Middlebury ``Shopvac-perfect'' dataset, the disparity range is $[-1100, ~0]$. We want to minimize $s_{rel}$ to insure our intervals are not too large. During the regularization of confidence intervals, we purposefully extended the bounds of the intervals in low confidence areas. The relative size of intervals $s_{rel}$ in those areas will, by design, be very large. We therefore propose to evaluate the relative size on high confidence areas, and to introduce a specific measure for low confidence areas, called relative overestimation. Defined when intervals correctly contain the true disparity, it is computed as follows:
+\begin{align}
+    o_{rel}=\median(\dfrac{\sup\Delta|d_{true}-\tilde{d}|}{\overline{I}-\underline{I}})\label{eq:relative_overestimation}
+\end{align}
+where $\Delta|d_{true}-\tilde{d}|$ is the maximal difference between the true disparity and the predicted disparity over the whole low confidence area. $\Delta|d_{true}-\tilde{d}|$ is therefore the size of the optimal interval, \ie the smallest interval containing both $d_{true}$ and $\tilde{d}$ in the low confidence area. Because we aim for small intervals that are correct, it only makes sense to compute $o_{rel}$ for confidence intervals that correctly contain the true disparity. \Cref{fig:relative_overestimation} illustrates the meaning of $\Delta|d_{true}-\tilde{d}|$ and $I_\alpha$ for the computation of the relative overestimation inside a low confidence area. We want the relative overestimation to be as close as $1$ as possible, as $o_{rel}=1$ means that $I_\alpha$ is the optimal interval in half of the low confidence pixels. $o_{rel}=0.5$ means that half of low confidence pixels were twice as big as the needed to be, $o_{rel}=0.1$ means that half of low confidence pixels were ten times as big as the needed to be\etc.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\linewidth]{Images/Chap_5/relative_overestimation_row_230.png}
+    \caption{$\Delta|d_{true}-\tilde{d}|$ and $I_\alpha$ for computing the relative estimation (\cref{eq:relative_overestimation}) over a low confidence area in gray.}
+    \label{fig:relative_overestimation}
+\end{figure}
+
+$o_{rel}$ is a measure used to evaluate the size of correct intervals in low confidence areas. It is also interesting to evaluate the behaviour of intervals that do not contain the ground truth. We thus introduce another metric called residual error $\epsilon$ and defined as:
+\begin{align}
+    \epsilon=\median \left( \dfrac{\min(|d_{true}-\overline{I}_\alpha|, |d_{true}-\underline{I}_\alpha|)}{d_{max}-d_{min}}\right)\label{eq:residual_error}
+\end{align}
+where $[d_{min}, ~d_{max}]$ is the considered disparity range, which allows to compare the different images. \Cref{fig:residual_error} helps visualizing $\epsilon$.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\linewidth]{Images/Chap_5/residual_error_row_108.png}
+    \caption{Different values of $\min(|d_{true}-\overline{I}_\alpha|, |d_{true}-\underline{I}_\alpha|)$ for computing the residual error of \cref{eq:residual_error}}
+    \label{fig:residual_error}
+\end{figure}
+
+The accuracy $acc$ and relative error $\epsilon$ allow to measure the precision of the intervals and to quantify the errors. The relative size $s_{rel}$ and over-estimation $o_{rel}$ measure the size of intervals in high and low confidence areas respectively. 
+
+\subsection{Stereo Matching Dataset}\label{sec:dataset}
+We evaluate the disparity confidence intervals on $83$ scenes from the Middlebury datasets. Those datasets are composed of two stereo images of indoor scenes, for which the true disparity is known with precision. It is separated on different years: 2003, 2005, 2006, 2014 and 2021 \cite{scharstein_high-accuracy_2003, scharstein_learning_2007, hirschmuller_evaluation_2007, scharstein_high-resolution_2014}, each year presenting more complex scenes. \Cref{fig:middlebury_examples} present some scenes from each dataset.  Each dataset is available in different resolutions. We use quarter-size and third-size versions of the data for 2003, 2005 and 2006 datasets and full resolution for 2014 and 2021 datasets in order to include a diversity of resolutions in our experiments. As a result, ranges of consider disparities also vary greatly, for instance the 2014 dataset are very large (more than a thousand disparity wide), which presents a significant challenge for the SGM regularization. On those scenes our stereo matching algorithm performs far less well than on the 2003 dataset. This will allow to evaluate whether or not the disparity confidence intervals can perform well even when the main disparity prediction does not. Each dataset does not contain the same number of images, and shapes of images can vary across datasets and inside each datasets. For indication purposes, datasets 2003, 2005, 2006, 2014 and 2021 respectfully contain 2, 6, 21, 23 and 25 scenes.
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{0.33\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_5/2003cones.png}
+        \caption{2003 Cones}
+        \label{fig:2003_cones}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.33\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_5/2005art.png}
+        \caption{2005 Art}
+        \label{fig:2005_art}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.33\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_5/2006aloe.png}
+        \caption{2006 Aloe}
+        \label{fig:2006_aloe}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.33\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_5/2014_Jadeplant-perfect.png}
+        \caption{2014 Jadeplant Perfect}
+        \label{fig:2014_jadeplant}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.33\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_5/2021_artroom1.png}
+        \caption{2021 Artroom1}
+        \label{fig:2021_artroom1}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.33\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_5/2021_octogons1.png}
+        \caption{2021 Octogons1}
+        \label{fig:2021_octogons1}
+    \end{subfigure}
+    \caption{Example of left images from  different Middlebury datasets}
+    \label{fig:middlebury_examples}
+\end{figure}
+
+The Middlebury dataset contains generic indoor scene with a high variety of 3D structures which can highlight the potential of our method for any stereo algorithm. Our objective is however to process satellite images, so we also evaluate our method on satellite data, which can greatly differ from indoor scenes. For this purpose, we use 327 pairs of $1845\times1845$ satellite images in epipolar geometry. Those image are all part of the same pair of Pléiades images over the city of Montpellier, which is large enough to contain both urban and rural areas. The ground truth of those image was obtained using the method described in \cite{cournet_ground_2020}. In short, this method first process stereo images in order to get the images in epipolar geometry. Then it considers the ground truth \acrshort{dsm} of the scene, for instance some rasterized LiDAR HD data, and project it into the same geometry as one of the sensors. Then, using the disparity to altitude ratio computed alongside epipolar images, it converts the altitude of the re-projected \acrshort{dsm} into disparities. Using the same epipolar grids, this true disparity map can be projected into epipolar geometry. We now have two stereo images and their associated ``ground truth'' disparity map in epipolar geometry, ready to be processed. This method possesses a few known drawbacks: first, the ground truth is resampled in two different geometries, which relies among others on the quality of the epipolar grid. More importantly, the images and ground truth were acquired a few years apart which results in some new buildings being build or destroyed between images and ground truth. The vegetation also changed, so the ground truth is not $100\%$ correct. The evaluation metrics on this dataset must thus be taken with care.
+
+In the next section, we will use the Middlebury datasets to evaluate our method on general stereo scenes, and images of Montpellier (sometimes abbreviated as $\mathrm{MTP}$) to determine if we can generalize our results to satellite imagery.
+\youshallnotpass
+
+\subsection{Results}
+
+\begin{table}[ht]
+\centering
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{|c|c||c|c|c|c|c|}
+\cline{2-7}
+\rowcolor{lightgray}
+\multicolumn{1}{c|}{\cellcolor{white}}& Year & 2003 & 2005 & 2006 & 2014 & 2021 \\ \hline
+
+\rowcolor{color_census}
+\cellcolor{white} & CENSUS & $94.6\%$ & $94.2\%$ & $97.7\%$ & $95.1\%$ & $93.5\%$\\ \cline{2-7}
+
+\rowcolor{color_mccnn}
+\multirow{-2}{*}{\cellcolor{white} $acc$ $\uparrow$} & MC-CNN & $93.8\%$ & $95.4\%$ & $98.2\%$ & $97.5\%$ & $99.1\%$\\ \hline
+
+
+\rowcolor{color_census}
+\cellcolor{white} & CENSUS & $3.3\%$ & $2.6\%$ & $2.6\%$ & $0.6\%$ & $1.2\%$\\ \cline{3-7}
+
+\rowcolor{color_mccnn}
+\multirow{-2}{*}{\cellcolor{white} $s_{rel}$ $\downarrow$} & MC-CNN & $3.3\%$ & $2.6\%$ & $3.0\%$ & $2.5\%$ & $4.1\%$\\ \hline
+
+\rowcolor{color_census}
+\cellcolor{white} & CENSUS & $49.5\%$ & $52.0\%$ & $60.0\%$ & $46.8\%$ & $51.8\%$\\ \cline{3-7}
+
+\rowcolor{color_mccnn}
+\multirow{-2}{*}{\cellcolor{white} $o_{rel}$ $\downarrow$} & MC-CNN & $49.7\%$ & $62.4\%$ & $72.6\%$ & $71.0\%$ & $66.0\%$\\ \hline
+
+
+\rowcolor{color_census}
+\cellcolor{white} & CENSUS & $3.5\%$ & $2.6\%$ & $3.0\%$ & $1.5\%$ & $1.3\%$\\ \cline{3-7}
+
+\rowcolor{color_mccnn}
+\multirow{-2}{*}{\cellcolor{white} $\epsilon_{~~~}$ $\downarrow$} & MC-CNN & $3.7\%$ & $3.6\%$ & $7.3\%$ & $5.2\%$ & $9.8\%$\\ \hline
+
+\end{tabular}
+\renewcommand{\arraystretch}{1}
+\caption{Average metrics over the different Middlebury datasets, depending on the cost function. Up arrows indicate the optimal score is close to $1$, and close to $0$ for down arrows.}\label{tab:metric_average}
+\end{table}
+
+
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{0.5\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_5/histogram_acc_middlebury.png}
+        \caption{Middlebury}
+        \label{fig:acc_middlebury}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.5\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_5/histogram_acc_mtp.png}
+        \caption{Montpellier}
+        \label{fig:acc_mtp}
+    \end{subfigure}
+    \caption{Accuracy $acc$ histograms over the different datasets depending on the cost function. Each histogram counts the number of scenes. The vertical dotted line represent the $90\%$ objective.}
+    \label{fig:acc_hist}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{0.5\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_5/histogram_s_rel_middlebury.png}
+        \caption{Middlebury}
+        \label{fig:s_rel_middlebury}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.5\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_5/histogram_s_rel_mtp.png}
+        \caption{Montpellier}
+        \label{fig:s_rel_mtp}
+    \end{subfigure}
+    \caption{Relative size $s_{rel}$  histograms over the different datasets depending on the cost function. Each histogram counts the number of scenes.}
+    \label{fig:s_rel_hist}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{0.5\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_5/histogram_o_rel_middlebury.png}
+        \caption{Middlebury}
+        \label{fig:o_rel_middlebury}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.5\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_5/histogram_o_rel_mtp.png}
+        \caption{Montpellier}
+        \label{fig:o_rel_mtp}
+    \end{subfigure}
+    \caption{Relative over-estimation $o_{rel}$ histograms over the different datasets depending on the cost function. Each histogram counts the number of scenes.}
+    \label{fig:o_rel_hist}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{0.5\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_5/histogram_eps_middlebury.png}
+        \caption{Middlebury}
+        \label{fig:eps_middlebury}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.5\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_5/histogram_eps_mtp.png}
+        \caption{Montpellier}
+        \label{fig:eps_mtp}
+    \end{subfigure}
+    \caption{Residual error $\epsilon$ histograms over the different datasets depending on the cost function. Each histogram counts the number of scenes.}
+    \label{fig:eps_hist}
+\end{figure}
+
+
+\section{Propagation in the CARS Pipeline}
 We computed confidence disparity intervals alongside each predicted disparity $\tilde{d}$. It is this disparity which is triangulated and filtered (\Cref{sec:triangulation}) and then rasterized (\Cref{sec:rasterization}) to obtain the final \acrshort{dsm}. We will see in this section how we can propagate the disparity confidence intervals into height confidence intervals associated with the \acrshort{dsm} values.
 
 As indicated by their name, disparity confidence intervals are expressed in disparities. Disparities are use to create pairs of line of sight from different sensors, which are then triangulated to obtain a 3D point. With confidence intervals, we now have 3 pairs of line of sight for each pixel instead of just one:
@@ -411,14 +616,45 @@ Depending on the disposition of satellites, as well as which image is selected a
 
 The point cloud obtained from the triangulation of the disparity map is then filtered, as detailed in \Cref{sec:rasterization}. If a 3D point is filtered, then we naturally also filter its interval with it. 
 
-The final step of the pipeline is the rasterization part. We want to produce height confidence intervals associated with every value contained in the \acrshort{dsm}. However, rasterizing the confidence intervals as it stands raises an issue: we are not guaranteed that the rasterized intervals will remain coherent with the final \acrshort{dsm} when projected on the regular grid. A solution to circumvent this issue is to consider 
+The final step of the pipeline is the rasterization, as our objective is to produce height confidence intervals associated with every value contained in the \acrshort{dsm}. However, rasterizing intervals along lines of sight as it stands raises an issue: we are not guaranteed that the rasterized intervals will remain coherent with the final \acrshort{dsm} when projected on the regular grid. A solution to circumvent this issue is to consider that the planimetric shift $\Delta XY=\sqrt{(x-\underline{x})^2+(y-\underline{y})^2}$ is small in comparison to the altimetric shift $\Delta Z=\sqrt{(z-\underline{z})^2}$, and that we can therefore neglect it. The lower and upper bounds can thus be aligned directly above and below the predicted 3D point $(x, ~y, ~z)$, and they thus become:
+\begin{align}
+    (\overline{x}, ~\overline{y}, ~\overline{z}) ~\rightarrow~ (x, ~y, ~\overline{z})\\
+    (\underline{x}, ~\underline{y}, ~\underline{z}) ~\rightarrow~ (x, ~y, ~\underline{z})
+\end{align}
+\Cref{fig:planimetric_shift} illustrates this modification, where the orange points along the line of sight are shifted in the $(X,~Y)$ plane to be vertically aligned with $(x, ~y, ~z)$.
+\begin{remark}
+    \todoroman{A mettre en annexe plutôt ?} The hypothesis that $\Delta XY$ is small compared to $\Delta Z$ depends only on the incidence angle $\beta$ of the reference image. Indeed, it holds that $\dfrac{\Delta Z}{\Delta XY}=\dfrac{1}{\tan(\beta)}$, where $\beta$ is the incidence angle as depicted in \Cref{fig:incidence_angle}. Ideally, if the reference image has no incidence angle, then the $\Delta XY$ shift is null. \Cref{tab:angle_coupling_pleiades} details the different incidence angles encountered in our experiments. The incidence angles are typically around $10\degree$, \ie $\Delta Z$ is around $5.6$ times bigger than $\Delta XY$. For the scene in Paris where the incidence reaches $6.1\degree$, the ratio is around $10$, while the only scene with $21.3\degree$, near Peyto Lake, Canada, has a ratio around $2.6$. For this last acquisition, the hypothesis that $\Delta XY$ is small compared to $\Delta Z$ is debatable, but we will still neglect $\Delta XY$ in the rasterization in order to stay consistent across our experiments. This will also allow to verify if this hypothesis can impact the performances of our method.
+\end{remark}
 
 \begin{figure}
     \centering
-    \includegraphics[width=\linewidth]{Images/Chap_5/Planimetric_shift.png}
-    \caption{Aligning the confidence interval bounds.}
+    \includegraphics[width=0.8\linewidth]{Images/Chap_5/Incidence_angle.png}
+    \caption{Acquisition angles of satellites}
+    \label{fig:incidence_angle}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.6\linewidth]{Images/Chap_5/Planimetric_shift.png}
+    \caption{Aligning the confidence interval bounds along a line of sight}
     \label{fig:planimetric_shift}
 \end{figure}
+
+We remind here the general formulation of the rasterization step, where each cell $(x,~y)$ of the \acrshort{dsm} is computed using a weighted mean on its neighboring $\N(x,y)$ :
+\begin{align}
+    \DSM(x,y) &= \dfrac{\sum\limits_{(x_i, y_i, z_i)\in\N(x,y)}z_i\cdot w(x_i, y_i)}{\sum\limits_{(x_i,y_i,z_i)\in\N(x,y)} w(x_i, y_i)}
+\end{align}
+where weights $w(x_i,y_i)$ are positive scalars. In CARS, they are computed using a Gaussian distribution, but other pipelines also use Inverse Distance Weightings which works similarly. Because it holds that for any point, $\underline{z}\leqslant z\leqslant\overline{z}$, then computing the \acrshort{dsm}s independently using $(x, ~y, ~z)$, $(x, ~y, ~\overline{z})$ and $(x, ~y, ~\underline{z})$ will ensure the consistency of resulting \acrshort{dsm}s:
+\begin{eqnarray}
+    \dfrac{\sum\limits_{(x_i, y_i, \underline{z}_i)\in\N(x,y)}\underline{z}_i\cdot w(x_i, y_i)}{\sum\limits_{(x_i,y_i, \underline{z}_i)\in\N(x,y)} w(x_i, y_i)}
+    \leqslant&
+    \dfrac{\sum\limits_{(x_i, y_i, z_i)\in\N(x,y)}z_i\cdot w(x_i, y_i)}{\sum\limits_{(x_i,y_i,z_i)\in\N(x,y)} w(x_i, y_i)}
+    &\leqslant
+    \dfrac{\sum\limits_{(x_i, y_i, \overline{z}_i)\in\N(x,y)}\overline{z}_i\cdot w(x_i, y_i)}{\sum\limits_{(x_i,y_i,\overline{z}_i)\in\N(x,y)} w(x_i, y_i)}\nonumber\\
+    &&\nonumber\\
+    \underline{\DSM}(x,y) \leqslant& \DSM(x,y) &\leqslant\overline{DSM}(x,y)
+\end{eqnarray}
+where $\underline{\DSM}(x,y)$ is the \acrshort{dsm} computed using points $(x, ~y, ~\underline{z})$, and $\overline{\DSM}(x,y)$ is the \acrshort{dsm} computed using points $(x, ~y, ~\overline{z})$.
 
 \subsection{Unexplored leads}
 Patatoides sur les lignes de visées. Un pixel est représenté par des coordonées précises mais est en fait l'aggrégation d'information radiométriques issues d'une surface au sol. On pourrait donc imaginer que les lignes de visées ne sont pas une ligne mais plus un cône/cylindre (approx), et donc qu'on pourrait donc représenter la position d'un point 3D comme l'intersection de deux volumes (cône + intervalles de disparité).   
@@ -426,38 +662,29 @@ Patatoides sur les lignes de visées. Un pixel est représenté par des coordon�
 Filtrer les points si la distance planimétrique en x et en y est trop grande. 
 Filtrage non gaussien 
 
-
-\section{Evaluation}
-\subsection{Metrics for Evaluating the Precision and Size}\label{sec:metrics}
-\todoroman{Montrer differentes zones d'aggrégation avec différents paramètres.}
-\todoroman{Soit je mets les résultats des tests de disparité ici, soit je les mets après avoir fait tout le pipeline CARS.}
-\todoroman{Expliquer aussi comment on peut remonter le LiDAR HD en géométrie Epi + rasterization.}
-
 \subsection{Coregistration}
 DEM Compare 
 
-\subsection{Evaluation of Disparity Intervals}
 \subsection{Ablation Studies}
+\todoroman{Montrer differentes zones d'aggrégation avec différents paramètres.}
 \todoroman{A mettre en annexe ?}
 \subsection{Elevation Confidence Intervals}
 \begin{table}[ht]
     \centering
-    \begin{tabular}{|c||c|c|c|c|}
+    \begin{tabular}{|c||c|c|c|}
     \hline
-        Area & Date for LiDAR & Date of Pléiades & Coupling mode & GT Size (0.5m)\\
+        Area & Date for LiDAR & Date of Pléiades &  GT Size (0.5m)\\
         \hline\hline
-        Bordeaux & 2023-09-15 & 2022-08-04 & Stereo & $6001\times 6001$\\\hline
-        Grenoble & 2021-09-05 & 2020-09-17 & Stereo & $10 001\times 10 001$ \\\hline
-        Jotunheinem & 2019-08-27 & 2019-08-27 & Stereo & \begin{tabular}{@{}c@{}} $7127\times 7298$ and\\ $3912\times2880$\end{tabular} \\\hline
-        Langfjordjokelen & 2018-09-01 & 2018-09-01 & Stereo & $5841\times 3689$\\\hline
-        Monaco & 2021-05-13 & 2020-08-30 & Stereo & $10 001\times 10 001$\\\hline
-        Montpellier & 2021-05-28 & 2021-10-17 & Tri Stereo & $8001\times 8001$\\\hline
-        Paris & 2023-03-03 & 2023-05-31 & Tri stereo & $10 001\times 10 001$\\\hline
-        Peyto & 2016-09-13 & 2016-09-13 & Stereo & $13240\times 17874$\\\hline
-        Pic du Midi & 2021-10-02 & 2021-10-16 & Stereo & $10001 \times 12001$ \\\hline
-        Toulouse & 2022-05-29 & 2022-06-28 & Tri Stereo & $12001\times 8001$\\\hline
-        Yosemite 1 &  \begin{tabular}{@{}c@{}} \tiny{2017-05-02 (snow) +} \\ \tiny{2014-08-27 (LiDAR)}\end{tabular} &  2017-05-01 & Tri stereo & \tiny{$17733\times 16800$ (3m)}\\\hline
-        Yosemite 2 &  \begin{tabular}{@{}c@{}} \tiny{2017-05-02 (snow) +} \\ \tiny{2014-08-27 (LiDAR)}\end{tabular} &  2017-05-02 &  Tri stereo & \tiny{$17733\times 16800$ (3m)}\\ \hline
+        Bordeaux & 2023-09-15 & 2022-08-04 & $6001\times 6001$\\\hline
+        Grenoble & 2021-09-05 & 2020-09-17 & $10 001\times 10 001$ \\\hline
+        Jotunheinem & 2019-08-27 & 2019-08-27 & \begin{tabular}{@{}c@{}} $7127\times 7298$ and\\ $3912\times2880$\end{tabular} \\\hline
+        Langfjordjokelen & 2018-09-01 & 2018-09-01 & $5841\times 3689$\\\hline
+        Monaco & 2021-05-13 & 2020-08-30 & $10 001\times 10 001$\\\hline
+        Montpellier & 2021-05-28 & 2021-10-17 & $8001\times 8001$\\\hline
+        Paris & 2023-03-03 & 2023-05-31 & $10 001\times 10 001$\\\hline
+        Peyto & 2016-09-13 & 2016-09-13 & $13240\times 17874$\\\hline
+        Pic du Midi & 2021-10-02 & 2021-10-16 & $10001 \times 12001$ \\\hline
+        Toulouse & 2022-05-29 & 2022-06-28 & $12001\times 8001$\\\hline
     \end{tabular}
     \caption{Acquisition date of Pléiade stereo or tri-stereo images, and the LiDAR ground truth}
     \label{tab:dates_pleiades_lidar_hd}
@@ -467,18 +694,21 @@ DEM Compare
     \centering
     \begin{tabular}{|c||c|c|c|c|}
     \hline
-        Area & Date for LiDAR & Date of Pléiades & Coupling mode & GT Size (0.5m)\\
+        Area & Coupling mode & Convergence & Incidence left & Incidence right \\
         \hline\hline
-        Bordeaux & 2023-09-15 & 2022-08-04 & Stereo & $6001\times 6001$\\\hline
-        Grenoble & 2021-09-05 & 2020-09-17 & Stereo & $10 001\times 10 001$ \\\hline
-        Monaco & 2021-05-13 & 2020-08-30 & Stereo & $10 001\times 10 001$\\\hline
-        Montpellier & 2021-05-28 & 2021-10-17 & Tri Stereo & $8001\times 8001$\\\hline
-        Paris & 2023-03-03 & 2023-05-31 & Tri stereo & $10 001\times 10 001$\\\hline
-        Pic du Midi & 2021-10-02 & 2021-10-16 & Stereo & $10001 \times 12001$ \\\hline
-        Toulouse & 2022-05-29 & 2022-06-28 & Tri Stereo & $12001\times 8001$\\\hline
+        Bordeaux & Stereo & 23.1\degree & 9.7\degree & 14.2\degree \\\hline
+        Grenoble & Stereo & 28.3\degree & 12.4\degree & 16.1\degree \\\hline
+        Jotunheinem & Stereo & 22.5\degree & 10.6\degree & 14.5\degree \\\hline
+        Langfjordjokelen & Stereo & 21.4\degree & 10.2\degree & 13.8\degree \\\hline
+        Monaco & Stereo & 29.2\degree & 12.8\degree & 18.1\degree \\\hline
+        Montpellier & Tri Stereo & 7.7\degree ~and~ 13.6\degree & 11.5\degree & 15\degree ~and~ 16\degree \\\hline
+        Paris & Tri stereo & 4.9\degree ~and~ 4.9\degree & 6.1\degree & 7.9\degree ~and~ 7.7\degree \\\hline
+        Peyto & Stereo & 17.2\degree & 21.3\degree & 21.6\degree \\\hline
+        Pic du Midi & Stereo & 29.0\degree & 13.7\degree & 15.3\degree \\\hline
+        Toulouse & Tri Stereo & 11.4\degree ~and~ 11.6\degree & 12.5\degree & 18.7\degree ~and~ 14.9\degree \\\hline
     \end{tabular}
-    \caption{Acquisition date of Pléiade stereo or tri-stereo images, and the LiDAR ground truth}
-    \label{tab:my_label}
+    \caption{Type of acquisition and relevant angles of Pléiades images. See \Cref{fig:incidence_angle} for a schematic representation of those angles.}
+    \label{tab:angle_coupling_pleiades}
 \end{table}
 
 \todoroman{Rasterizer le min max du lidar HD pour avoir une idée des intervalles.}

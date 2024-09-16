@@ -20,9 +20,10 @@
 \usepackage{amsfonts}
 \usepackage{amsthm}
 \usepackage{dsfont} % For characteristic function (\mathds{1}, similar to mathbb 1 but)
-\usepackage{textcomp,gensymb} % For the /degree symbol
+\usepackage{textcomp,gensymb} % For the \degree symbol
 
 \usepackage{comment}  % For commenting big chuncks of text
+\usepackage{multirow} % For multiple rows in tables
 
 \usepackage[margin=2.5cm]{geometry}
 \usepackage{graphicx}
@@ -50,6 +51,9 @@
 \bibliographystyle{apalike}
 
 %=============================== Commands ===================================
+\definecolor{color_census}{rgb}{0.8, 0.93, 2}
+\definecolor{color_mccnn}{rgb}{1, 0.84, 0.7}
+
 \newcommand{\todoroman}[1]{{\color{purple}TODO: #1}}
 
 \newcommand{\comseb}[1]{{\color{red}\footnote{\color{red}Seb: \textit{#1}}}}
@@ -58,8 +62,8 @@
 \newcommand{\commanue}[1]{{\color{blue}\footnote{\color{blue}Manue: \textit{#1}}}}
 \newcommand{\comloic}[1]{{\color{orange}\footnote{\color{orange}Loïc: \textit{#1}}}}
 
-\newcommand{\marquepage}{{\color{violet}Manue, tu t'es arrêtée de lire ici la dernière fois.}\\\begin{center}\includegraphics[width=5cm]{tmp/balrog.png}\end{center}}
-
+\newcommand{\marquepage}{\noindent{\color{violet}Manue, tu t'es arrêtée de lire ici la dernière fois.}\\\begin{center}\includegraphics[width=5cm]{tmp/balrog.png}\end{center}}
+\newcommand{\youshallnotpass}{\noindent{\color{purple}Attention Manue je m'en suis arrêté là :)}\begin{center}\includegraphics[width=5cm]{tmp/gandalf.png}\end{center}}
 % We use colors in equations to help readability.
 % Un-comment next lines if you want just black text.
 %\let\oldtextcolor\textcolor
@@ -80,6 +84,7 @@
 \newcommand{\rowcol}{row, ~col}
 \newcommand{\AD}{\mathrm{AD}}
 \newcommand{\SAD}{\mathrm{SAD}}
+\newcommand{\DSM}{\mathrm{DSM}}
 
 \newcommand{\N}{\mathcal{N}}
 \newcommand{\ith}{\textsuperscript{th}~}
