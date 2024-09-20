@@ -9,7 +9,7 @@ This aforementioned epistemic uncertainty\commanue{alors moi perso je mettrais T
 \section{Producing Confidence Intervals}
 This section will detail the method developed to create disparity confidence intervals in the stereo matching step of the pipeline. We will use possibility distributions to model the uncertainty associated with the available information and deduce confidence intervals from it.
 
-It is important to keep in mind that we want intervals as precise as possible, while staying relatively small. Indeed, it would be easy to reach a $100\%$ precision by simply extending the intervals to the whole range of considered disparities. However, the intervals would not contain any relevant information. We therefore must maintain a trade-off between the precision of the intervals and their size. As stated previously, we fixed ourselves a $90\%$ precision objective. As for the criteria of maintaining small intervals, we will introduce in \Cref{sec:metrics} different metrics to quantify their size for further evaluation. Different parameters will be introduced in our method, and we chose their values accordingly with the precision/size trade-off mentioned above. We will also study different configuration of those parameters in annex. \todoroman{Mettre les analyses en annexe}
+It is important to keep in mind that we want intervals as precise as possible, while staying relatively small. Indeed, it would be easy to reach a $100\%$ precision by simply extending the intervals to the whole range of considered disparities. However, the intervals would not contain any relevant information. We therefore must maintain a trade-off between the precision of the intervals and their size. As stated previously, we fixed ourselves a $90\%$ precision objective. As for the criteria of maintaining small intervals, we will introduce in \Cref{sec:metrics_disparity} different metrics to quantify their size for further evaluation. Different parameters will be introduced in our method, and we chose their values accordingly with the precision/size trade-off mentioned above. We will also study different configuration of those parameters in annex. \todoroman{Mettre les analyses en annexe}
 
 \subsection{Possibility Distributions as Uncertain Models for Cost Curves}
 In this section, we will detail how possibility distributions can be used to model the epistemic uncertainty associated with cost curves. We first present a quick reminder of concepts and notations regarding cost volumes presented in \Cref{sec:stereo_matching}, as we will base our model on them. Cost volume based approaches, considered here, compare every pixel from the left image $I_L$ to pixels from the same row in the right image $I_R$, in a given disparity range. The comparison is done using a cost function $f$, measuring the dissimilarity between two windows centered around pixel $p$ and $q$. All evaluations using this cost function are stored in a cost volume $C_V$:
@@ -23,7 +23,7 @@ For every pixel $(\rowcol)$ from the left image, we refer to its cost curve as t
 	\tilde{d} = \argmin_d C_V(\rowcol, ~d)
 \end{align} 
 \Cref{fig:tuto_dense_matching} presents a cost curve and its true disparity. We can see that the true disparity can be correctly estimated by looking at the minimum of the cost curve.
-
+ 
 \begin{figure}
     \centering
     \begin{subfigure}[t]{0.073\linewidth}
@@ -275,7 +275,7 @@ The proof of this result can be found in the \hyperref[chap:annex]{Annex}, using
 \end{figure}
 
 Another processing applied to the disparity map is the sub-pixel refinement of its values, presented in \Cref{sec:stereo_matching} and \Cref{fig:sub-pixel_refinement}. The idea is to slightly modify the value of the disparity by interpolation of the cost curve, in order to obtain sub-integers disparity values. The modification cannot change a disparity more than a pixel away from its original value. If the predicted disparity $\tilde{d}$ equals one of the bounds of its confidence interval $I_\alpha$, the sub-pixel refinement step can shift the predicted disparity to a value slightly outside the confidence intervals. In this case, we simply extend the interval by one pixel. For instance, if $\tilde{d}=\underline{I}_\alpha$, then the new confidence interval $I_\alpha'$ equals:
-\begin{align}
+\begin{align}\label{eq:subpixel_intervals}
     I_\alpha'=[\underline{I}_\alpha-1,~\overline{I}_\alpha]
 \end{align}
 This stretching is simple, and also presents the advantage of working with different\commanue{any} type of sub-pixel refinement (\ie V-fit, parabola \etc).
@@ -385,41 +385,39 @@ In theory, it is possible to perform the regularization of intervals before the 
 
 This concludes the method for computing confidence disparity intervals in the dense stereo matching part of the photogrammetry pipeline. We will see in the following how those intervals can be propagated into confidence intervals for the \acrshort{dsm}s.
 
-\marquepage
-
 
 \section{Evaluation of Disparity Intervals}
-\subsection{Metrics for Evaluating the Precision and Size}\label{sec:metrics}
-In order to evaluate the performances of the disparity confidence intervals, we will now introduce some metrics. The objective of this section is to propose a range of tools able to quantify the trade-off between accuracy and size of intervals. For all metrics, we do not consider pixels for which the ground truth does not exist, or pixels for which the predicted disparity $\tilde{d}$ has been removed by a cross-checking test (\cref{eq:cross-checking}). Also, many metrics are defined using the $\median$ of a set, instead of the mean, in order to be less sensitive to outliers.
+\subsection{Metrics for Evaluating the Precision and Size}\label{sec:metrics_disparity}
+In order to evaluate the performances of the disparity confidence intervals, we will now introduce some metrics. The objective of this section is to propose a range of tools able to quantify the trade-off between accuracy and size of intervals. For all metrics, we do not consider pixels for which the ground truth does not exist, or pixels for which the predicted disparity $\tilde{d}$ has been removed by a cross-checking test (\cref{eq:cross-checking})\commanue{pixels without ground truth or pixels discarded by the cross-checking test, trop de relatives tuent la relative}. Also, many metrics are defined using the $\median$ of a set, instead of the mean, in order to be less sensitive to outliers\commanue{je ne sais pas si je mettrais la remarque là ou si j'attendrais la première définition pour dire que tu as décidé d'utiliser la médiane car blabla}. 
 
-The first and most obvious metric is the proportion of correct intervals, which we call accuracy $acc$:
+The first\commanue{pour des questions de lisibilité, je mettrai des sous-sous-section histoire d'avoir le titre de la métrique qui apparaît bien.} and most obvious metric is the proportion of correct intervals\commanue{comme je lis au fil de l'eau, je ne suis pas sure de ma remarque donc je ne sais pas si tu as explicitement défini ce qu'était un intervalle correct, genre i.e. intervals containing the true disparity}, which we call accuracy $acc$:
 \begin{align}
     acc = \dfrac{\#\{I_\alpha ~|~ \st ~d_{true}\in I_\alpha\}}{\#\{I_\alpha\}}
 \end{align}
 We want to maximize the accuracy, but fixed ourselves a minimal objective of $90\%$ accuracy for our method.
 
-The second metric introduced is the relative size of intervals, with regards to the size of the considered disparity range:
+It is also interesting to measure the magnitude of the error. We thus introduce another metric called residual error $\varepsilon$, computed for intervals that do not contain the ground truth and defined as:
 \begin{align}
+    \varepsilon=\median \left( \dfrac{\min(|d_{true}-\overline{I}_\alpha|, |d_{true}-\underline{I}_\alpha|)}{d_{max}-d_{min}}\right)\label{eq:residual_error}
+\end{align}
+where $[d_{min}, ~d_{max}]$ is the considered disparity range, which allows to compare the different images\commanue{Pour éviter les poupées russes de relatives, je ferais une phrase séparée: Normalization by the disparuty range gives us a metric that is independent of disparity range, so we can compare this metric between different pairs of images.(ou un truc dans le genre)}. \Cref{fig:residual_error} helps visualizing $\varepsilon$\commanue{je décalerais cette phrase un peu plus loin, d'abord l'explication ensuite le lien avec la figure}. The residual error allows to quantify how ``wrong'' were the intervals. A residual error near $0$ translate the fact that the confidence intervals were really close to capture the ground truth, while a residual error near $1$ indicate that the intervals were far off the ground truth. Note that extending each intervals by $\min(|d_{true}-\overline{I}_\alpha|, |d_{true}-\underline{I}_\alpha|)$ to divide\commanue{divides? j'ai l'impression qu'il manque un verbe conjugué} the global error by two \ie, the accuracy would be $acc'=acc+\dfrac{(1-acc)}{2}$.
+
+We now introduce metrics to measure the size of intervals. The first of those metrics is the relative size of intervals, with regards to the size of the considered disparity range:
+\begin{align}\label{eq:relative_size_disparity}
     s_{rel}=\median(\dfrac{\overline{I}_\alpha-\underline{I}_\alpha}{d_{max}-d_{min}})
 \end{align}
-where $[d_{min}, ~d_{max}]$ is the considered disparity range. Dividing by the range of disparities allows to compare images with various range of disparities. For instance in the 2003 Middlebury ``Cones'' dataset, the disparity range is $[-60, ~0]$, while in the 2014 Middlebury ``Shopvac-perfect'' dataset, the disparity range is $[-1100, ~0]$. We want to minimize $s_{rel}$ to insure our intervals are not too large. During the regularization of confidence intervals, we purposefully extended the bounds of the intervals in low confidence areas. The relative size of intervals $s_{rel}$ in those areas will, by design, be very large. We therefore propose to evaluate the relative size on high confidence areas, and to introduce a specific measure for low confidence areas, called relative overestimation. Defined when intervals correctly contain the true disparity, it is computed as follows:
+where $[d_{min}, ~d_{max}]$ is the considered disparity range. Dividing by the range of disparities allows to compare images\commanue{pairs of images} with various range of disparities\commanue{tu as déjà une phrase avec le principe de normalisation par l'intervalle de disparité donc peut-être regroupe tout avant et ici rappelle juste: Recall that disparity range normalization allows us to abstract from the disparity range variation (simple proposition)}. For instance in the 2003 Middlebury ``Cones'' dataset, the disparity range is $[-60, ~0]$, while in the 2014 Middlebury ``Shopvac-perfect'' dataset, the disparity range is $[-1100, ~0]$. We want to minimize $s_{rel}$ to insure our intervals are not too large. During the regularization of confidence intervals, we purposefully extended the bounds of the intervals in low confidence areas. The relative size of intervals $s_{rel}$ in those areas will, by design, be very large. We therefore propose to evaluate the relative size on\commanue{only on?} high confidence areas, and to introduce a specific measure for low confidence areas, called relative overestimation. Defined when intervals correctly contain the true disparity, it is computed as follows:
 \begin{align}
-    o_{rel}=\median(\dfrac{\sup\Delta|d_{true}-\tilde{d}|}{\overline{I}-\underline{I}})\label{eq:relative_overestimation}
+    o_{rel}=1-\median(\dfrac{\sup\Delta|d_{true}-\tilde{d}|}{\overline{I}-\underline{I}})\label{eq:relative_overestimation_disparity}
 \end{align}
-where $\Delta|d_{true}-\tilde{d}|$ is the maximal difference between the true disparity and the predicted disparity over the whole low confidence area. $\Delta|d_{true}-\tilde{d}|$ is therefore the size of the optimal interval, \ie the smallest interval containing both $d_{true}$ and $\tilde{d}$ in the low confidence area. Because we aim for small intervals that are correct, it only makes sense to compute $o_{rel}$ for confidence intervals that correctly contain the true disparity. \Cref{fig:relative_overestimation} illustrates the meaning of $\Delta|d_{true}-\tilde{d}|$ and $I_\alpha$ for the computation of the relative overestimation inside a low confidence area. We want the relative overestimation to be as close as $1$ as possible, as $o_{rel}=1$ means that $I_\alpha$ is the optimal interval in half of the low confidence pixels. $o_{rel}=0.5$ means that half of low confidence pixels were twice as big as the needed to be, $o_{rel}=0.1$ means that half of low confidence pixels were ten times as big as the needed to be\etc.
+where $\Delta|d_{true}-\tilde{d}|$ is the maximal difference between the true disparity and the predicted disparity over the whole low confidence area. $\Delta|d_{true}-\tilde{d}|$ is therefore the size of the optimal interval, \ie the smallest interval containing both $d_{true}$ and $\tilde{d}$ in the low confidence area. $1-\dfrac{\sup\Delta|d_{true}-\tilde{d}|}{\overline{I}-\underline{I}}$ therefore represent the superfluous proportion of intervals, or in other words, the proportion of $\overline{I}-\underline{I}$ that is overestimating the error $\Delta|d_{true}-\tilde{d}|$. Because we aim for small intervals that are correct\commanue{Because we want to obtain the smallest possible correct intervals?}, it only makes sense to compute $o_{rel}$ for confidence intervals that correctly\commanue{properly? j'essaie d'éviter d'avoir trop de correct dans les paragraphes} contain the true disparity. Indeed, considering wrong intervals could reduce the overestimation and induce bias in our conclusions. \Cref{fig:relative_overestimation} illustrates the meaning of $\Delta|d_{true}-\tilde{d}|$ and $I_\alpha$ for the computation of the relative overestimation inside a low confidence area. We want the relative overestimation to be as close as $1$ as possible\commanue{Alors j'avoue que c'est pas clair pour moi. On veut que la proportion d'intervals qui surestiment l'erreur soit faible}, as $o_{rel}=0$ means that $I_\alpha$ is the optimal interval in half of the low confidence pixels. $o_{rel}=0.5$ means that half of low confidence pixels were twice as big as the needed to be, $o_{rel}=0.1$ means that the superfluous part of the intervals represent a tenth of its total length \etc\commanue{je ne suis pas fan du etc. Mais sinon c'est pas bien d'avoir 0.1? ça semble mieux que 0.5}. Reaching a relative over-estimation is not realistic, as it would be equivalent to say that we exactly know the position of the true disparity for each pixel. This is irrational, as it would mean we have the perfect algorithm (but somehow still predicted a wrong disparity?) and there would be no low confidence area in the first place. A more realistic objective is to be around $50\%$, even though less is better\commanue{alors c'est pas super clair pour moi tout ce paragraphe. Les autres métriques sont claires. Mais celle-ci à chaque fois que je crois comprendre une phrase. La phrase d'après me fait douter.}.
 
 \begin{figure}
     \centering
     \includegraphics[width=0.8\linewidth]{Images/Chap_5/relative_overestimation_row_230.png}
-    \caption{$\Delta|d_{true}-\tilde{d}|$ and $I_\alpha$ for computing the relative estimation (\cref{eq:relative_overestimation}) over a low confidence area in gray.}
+    \caption{$\Delta|d_{true}-\tilde{d}|$ and $I_\alpha$ for computing the relative estimation (\cref{eq:relative_overestimation_disparity}) over a low confidence area in gray.}
     \label{fig:relative_overestimation}
 \end{figure}
-
-$o_{rel}$ is a measure used to evaluate the size of correct intervals in low confidence areas. It is also interesting to evaluate the behaviour of intervals that do not contain the ground truth. We thus introduce another metric called residual error $\epsilon$ and defined as:
-\begin{align}
-    \epsilon=\median \left( \dfrac{\min(|d_{true}-\overline{I}_\alpha|, |d_{true}-\underline{I}_\alpha|)}{d_{max}-d_{min}}\right)\label{eq:residual_error}
-\end{align}
-where $[d_{min}, ~d_{max}]$ is the considered disparity range, which allows to compare the different images. \Cref{fig:residual_error} helps visualizing $\epsilon$.
 
 \begin{figure}
     \centering
@@ -428,10 +426,16 @@ where $[d_{min}, ~d_{max}]$ is the considered disparity range, which allows to c
     \label{fig:residual_error}
 \end{figure}
 
-The accuracy $acc$ and relative error $\epsilon$ allow to measure the precision of the intervals and to quantify the errors. The relative size $s_{rel}$ and over-estimation $o_{rel}$ measure the size of intervals in high and low confidence areas respectively. 
+Because we evaluate the size of intervals using two different metrics depending if intervals are in low confidence areas or not, it is interesting to measure the proportion of low confidence areas in the scene $p_{amb}$:
+\begin{align}
+    p_{amb} = \dfrac{\#\{I_\alpha ~|~I_\alpha\in\mathrm{low~confidence~area}\}}{\#\{I_\alpha\}}
+\end{align}
+A proportion $p_{amb}$ of intervals size will be evaluated using $o_{rel}$, and a proportion $1-p_{amb}$ using $s_{rel}$. A high $p_{amb}$ thus indicates many regularization and consequently larger intervals in general.
+
+Before measuring the precision of intervals using $acc$, to quantify their errors using $\varepsilon$ or measuring their relative size with $s_{rel}$ and $o_{rel}$, we will present the different considered datasets used for our evaluation.
 
 \subsection{Stereo Matching Dataset}\label{sec:dataset}
-We evaluate the disparity confidence intervals on $83$ scenes from the Middlebury datasets. Those datasets are composed of two stereo images of indoor scenes, for which the true disparity is known with precision. It is separated on different years: 2003, 2005, 2006, 2014 and 2021 \cite{scharstein_high-accuracy_2003, scharstein_learning_2007, hirschmuller_evaluation_2007, scharstein_high-resolution_2014}, each year presenting more complex scenes. \Cref{fig:middlebury_examples} present some scenes from each dataset.  Each dataset is available in different resolutions. We use quarter-size and third-size versions of the data for 2003, 2005 and 2006 datasets and full resolution for 2014 and 2021 datasets in order to include a diversity of resolutions in our experiments. As a result, ranges of consider disparities also vary greatly, for instance the 2014 dataset are very large (more than a thousand disparity wide), which presents a significant challenge for the SGM regularization. On those scenes our stereo matching algorithm performs far less well than on the 2003 dataset. This will allow to evaluate whether or not the disparity confidence intervals can perform well even when the main disparity prediction does not. Each dataset does not contain the same number of images, and shapes of images can vary across datasets and inside each datasets. For indication purposes, datasets 2003, 2005, 2006, 2014 and 2021 respectfully contain 2, 6, 21, 23 and 25 scenes.
+We evaluate the disparity confidence intervals on $76$ scenes from the Middlebury datasets. Those datasets are composed of two stereo images of indoor scenes, for which the true disparity is known with precision. It is separated on different years: 2003, 2005, 2006, 2014 and 2021 \cite{scharstein_high-accuracy_2003, scharstein_learning_2007, hirschmuller_evaluation_2007, scharstein_high-resolution_2014}, each year presenting more complex scenes. \Cref{fig:middlebury_examples} present some scenes from each dataset.  Each dataset is available in different resolutions. We use quarter-size and third-size versions of the data for 2003, 2005 and 2006 datasets and full resolution for 2014 and 2021 datasets in order to include a diversity of resolutions in our experiments. As a result, ranges of consider disparities also vary greatly, for instance the 2014 dataset are very large (more than a thousand disparity wide), which presents a significant challenge for the SGM regularization\commanue{alors disons qu'un intervalle aussi grand c'est un challenge pour l'algorithme tout court. Pour SGM c'est plus la taille des sauts de disparités qui sont des challanges je dirais. Et si tu veux pas t'embêter tu mets de côté ta remarque}. On those scenes our stereo matching algorithm performs far less well than on the 2003 dataset. This will allow to evaluate whether or not the disparity confidence intervals can perform well even when the main disparity prediction does not. Each dataset does not contain the same number of images, and shapes of images can vary across datasets and inside each datasets. For indication purposes, datasets 2003, 2005, 2006, 2014 and 2021 respectfully contain 2, 6, 21, 23 and 25 scenes.
 
 \begin{figure}
     \centering
@@ -475,14 +479,75 @@ We evaluate the disparity confidence intervals on $83$ scenes from the Middlebur
     \label{fig:middlebury_examples}
 \end{figure}
 
-The Middlebury dataset contains generic indoor scene with a high variety of 3D structures which can highlight the potential of our method for any stereo algorithm. Our objective is however to process satellite images, so we also evaluate our method on satellite data, which can greatly differ from indoor scenes. For this purpose, we use 327 pairs of $1845\times1845$ satellite images in epipolar geometry. Those image are all part of the same pair of Pléiades images over the city of Montpellier, which is large enough to contain both urban and rural areas. The ground truth of those image was obtained using the method described in \cite{cournet_ground_2020}. In short, this method first process stereo images in order to get the images in epipolar geometry. Then it considers the ground truth \acrshort{dsm} of the scene, for instance some rasterized LiDAR HD data, and project it into the same geometry as one of the sensors. Then, using the disparity to altitude ratio computed alongside epipolar images, it converts the altitude of the re-projected \acrshort{dsm} into disparities. Using the same epipolar grids, this true disparity map can be projected into epipolar geometry. We now have two stereo images and their associated ``ground truth'' disparity map in epipolar geometry, ready to be processed. This method possesses a few known drawbacks: first, the ground truth is resampled in two different geometries, which relies among others on the quality of the epipolar grid. More importantly, the images and ground truth were acquired a few years apart which results in some new buildings being build or destroyed between images and ground truth. The vegetation also changed, so the ground truth is not $100\%$ correct. The evaluation metrics on this dataset must thus be taken with care.
+The Middlebury dataset contains generic indoor scene with a high variety of 3D structures which can highlight the potential of our method for any stereo algorithm. Our objective is however to process satellite images, so we also evaluate our method on satellite data, which can greatly differ from indoor scenes. For this purpose, we use 80 pairs of $1845\times1845$ satellite images in epipolar geometry, with a typical disparity range of $[-20, 10]$ (it slightly varies between images). Those image are all part of the same pair of Pléiades images over the city of Montpellier, which is large enough to contain both urban and rural areas as presented in \Cref{fig:mtp_img}. The ground truth of those image was obtained using the method described in \cite{cournet_ground_2020}. In short, this method first process stereo images in order to get the images in epipolar geometry. Then it considers the ground truth \acrshort{dsm} of the scene, for instance some rasterized LiDAR HD data, and project it into the same geometry as one of the sensors. Then, using the disparity to altitude ratio computed alongside epipolar images, it converts the altitude of the re-projected \acrshort{dsm} into disparities. Using the same epipolar grids, this true disparity map can be projected into epipolar geometry. We now have two stereo images and their associated ``ground truth'' disparity map in epipolar geometry, ready to be processed. This method possesses a few known drawbacks: first, the ground truth is resampled in two different geometries, which relies among others on the quality of the epipolar grid. More importantly\commanue{pour moi le plsu import c'est le recalage planimétrique qu'il faut faire avant de remonter l'info LIDAR qui est le plus problématique. Après effectivement le fait que la VT présente des changements par rapport aux images induits nécessaires des erreurs supplémentaires}, the images and ground truth were acquired a few years apart which results in some new buildings being build or destroyed between images and ground truth. The vegetation also changed, so the ground truth is not $100\%$ correct. The dataset contained at first 327 pairs of images, but we detected major differences between the ground truth and the epipolar image, as illustrated in \Cref{fig:mtp_278}, so we restricted our selection to 80 pairs for which no major differences appeared. The evaluation metrics on this dataset must thus be taken with care.
 
-In the next section, we will use the Middlebury datasets to evaluate our method on general stereo scenes, and images of Montpellier (sometimes abbreviated as $\mathrm{MTP}$) to determine if we can generalize our results to satellite imagery.
-\youshallnotpass
+\begin{figure}[ht!]
+    \centering
+    \begin{subfigure}[t]{0.4\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_5/img_MTP_120.png}
+        \caption{Left epipolar image}
+        \label{fig:mtp_img_a}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.4\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_5/img_MTP_153.png}
+        \caption{Left epipolar image}
+        \label{fig:mtp_img_b}
+    \end{subfigure}\\
+    \begin{subfigure}[t]{0.4\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_5/img_MTP_120_gt.png}
+        \caption{Ground truth disparity}
+        \label{fig:mtp_img_c}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.4\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_5/img_MTP_153_gt.png}
+        \caption{Ground truth disparity}
+        \label{fig:mtp_img_d}
+    \end{subfigure}
+    \caption{One rural and one urban scene from the Montpellier dataset.} 
+    \label{fig:mtp_img}
+\end{figure}
+
+
+\begin{figure}[ht!]
+    \centering
+    \begin{subfigure}[t]{0.4\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_5/img_error_MTP_278.png}
+        \caption{Left epipolar image}
+        \label{fig:mtp_278_a}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.4\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_5/img_error_MTP_278_err.png}
+        \caption{Wrong intervals (red)}
+        \label{fig:mtp_278_b}
+    \end{subfigure}\\
+    \begin{subfigure}[t]{0.4\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_5/img_error_MTP_278_disp.png}
+        \caption{Predicted disparity}
+        \label{fig:mtp_278_c}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.4\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_5/img_error_MTP_278_gt.png}
+        \caption{Ground truth}
+        \label{fig:mtp_278_d}
+    \end{subfigure}
+    \caption{Important differences between the ground truth and the epipolar images. We can see that the road appearing in the left image from \Cref{fig:mtp_278_a} does not appear in the ground truth in \Cref{fig:mtp_278_d}, which results in false negative on the intervals from \Cref{fig:mtp_278_b}. The road must have been constructed in between the ground truth acquisition and image acquisition. Images with such differences were removed from the Montpellier dataset.} 
+    \label{fig:mtp_278}
+\end{figure}
+
+In the next section, we will use the Middlebury datasets to evaluate our method on general indoor scenes, and images of Montpellier (sometimes abbreviated as $\mathrm{MTP}$) to determine if we can generalize our results to satellite imagery. We will also consider two cost functions: the CENSUS cost function and MC-CNN cost function, both detailed in \Cref{sec:cost_volume_computation} and implemented in the \acrshort{cars} pipeline\commanue{là comme tu es juste dans le corrélateur tu peux te limiter à Pandora}.
 
 \subsection{Results}
+This section will evaluate each metric on the different datasets, and for the two considered cost functions CENSUS and MC-CNN. Because there are a few metrics and many different scenes, we first give global results, and gradually go into more details across tables and figures. We first consider global results on Middlebury datasets as they are more general and possess a ground truth of better quality. Each metric is evaluated and averaged over the whole dataset (\ie 2003, 2005, 2006 \etc)\commanue{tu peux enlever l'énumération} in \Cref{tab:metric_average} to get an overall estimation of the performances. To have a better estimation of scores distribution across scenes, we then plot histograms of each metric across all datasets in \Cref{fig:acc_hist,fig:s_rel_hist,fig:o_rel_hist,fig:eps_hist}. Finally, we will also discuss the metrics by looking at some details of particular scenes.
 
-\begin{table}[ht]
+\begin{table}[ht!]
 \centering
 \renewcommand{\arraystretch}{1.5}
 \begin{tabular}{|c|c||c|c|c|c|c|}
@@ -491,37 +556,53 @@ In the next section, we will use the Middlebury datasets to evaluate our method 
 \multicolumn{1}{c|}{\cellcolor{white}}& Year & 2003 & 2005 & 2006 & 2014 & 2021 \\ \hline
 
 \rowcolor{color_census}
-\cellcolor{white} & CENSUS & $94.6\%$ & $94.2\%$ & $97.7\%$ & $95.1\%$ & $93.5\%$\\ \cline{2-7}
+\cellcolor{white} & CENSUS & $97.6\%$ & $96.4\%$ & $99.1\%$ & $94.8\%$ & $91.6\%$\\\cline{2-7}
 
 \rowcolor{color_mccnn}
-\multirow{-2}{*}{\cellcolor{white} $acc$ $\uparrow$} & MC-CNN & $93.8\%$ & $95.4\%$ & $98.2\%$ & $97.5\%$ & $99.1\%$\\ \hline
+\multirow{-2}{*}{\cellcolor{white} $acc$ $\uparrow$} & MC-CNN & $97.0\%$ & $97.5\%$ & $99.3\%$ & $98.5\%$ & $99.1\%$\\
 
-
-\rowcolor{color_census}
-\cellcolor{white} & CENSUS & $3.3\%$ & $2.6\%$ & $2.6\%$ & $0.6\%$ & $1.2\%$\\ \cline{3-7}
-
-\rowcolor{color_mccnn}
-\multirow{-2}{*}{\cellcolor{white} $s_{rel}$ $\downarrow$} & MC-CNN & $3.3\%$ & $2.6\%$ & $3.0\%$ & $2.5\%$ & $4.1\%$\\ \hline
-
-\rowcolor{color_census}
-\cellcolor{white} & CENSUS & $49.5\%$ & $52.0\%$ & $60.0\%$ & $46.8\%$ & $51.8\%$\\ \cline{3-7}
+\rowcolor{color_census}\hline
+\cellcolor{white} & CENSUS & $2.5\%$ & $3.1\%$ & $5.3\%$ & $0.2\%$ & $0.9\%$\\\cline{3-7} 
 
 \rowcolor{color_mccnn}
-\multirow{-2}{*}{\cellcolor{white} $o_{rel}$ $\downarrow$} & MC-CNN & $49.7\%$ & $62.4\%$ & $72.6\%$ & $71.0\%$ & $66.0\%$\\ \hline
+\multirow{-2}{*}{\cellcolor{white} $\varepsilon_{~~~}$ $\downarrow$} & MC-CNN & $4.0\%$ & $5.6\%$ & $10.0\%$ & $3.8\%$ & $8.3\%$\\
 
-
-\rowcolor{color_census}
-\cellcolor{white} & CENSUS & $3.5\%$ & $2.6\%$ & $3.0\%$ & $1.5\%$ & $1.3\%$\\ \cline{3-7}
+\rowcolor{color_census}\hline
+\cellcolor{white} & CENSUS & $3.3\%$ & $2.6\%$ & $2.6\%$ & $0.6\%$ & $1.2\%$\\\cline{3-7} 
 
 \rowcolor{color_mccnn}
-\multirow{-2}{*}{\cellcolor{white} $\epsilon_{~~~}$ $\downarrow$} & MC-CNN & $3.7\%$ & $3.6\%$ & $7.3\%$ & $5.2\%$ & $9.8\%$\\ \hline
+\multirow{-2}{*}{\cellcolor{white} $s_{rel}$ $\downarrow$} & MC-CNN & $3.3\%$ & $2.6\%$ & $3.0\%$ & $1.5\%$ & $3.3\%$\\
+
+\rowcolor{color_census}\hline
+\cellcolor{white} & CENSUS & $55.8\%$ & $66.9\%$ & $73.9\%$ & $70.9\%$ & $67.5\%$\\\cline{3-7} 
+
+\rowcolor{color_mccnn}
+\multirow{-2}{*}{\cellcolor{white} $o_{rel}$ $\downarrow$} & MC-CNN & $58.5\%$ & $71.3\%$ & $80.4\%$ & $86.3\%$ & $78.0\%$\\
+
+\rowcolor{color_census}\hline
+\cellcolor{white} & CENSUS & $20.8\%$ & $29.1\%$ & $27.1\%$ & $47.1\%$ & $59.2\%$\\\cline{3-7} 
+
+\rowcolor{color_mccnn}
+\multirow{-2}{*}{\cellcolor{white} $p_{amb}$} & MC-CNN & $15.3\%$ & $41.1\%$ & $39.9\%$ & $43.2\%$ & $69.1\%$\\\hline
+
 
 \end{tabular}
 \renewcommand{\arraystretch}{1}
-\caption{Average metrics over the different Middlebury datasets, depending on the cost function. Up arrows indicate the optimal score is close to $1$, and close to $0$ for down arrows.}\label{tab:metric_average}
+\caption{Average metrics over the different Middlebury datasets, depending on the cost function. Up arrows indicate that the optimal score is $100\%$, and $0\%$ for down arrows. $amb$ is the proportion of low confidence area, computed with the ambiguity.}\label{tab:metric_average}
 \end{table}
 
-
+In \Cref{tab:metric_average}, each metric is evaluated and averaged over each Middlebury dataset: 2003 to 2021\commanue{Si jamais tu as la stat ça peut être bien d'avoir le pourcentage de disparté valide (< à seuil de 1)}. The conclusions drawn for this table are quite general as we are looking at averages across multiple datasets. We will dive into more details later in this section. Here are some of the key takeaways from this table:
+\begin{itemize}
+    \item Accuracy $acc$: the first observation is that the accuracy is greater than the $90\%$ objective on each dataset, and for both considered cost curve\commanue{function?}. In fact, the average is always higher than $91.6\%$, and reaches $99.3\%$ accuracy on some datasets (2006 with MC-CNN). Except for the $2003$ dataset it seems that intervals computed using the MC-CNN cost curves\commanue{just MC-CNN?} are more accurate than those using CENSUS. This high accuracy must however be considered along side the size of the intervals with $s_{rel}$ and $o_{rel}$.
+    
+    \item Residual error $\varepsilon$: residual errors values are between $0.2\%$ and $10\%$ for all datasets, which is relatively low. The residual error is always lower for CENSUS intervals than for MC-CNN ones. In particular, the residual error using CENSUS is almost ten times smaller than that using MC-CNN for the 2021 dataset. This means that it is easier to improve the accuracy of CENSUS intervals, as they miss the true disparity by a smaller fraction of disparity range, than MC-CNN intervals. With the conclusions drawn from the accuracy results, it seems that the last few missing accuracy percent are the hardest to recover.
+    
+    \item Relative size $s_{rel}$: The relative size of intervals in high confidence areas is relatively low. Across datasets, it is on average between $0.6\%$ and $3.3\%$. This broadly means that half of intervals sizes (in high confidence areas) are less than $5\%$ of the considered disparity range. This is a very reasonable size for confidence intervals. For datasets 2003 to 2006, both cost functions lead to similar relative sizes. For datasets 2014 and 2021, the MC-CNN cost curves leads to larger intervals around 3 times bigger than the CENSUS intervals. This is coherent with the higher accuracy of MC-CNN intervals on those datasets.
+    
+    \item Relative over-estimation $o_{rel}$: The range of relative over-estimation of intervals across datasets is more widely spread. It ranges between $46.8\%$ and $72.6\%$. Except for the 2003 dataset, the MC-CNN cost functions clearly leads to intervals with higher over-estimation than those obtained using the CENSUS cost function. CENSUS intervals typically overestimate intervals in low confidence areas by around $50\%$, while it is around $60\%$ or $70\%$ for MC-CNN intervals. This means that half or low confidence pixels have $50\%$ or less of their size that is superfluous when using CENSUS, but for MC-CNN the proportion of superfluous size reaches $60\%$ to $70\%$. For CENSUS, this score is around what we deem\commanue{donc tu as des synonymes à consider en fait ;)} to be a good performing intervals. For MC-CNN, it seems to be a bit large. We must however take into consideration the complexity of datasets 2014 and 2021. Indeed, we will see in some examples that the correlator has a hard time producing a good quality disparity map for some scenes, and that over-estimating the intervals is necessary to produce accurate intervals (for instance in \Cref{fig:sword2}).
+    
+    \item Proportion of low confidence area $p_{amb}$: \Cref{tab:metric_average} also indicates the proportion of low confidence areas. This provides indicative insights on the proportion of intervals that have been evaluated using $o_{rel}$, the rest being evaluated using $s_{rel}$. It is hard to see whether or not there is a cost function leading to more low confidence areas than the other, and the proportion of low confidence area do not seem to be correlated to the accuracy or to the residual error.
+\end{itemize}
 
 \begin{figure}
     \centering
@@ -545,6 +626,27 @@ In the next section, we will use the Middlebury datasets to evaluate our method 
     \centering
     \begin{subfigure}[t]{0.5\linewidth}
         \centering
+        \includegraphics[width=\linewidth]{Images/Chap_5/histogram_eps_middlebury.png}
+        \caption{Middlebury}
+        \label{fig:eps_middlebury}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.5\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_5/histogram_eps_mtp.png}
+        \caption{Montpellier}
+        \label{fig:eps_mtp}
+    \end{subfigure}
+    \caption{Residual error $\varepsilon$ histograms over the different datasets depending on the cost function. Each histogram counts the number of scenes.}
+    \label{fig:eps_hist}
+\end{figure}
+
+We have a good first estimation of the performance of the method for creating confidence disparity intervals. We can now dive more into details by looking at the distribution of score across all scenes, for the Middlebury datasets and the Montpellier images separately. The results are presented in \Cref{fig:acc_hist,fig:s_rel_hist,fig:o_rel_hist,fig:eps_hist}. \Cref{fig:acc_middlebury} presents the accuracy distribution across all Middlebury scenes. For the CENSUS cost function, there are in total 9 scenes across the 76 Middlebury images that do not verify the $90\%$ accuracy threshold, 4 of which have an accuracy greater\commanue{less?} than $89\%$. Those scenes are all taken from the 2014 and 2021 datasets, which are complex scenes with very large disparity intervals, typically not found in the stereo satellites image we consider for building the \acrshort{dsm}. Intervals using the MC-CNN cost function all verify the $90\%$ accuracy threshold.
+
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{0.5\linewidth}
+        \centering
         \includegraphics[width=\linewidth]{Images/Chap_5/histogram_s_rel_middlebury.png}
         \caption{Middlebury}
         \label{fig:s_rel_middlebury}
@@ -558,6 +660,15 @@ In the next section, we will use the Middlebury datasets to evaluate our method 
     \caption{Relative size $s_{rel}$  histograms over the different datasets depending on the cost function. Each histogram counts the number of scenes.}
     \label{fig:s_rel_hist}
 \end{figure}
+
+\Cref{fig:acc_hist,fig:eps_hist,fig:s_rel_hist,fig:o_rel_hist} provides more details on the distribution of each metric across Middlebury scenes and Montpellier scenes\commanue{Alors là il y a des redites entre ce paragraphe et le précédent, donc à fusionner}. Regarding the Middlebury datasets, those figures support observations made in \Cref{tab:metric_average}, as the distribution of most metrics are concentrated around the same values. Regarding the accuracy using the CENSUS cost function, there are in total 9 scenes across the 76 Middlebury images that do not verify the $90\%$ accuracy threshold, 4 of which have however an accuracy greater\commanue{less?} than $89\%$. Those scenes are all from the 2014 and 2021 datasets, which are complex scenes with very large disparity intervals, typically not found in the stereo satellites image we consider for building the \acrshort{dsm}. Intervals using the MC-CNN cost function all verify the $90\%$ accuracy threshold. Another noteworthy remark concerns the relative over-estimation: CENSUS intervals values are concentrated around $50\%$ but spread almost across the entire range, while MC-CNN intervals are more uniformly distributed along values in $[0.4, 0.9]$. This does not change the observation that using the MC-CNN cost function leads to a greater over-estimation of intervals than using the CENSUS cost function\commanue{Pour Middlebury j'ai l'impression que tu ne mentionnes que la métrique $acc$ et $o_{rel}$ donc tu ne commentes pas toutes les courbes}. 
+
+The differences between CENSUS intervals and MC-CNN intervals are also observed on the Montpellier dataset. The $90\%$ accuracy objective is respected, and MC-CNN intervals are more accurate in general. Their residual error, relative size and relative over-estimation are all larger than those of CENSUS intervals. In general, the residual error, relative size and relative over-estimation on the Montpellier dataset are greater than on the Middlebury datasets, while still remaining relatively low. This is due to the smaller disparity range for those images (typically $[-20, 10]$) in compared to Middlebury ranges. 
+
+\begin{remark}\commanue{peut-être éventuellement rappeler au début du chapitre le paramétrage...}
+    MC-CNN cost function generates larger intervals than the CENSUS cost function, but they are more accurate in consequence. Tuning different parameters in our method could lead to the same performances of the two cost functions, but this was not explored as our primary objective is to propagate the disparity intervals to the rest of the photogrammetry pipeline.
+\end{remark}
+
 
 \begin{figure}
     \centering
@@ -577,26 +688,85 @@ In the next section, we will use the Middlebury datasets to evaluate our method 
     \label{fig:o_rel_hist}
 \end{figure}
 
+We evaluated the metrics quantitatively across datasets and scenes in \Cref{tab:metric_average,fig:acc_hist,fig:eps_hist,fig:s_rel_hist,fig:o_rel_hist}\commanue{alors ta macro met pas de F majuscule à Figure}. Those analysis gave us a global overview of the performances\commanue{remarque générale faite au milieu de la section mais vérifie que performance en anglais se met bien au pluriel comme en français.} of the intervals. However, providing a quantitative analysis on \textit{local} performances is more complex and tedious. We instead present a qualitative analysis of the intervals in \Cref{fig:piano,fig:mtp_291}. The accuracy can be observed on \Cref{fig:piano_b,fig:mtp_291_b}, as the proportion of red pixels (indicating wrong intervals) is relatively low. The size of intervals in high confidence areas can be estimated by looking at pixels from columns 900 to 950 of \Cref{fig:piano_c} or columns 700 to 800 of \Cref{fig:mtp_291_b}. They seem to be around 2 disparities wide, which is quite small. In low confidence areas, for instance near column 850 of \Cref{fig:piano_c} and column 830 of \Cref{fig:mtp_291_c}, intervals do not over-estimate to much the maximum potential error between the predicted disparity and the true disparity. \Cref{fig:sword2} illustrates a case where the stereo matching algorithm has very poor performances of when it comes to the disparity prediction. Most areas are low confidence areas, and the predicted disparity is sometimes hundred of pixels apart from the true disparity. However, the intervals are still correct, although they are necessarily very large.  
+
 \begin{figure}
     \centering
     \begin{subfigure}[t]{0.5\linewidth}
         \centering
-        \includegraphics[width=\linewidth]{Images/Chap_5/histogram_eps_middlebury.png}
-        \caption{Middlebury}
-        \label{fig:eps_middlebury}
+        \includegraphics[width=\linewidth]{Images/Chap_5/Piano-perfect_2014.png}
+        \caption{Left Image}
+        \label{fig:piano_a}
     \end{subfigure}\hfill
     \begin{subfigure}[t]{0.5\linewidth}
         \centering
-        \includegraphics[width=\linewidth]{Images/Chap_5/histogram_eps_mtp.png}
-        \caption{Montpellier}
-        \label{fig:eps_mtp}
+        \includegraphics[width=\linewidth]{Images/Chap_5/Piano-perfect_2014_error.png}
+        \caption{Wrong intervals (red)}
+        \label{fig:piano_b}
+    \end{subfigure}\\
+    \begin{subfigure}[t]{1\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_5/Piano-perfect_2014_row_900.png}
+        \caption{True disparity, predicted disparity and intervals along the blue line of \Cref{fig:piano_b}. Gray areas represent low confidence areas.}
+        \label{fig:piano_c}
     \end{subfigure}
-    \caption{Residual error $\epsilon$ histograms over the different datasets depending on the cost function. Each histogram counts the number of scenes.}
-    \label{fig:eps_hist}
+    \caption{``Piano'' scene from Middlebury 2014 dataset.}
+    \label{fig:piano}
 \end{figure}
 
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{0.5\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_5/MTP_291.png}
+        \caption{Left Image}
+        \label{fig:mtp_291_a}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.5\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_5/MTP_291_error.png}
+        \caption{Wrong intervals (red)}
+        \label{fig:mtp_291_b}
+    \end{subfigure}\\
+    \begin{subfigure}[t]{1\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_5/MTP_291_error_row_750.png}
+        \caption{True disparity, predicted disparity and intervals along the blue line of \Cref{fig:mtp_291_b}. Gray areas represent low confidence areas.}
+        \label{fig:mtp_291_c}
+    \end{subfigure}
+    \caption{Scene from the Montpellier dataset.}
+    \label{fig:mtp_291}
+\end{figure}
 
-\section{Propagation in the CARS Pipeline}
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{0.5\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_5/Sword2-perfect_2014.png}
+        \caption{Left Image}
+        \label{fig:sword2_a}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.5\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_5/Sword2-perfect_2014_error.png}
+        \caption{Wrong intervals (red)}
+        \label{fig:sword2_b}
+    \end{subfigure}\\
+    \begin{subfigure}[t]{1\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_5/Sword2-perfect_2014_row_1500.png}
+        \caption{True disparity, predicted disparity and intervals along the blue line of \Cref{fig:sword2_b}. Gray areas represent low confidence areas.}
+        \label{fig:sword2_c}
+    \end{subfigure}
+    \caption{``Sword2'' scene from Middlebury 2014 dataset. This scene is an example of bad disparity prediction but correct (although large) confidence intervals.}
+    \label{fig:sword2}
+\end{figure}
+
+The evaluation of those different metrics indicate that our method seems to perform well for estimating confidence disparity intervals. Intervals seem to be correct even when the predicted disparity is far from the ground truth. This method could be applied to any cost-volume based stereo algorithm, although it produces different intervals depending on the cost function used. However, our main objective is to produce height confidence intervals on \acrshort{dsm}s. The next section will therefore be dedicated to the propagation of disparity intervals into height confidence intervals. \todoroman{A changer si on coupe le chapitre en deux.}
+\todoroman{Parler des ablations study}
+
+\section{Propagation in the CARS Pipeline} 
+\subsection{From Disparity Intervals to Elevation Intervals}\label{sec:elevation_intervals}
 We computed confidence disparity intervals alongside each predicted disparity $\tilde{d}$. It is this disparity which is triangulated and filtered (\Cref{sec:triangulation}) and then rasterized (\Cref{sec:rasterization}) to obtain the final \acrshort{dsm}. We will see in this section how we can propagate the disparity confidence intervals into height confidence intervals associated with the \acrshort{dsm} values.
 
 As indicated by their name, disparity confidence intervals are expressed in disparities. Disparities are use to create pairs of line of sight from different sensors, which are then triangulated to obtain a 3D point. With confidence intervals, we now have 3 pairs of line of sight for each pixel instead of just one:
@@ -621,9 +791,11 @@ The final step of the pipeline is the rasterization, as our objective is to prod
     (\overline{x}, ~\overline{y}, ~\overline{z}) ~\rightarrow~ (x, ~y, ~\overline{z})\\
     (\underline{x}, ~\underline{y}, ~\underline{z}) ~\rightarrow~ (x, ~y, ~\underline{z})
 \end{align}
-\Cref{fig:planimetric_shift} illustrates this modification, where the orange points along the line of sight are shifted in the $(X,~Y)$ plane to be vertically aligned with $(x, ~y, ~z)$.
+\Cref{fig:planimetric_shift} illustrates this modification, where the orange points along the line of sight are shifted in the $(X,~Y)$ plane to be vertically aligned with $(x, ~y, ~z)$. 
+
+$\Delta Z$ is proportional to the disparity to elevation ratio $r_{alt}$, \ie the elevation shift resulting from a shift of one disparity. This ratio is also a good indicator of the magnitude of errors on the final \acrshort{dsm}. This ratio will be used in \Cref{sec:metrics_elevation} to normalize the errors for different scenes.
 \begin{remark}
-    \todoroman{A mettre en annexe plutôt ?} The hypothesis that $\Delta XY$ is small compared to $\Delta Z$ depends only on the incidence angle $\beta$ of the reference image. Indeed, it holds that $\dfrac{\Delta Z}{\Delta XY}=\dfrac{1}{\tan(\beta)}$, where $\beta$ is the incidence angle as depicted in \Cref{fig:incidence_angle}. Ideally, if the reference image has no incidence angle, then the $\Delta XY$ shift is null. \Cref{tab:angle_coupling_pleiades} details the different incidence angles encountered in our experiments. The incidence angles are typically around $10\degree$, \ie $\Delta Z$ is around $5.6$ times bigger than $\Delta XY$. For the scene in Paris where the incidence reaches $6.1\degree$, the ratio is around $10$, while the only scene with $21.3\degree$, near Peyto Lake, Canada, has a ratio around $2.6$. For this last acquisition, the hypothesis that $\Delta XY$ is small compared to $\Delta Z$ is debatable, but we will still neglect $\Delta XY$ in the rasterization in order to stay consistent across our experiments. This will also allow to verify if this hypothesis can impact the performances of our method.
+    \todoroman{A mettre en annexe plutôt ?}\commanue{Moi je pense que tu peux le laisse et pas forcément le mettre dans une remarque. Ton hypsothèse est valide en fonction de l'angle d'acquisition. Tu peux dire que de toute façon on évite de trop dépointer car cela a un impact sur la résolution. Donc à part cas exceptionnel à vérifier quand on fait un vidéo mais pas plus à plus de 30°} The hypothesis that $\Delta XY$ is small compared to $\Delta Z$ depends only on the incidence angle $\beta$ of the reference image. Indeed, it holds that $\dfrac{\Delta Z}{\Delta XY}=\dfrac{1}{\tan(\beta)}$, where $\beta$ is the incidence angle as depicted in \Cref{fig:incidence_angle}. Ideally, if the reference image has no incidence angle, then the $\Delta XY$ shift is null. \Cref{tab:angle_coupling_pleiades} details the different incidence angles encountered in our experiments. The incidence angles are typically around $10\degree$, \ie $\Delta Z$ is around $5.6$ times bigger than $\Delta XY$. For the scene in Paris where the incidence reaches $6.1\degree$, the ratio is around $10$, while the only scene with $21.3\degree$, near Peyto Lake, Canada, has a ratio around $2.6$. For this last acquisition, the hypothesis that $\Delta XY$ is small compared to $\Delta Z$ is debatable, but we will still neglect $\Delta XY$ in the rasterization in order to stay consistent across our experiments. This will also allow to verify if this hypothesis can impact the performances of our method.
 \end{remark}
 
 \begin{figure}
@@ -640,7 +812,7 @@ The final step of the pipeline is the rasterization, as our objective is to prod
     \label{fig:planimetric_shift}
 \end{figure}
 
-We remind here the general formulation of the rasterization step, where each cell $(x,~y)$ of the \acrshort{dsm} is computed using a weighted mean on its neighboring $\N(x,y)$ :
+We remind here the general formulation of the rasterization step\commanue{peut-être que je mettrais des sous-sous-sections histoire de faire apparaître les différentes étapes de CARS que tu considères}, where each cell $(x,~y)$ of the \acrshort{dsm} is computed using a weighted mean on its neighboring $\N(x,y)$ :
 \begin{align}
     \DSM(x,y) &= \dfrac{\sum\limits_{(x_i, y_i, z_i)\in\N(x,y)}z_i\cdot w(x_i, y_i)}{\sum\limits_{(x_i,y_i,z_i)\in\N(x,y)} w(x_i, y_i)}
 \end{align}
@@ -654,21 +826,35 @@ where weights $w(x_i,y_i)$ are positive scalars. In CARS, they are computed usin
     &&\nonumber\\
     \underline{\DSM}(x,y) \leqslant& \DSM(x,y) &\leqslant\overline{DSM}(x,y)
 \end{eqnarray}
-where $\underline{\DSM}(x,y)$ is the \acrshort{dsm} computed using points $(x, ~y, ~\underline{z})$, and $\overline{\DSM}(x,y)$ is the \acrshort{dsm} computed using points $(x, ~y, ~\overline{z})$.
+where $\underline{\DSM}(x,y)$ is the \acrshort{dsm} computed using points $(x, ~y, ~\underline{z})$, and $\overline{\DSM}(x,y)$ is the \acrshort{dsm} computed using points $(x, ~y, ~\overline{z})$. For each value of the \acrshort{DSM} $\DSM(x,y)$ we have now computed a height interval $[\underline{\DSM}(x,y),~\overline{\DSM}(x,y)]$. We will make no distinction between height intervals and elevation intervals in the following. 
 
-\subsection{Unexplored leads}
-Patatoides sur les lignes de visées. Un pixel est représenté par des coordonées précises mais est en fait l'aggrégation d'information radiométriques issues d'une surface au sol. On pourrait donc imaginer que les lignes de visées ne sont pas une ligne mais plus un cône/cylindre (approx), et donc qu'on pourrait donc représenter la position d'un point 3D comme l'intersection de deux volumes (cône + intervalles de disparité).   
+As rasterization is the final step of the stereo pipeline, we now have propagated the confidence intervals all the way to the end of the pipeline while insuring their coherency with the predicted \acrshort{dsm} and without influencing the values of the final \acrshort{dsm}. The next step is therefore to evaluate the confidence height intervals on real data to verify if the potential errors occurring during the transformation of disparity intervals into elevation intervals do not question their accuracy.
 
-Filtrer les points si la distance planimétrique en x et en y est trop grande. 
-Filtrage non gaussien 
+\marquepage
 
-\subsection{Coregistration}
-DEM Compare 
+\subsection{Satellite and DSM datasets}
+This section will present the different images and ground truth \acrshort{dsm}s used to evaluate elevation intervals. There are two sources for ground truth \acrshort{dsm}s. The first source are \acrshort{dsm}s over mountainous regions containing glaciers. They have been kindly provided by Etienne Berthier from LEGOS, Liss Marie Andreassen from the Norwegian Water Resources and Energy Directorate (NVE) and Brian Menounos from the Natural Sciences and Engineering Research Council of Canada and the Tula Foundation (Hakai Institute). The data were acquired in the following regions:
+\begin{itemize}
+    \item Mountains near Peyto lake, in the Alberta province of Canada. (\Cref{fig:miniature_Peyto})
+    \item Two different \acrshort{dsm}s in the mountainous region of Jotunheinem, Norway. We will refer to each \acrshort{dsm} as Hellmem (\Cref{fig:miniature_Hellmem}) and Graasubreen (\Cref{fig:miniature_Graasubreen}).
+    \item Langfjordjøkelen glacier, Norway (\Cref{fig:miniature_Langfjordjokelen}).
+\end{itemize}
+The ground truth were acquired by LiDAR data, rasterized at 50cm resolution. We did not applied the rasterization ourselves and only had access to the rasterized \acrshort{dsm}. The second source of ground truth data comes from the LiDAR HD program (\cite{monnet_lidarhd_2023} \url{https://geoservices.ign.fr/lidarhd}) which intends to cover the whole french territory (except French Guiana) by the end of 2026. It is a very rich source of information, with around $10$ measured points per m$^2$ and a planimetric precision of 50cm. As of the time we write this thesis, not all regions of France are publicly available. From the data available at the time, we selected different regions of interest in order to have a variety of landscapes (rural, urban, seaside \etc). Those landscapes all presented strong elevation variations in order to present a challenge for the stereo pipeline. We also want to determine if our method behaves differently depending on the nature of the scene. Here is the list of the considered regions:
+\begin{itemize}
+    \item The city of Bordeaux (\Cref{fig:miniature_Bordeaux})
+    \item The city of Paris (\Cref{fig:miniature_Paris})
+    \item The city of Montpellier (\Cref{fig:miniature_Montpellier})
+    \item The city of Toulouse (\Cref{fig:miniature_Toulouse})
+    \item Mediterranean coastline with the city of Monaco (\Cref{fig:miniature_Monaco})
+    \item Valleys and mountains near Grenoble, in the french Alps (\Cref{fig:miniature_Grenoble})
+    \item Valleys and mountains at Pic du Midi, french Pyrenees (\Cref{fig:miniature_pic_du_midi})
+\end{itemize}
+The LiDAR point clouds were then rasterized at 50cm resolution with the same Gaussian rasterization method as in the stereo pipeline. \Cref{tab:dates_pleiades_lidar_hd} presents the different acquisition dates and shape of the ground truth \acrshort{dsm}.
 
-\subsection{Ablation Studies}
-\todoroman{Montrer differentes zones d'aggrégation avec différents paramètres.}
-\todoroman{A mettre en annexe ?}
-\subsection{Elevation Confidence Intervals}
+We used Pléiades images for producing both \acrshort{dsm}s and intervals that will be compared to the ground truth. We did not directly ordered the Pléiades acquisitions, as it is costly and hard to synchronise with the acquisition date of the ground truth. From the available catalogue, we selected stereo pairs that were acquired as close as possible from the acquisition date of the ground truth, or if multiple months separated the two acquisitions, we rather selected a similar period of previous/next year to minimize seasonal changes. \Cref{tab:dates_pleiades_lidar_hd} allows to compare dates of acquisition of the LiDAR and Pléiades images.
+
+We saw in \Cref{sec:elevation_intervals} that the planimetric and altimetric resolution (and errors) were defined by the incidence and convergence angles of the lines of sights of the satellites\commanue{the planimetric and altimetric accuracy depend on the incidence and convergence angles of the lines of sights of the satellites?}. \Cref{tab:angle_coupling_pleiades} presents those angles for the different Pléiades images.
+
 \begin{table}[ht]
     \centering
     \begin{tabular}{|c||c|c|c|}
@@ -677,8 +863,9 @@ DEM Compare
         \hline\hline
         Bordeaux & 2023-09-15 & 2022-08-04 & $6001\times 6001$\\\hline
         Grenoble & 2021-09-05 & 2020-09-17 & $10 001\times 10 001$ \\\hline
-        Jotunheinem & 2019-08-27 & 2019-08-27 & \begin{tabular}{@{}c@{}} $7127\times 7298$ and\\ $3912\times2880$\end{tabular} \\\hline
-        Langfjordjokelen & 2018-09-01 & 2018-09-01 & $5841\times 3689$\\\hline
+        Hellmem 1 & 2019-08-27 & 2019-08-27 & $7127\times 7298$ \\\hline
+        Graasubreen 2 & 2019-08-27 & 2019-08-27 & $3912\times2880$ \\\hline
+        Langfjordjøkelen & 2018-09-01 & 2018-09-01 & $5841\times 3689$\\\hline
         Monaco & 2021-05-13 & 2020-08-30 & $10 001\times 10 001$\\\hline
         Montpellier & 2021-05-28 & 2021-10-17 & $8001\times 8001$\\\hline
         Paris & 2023-03-03 & 2023-05-31 & $10 001\times 10 001$\\\hline
@@ -693,23 +880,539 @@ DEM Compare
 \begin{table}[ht]
     \centering
     \begin{tabular}{|c||c|c|c|c|}
-    \hline
-        Area & Coupling mode & Convergence & Incidence left & Incidence right \\
+        \hline
+        Area & Convergence & Incidence left & Incidence right \\
         \hline\hline
-        Bordeaux & Stereo & 23.1\degree & 9.7\degree & 14.2\degree \\\hline
-        Grenoble & Stereo & 28.3\degree & 12.4\degree & 16.1\degree \\\hline
-        Jotunheinem & Stereo & 22.5\degree & 10.6\degree & 14.5\degree \\\hline
-        Langfjordjokelen & Stereo & 21.4\degree & 10.2\degree & 13.8\degree \\\hline
-        Monaco & Stereo & 29.2\degree & 12.8\degree & 18.1\degree \\\hline
-        Montpellier & Tri Stereo & 7.7\degree ~and~ 13.6\degree & 11.5\degree & 15\degree ~and~ 16\degree \\\hline
-        Paris & Tri stereo & 4.9\degree ~and~ 4.9\degree & 6.1\degree & 7.9\degree ~and~ 7.7\degree \\\hline
-        Peyto & Stereo & 17.2\degree & 21.3\degree & 21.6\degree \\\hline
-        Pic du Midi & Stereo & 29.0\degree & 13.7\degree & 15.3\degree \\\hline
-        Toulouse & Tri Stereo & 11.4\degree ~and~ 11.6\degree & 12.5\degree & 18.7\degree ~and~ 14.9\degree \\\hline
+        Bordeaux & 23.1\degree & 9.7\degree & 14.2\degree \\\hline
+        Grenoble & 28.3\degree & 12.4\degree & 16.1\degree \\\hline
+        Jotunheinem & 22.5\degree & 10.6\degree & 14.5\degree \\\hline
+        Langfjordjøkelen & 21.4\degree & 10.2\degree & 13.8\degree \\\hline
+        Monaco & 29.2\degree & 12.8\degree & 18.1\degree \\\hline
+        Montpellier & 7.7\degree & 11.5\degree & 15\degree\\\hline
+        Paris & 4.9\degree& 6.1\degree & 7.9\degree\\\hline
+        Peyto & 17.2\degree & 21.3\degree & 21.6\degree \\\hline
+        Pic du Midi & 29.0\degree & 13.7\degree & 15.3\degree \\\hline
+        Toulouse & 11.4\degree & 12.5\degree & 18.7\degree\\\hline
     \end{tabular}
-    \caption{Type of acquisition and relevant angles of Pléiades images. See \Cref{fig:incidence_angle} for a schematic representation of those angles.}
+    \caption{Relevant angles of stereo pairs of Pléiades images. See \Cref{fig:incidence_angle} for a schematic representation of those angles.}
     \label{tab:angle_coupling_pleiades}
 \end{table}
+\commanue{vu que tu as de la place je mettrais convergence angle, left incidence angle, right incidence angle}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{0.48\linewidth}
+        \flushleft
+        \includegraphics[width=\linewidth]{Images/Chap_5/miniature_Bordeaux.png}
+        \caption{RGB image of Bordeaux}
+        \label{fig:miniature_Bordeaux_rgb}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.48\linewidth}
+        \flushright
+        \includegraphics[width=\linewidth]{Images/Chap_5/miniature_Bordeaux_gt.png}
+        \caption{LiDAR HD \acrshort{dsm}}
+        \label{fig:miniature_Bordeaux_gt}
+    \end{subfigure}
+    \caption{RGB image of Bordeaux and its associated ground truth \acrshort{dsm}.}
+    \label{fig:miniature_Bordeaux}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{0.48\linewidth}
+        \flushleft
+        \includegraphics[width=\linewidth]{Images/Chap_5/miniature_Grenoble.png}
+        \caption{RGB image of a region near Grenoble}
+        \label{fig:miniature_Grenoble_rgb}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.48\linewidth}
+        \flushright
+        \includegraphics[width=\linewidth]{Images/Chap_5/miniature_Grenoble_gt.png}
+        \caption{LiDAR HD \acrshort{dsm}}
+        \label{fig:miniature_Grenoble_gt}
+    \end{subfigure}
+    \caption{RGB image of Grenoble and its associated ground truth \acrshort{dsm}.}
+    \label{fig:miniature_Grenoble}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{0.48\linewidth}
+        \flushleft
+        \includegraphics[width=\linewidth]{Images/Chap_5/miniature_Graasubreen.png}
+        \caption{RGB image of Graasubreen}
+        \label{fig:miniature_Graasubreen_rgb}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.48\linewidth}
+        \flushright
+        \includegraphics[width=\linewidth]{Images/Chap_5/miniature_Graasubreen_gt.png}
+        \caption{LiDAR \acrshort{dsm}}
+        \label{fig:miniature_Graasubreen_gt}
+    \end{subfigure}
+    \caption{RGB image of Graasubreen and its associated ground truth \acrshort{dsm}.}
+    \label{fig:miniature_Graasubreen}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{0.48\linewidth}
+        \flushleft
+        \includegraphics[width=\linewidth]{Images/Chap_5/miniature_Hellmem.png}
+        \caption{RGB image of Hellmem}
+        \label{fig:miniature_Hellmem_rgb}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.48\linewidth}
+        \flushright
+        \includegraphics[width=\linewidth]{Images/Chap_5/miniature_Hellmem_gt.png}
+        \caption{LiDAR \acrshort{dsm}}
+        \label{fig:miniature_Hellmem_gt}
+    \end{subfigure}
+    \caption{RGB image of Hellmem and its associated ground truth \acrshort{dsm}.}
+    \label{fig:miniature_Hellmem}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{0.48\linewidth}
+        \flushleft
+        \includegraphics[width=\linewidth]{Images/Chap_5/miniature_Langfjordjokelen.png}
+        \caption{RGB image of Langfjordjøkelen}
+        \label{fig:miniature_Langfjordjokelen_rgb}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.48\linewidth}
+        \flushright
+        \includegraphics[width=\linewidth]{Images/Chap_5/miniature_Langfjordjokelen_gt.png}
+        \caption{LiDAR \acrshort{dsm}}
+        \label{fig:miniature_Langfjordjokelen_gt}
+    \end{subfigure}
+    \caption{RGB image of Langfjordjøkelen and its associated ground truth \acrshort{dsm}.}
+    \label{fig:miniature_Langfjordjokelen}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{0.48\linewidth}
+        \flushleft
+        \includegraphics[width=\linewidth]{Images/Chap_5/miniature_Monaco.png}
+        \caption{RGB image of Monaco}
+        \label{fig:miniature_Monaco_rgb}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.48\linewidth}
+        \flushright
+        \includegraphics[width=\linewidth]{Images/Chap_5/miniature_Monaco_gt.png}
+        \caption{LiDAR HD \acrshort{dsm}}
+        \label{fig:miniature_Monaco_gt}
+    \end{subfigure}
+    \caption{RGB image of Monaco and its associated ground truth \acrshort{dsm}.}
+    \label{fig:miniature_Monaco}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{0.48\linewidth}
+        \flushleft
+        \includegraphics[width=\linewidth]{Images/Chap_5/miniature_Montpellier.png}
+        \caption{RGB image of Montpellier}
+        \label{fig:miniature_Montpellier_rgb}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.48\linewidth}
+        \flushright
+        \includegraphics[width=\linewidth]{Images/Chap_5/miniature_Montpellier_gt.png}
+        \caption{LiDAR HD \acrshort{dsm}}
+        \label{fig:miniature_Montpellier_gt}
+    \end{subfigure}
+    \caption{RGB image of Montpellier and its associated ground truth \acrshort{dsm}.}
+    \label{fig:miniature_Montpellier}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{0.48\linewidth}
+        \flushleft
+        \includegraphics[width=\linewidth]{Images/Chap_5/miniature_Paris.png}
+        \caption{RGB image of Paris}
+        \label{fig:miniature_Paris_rgb}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.48\linewidth}
+        \flushright
+        \includegraphics[width=\linewidth]{Images/Chap_5/miniature_Paris_gt.png}
+        \caption{LiDAR HD \acrshort{dsm}}
+        \label{fig:miniature_Paris_gt}
+    \end{subfigure}
+    \caption{RGB image of  and its associated ground truth \acrshort{dsm}.}
+    \label{fig:miniature_Paris}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{0.48\linewidth}
+        \flushleft
+        \includegraphics[width=\linewidth]{Images/Chap_5/miniature_Peyto.png}
+        \caption{RGB image of Peyto}
+        \label{fig:miniature_Peyto_rgb}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.48\linewidth}
+        \flushright
+        \includegraphics[width=\linewidth]{Images/Chap_5/miniature_Peyto_gt.png}
+        \caption{LiDAR HD \acrshort{dsm}}
+        \label{fig:miniature_Peyto_gt}
+    \end{subfigure}
+    \caption{RGB image of Peyto and its associated ground truth \acrshort{dsm}.}
+    \label{fig:miniature_Peyto}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{0.48\linewidth}
+        \flushleft
+        \includegraphics[width=\linewidth]{Images/Chap_5/miniature_Pic_du_midi.png}
+        \caption{RGB image of Pic du Midi}
+        \label{fig:miniature_pic_du_midi_rgb}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.48\linewidth}
+        \flushright
+        \includegraphics[width=\linewidth]{Images/Chap_5/miniature_Pic_du_midi_gt.png}
+        \caption{LiDAR HD \acrshort{dsm}}
+        \label{fig:miniature_pic_du_midi_gt}
+    \end{subfigure}
+    \caption{RGB image of Pic du Midi and its associated ground truth \acrshort{dsm}.}
+    \label{fig:miniature_pic_du_midi}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{0.48\linewidth}
+        \flushleft
+        \includegraphics[width=\linewidth]{Images/Chap_5/miniature_Toulouse.png}
+        \caption{RGB image of Toulouse}
+        \label{fig:miniature_Toulouse_rgb}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.48\linewidth}
+        \flushright
+        \includegraphics[width=\linewidth]{Images/Chap_5/miniature_Toulouse_gt.png}
+        \caption{LiDAR HD \acrshort{dsm}}
+        \label{fig:miniature_Toulouse_gt}
+    \end{subfigure}
+    \caption{RGB image of Toulouse and its associated ground truth \acrshort{dsm}.}
+    \label{fig:miniature_Toulouse}
+\end{figure}
+
+
+\begin{remark}\commanue{alors moi je mettrais pas çà en remarque c'est un élément que tu considères dans tes données de test au même titre que tu as choisi certaines dates.}
+    Both LiDAR data and stereo correlation present poor results on water surfaces. For the LiDAR data, wavelengths are often absorbed by still water and do not provide the sensor with any feedback (although turbid water can usually send back some signal). For moving waters, the provided signal is often noisy and needs post processing to remove artifacts. Stereo photogrammetry has usual even poorer results, because open waters are texture-less or uniform surfaces on which the correlation does not perform well. Furthermore, for Pléiades acquisitions, the water has moved\commanue{may have moved?} between images which prevents water pixels to be correctly triangulated. For those reasons, we chose to add a water mask on images of cities crossed by a river (Bordeaux, Monaco, Montpellier, Paris and Toulouse) or near the seaside (Monaco). The water mask was obtained using an algorithm developed by CNES, which uses a random forest trained on existing high resolution mapping of surface waters \cite{pekel_high-resolution_2016} and the Normalized Difference Water Index \cite{gao_ndwinormalized_1996}. \Cref{fig:paris_watermask_2} presents a water mask produced on the image of Paris.
+\end{remark}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{0.48\linewidth}
+        \flushleft
+        \includegraphics[width=\linewidth]{Images/Chap_5/miniature_Paris.png}
+        \caption{RGB image of Paris}
+        \label{fig:paris_watermask_1}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.48\linewidth}
+        \flushright
+        \includegraphics[width=\linewidth]{Images/Chap_5/watermask_Paris.png}
+        \caption{Water mask}
+        \label{fig:paris_watermask_2}
+    \end{subfigure}
+    \caption{RGB image of Paris and its associated water mask. Water is indicated by blue pixels}
+    \label{fig:paris_watermask}
+\end{figure}
+
+\subsection{Co-registration}
+The \acrshort{dsm}s obtained from LiDAR data and from stereo photogrammetry are not necessarily in the same projection reference system, and do not use the same altitude reference. Moreover, due to the limited precision of the \acrshort{rpc} models and GPS measures of the the LiDAR, some planimetric and elevation bias may exist between the two \acrshort{dsm}s which do not allow their comparison as such. We therefore reproject the ground truth data in the same reference system as their corresponding \acrshort{dsm} produced by the CARS pipeline. We then rectify the planimetric and altimetric biases by employing the method presented in \cite{nuth_co-registration_2011}. This process is called co-registration. We quickly present the method for estimating the altimetric and planimetric biases, and refer to the original publication for additional details.
+
+It is possible to observe that the measured differences between two shifted \acrshort{dsm}s vary with the slope angle and the orientation of the slope. The different parameters influencing the measured variations of elevation, presented in \Cref{fig:coregistration}, are the following:
+\begin{itemize}
+    \item We note $\sigma$ the angle of a slope. $\sigma=0\degree$ corresponds to a flat slope and $\sigma=90\degree$ to a vertical slope.
+    \item We note $\psi$ the azimuth of the slope. If the slope faces north, then $\psi=0\degree$. If it faces west, $\psi=90\degree$ \etc
+    \item The direction of the planimetric shift between \acrshort{dsm}s is given by an angle $\beta$, with the same conventions as the azimuth. The magnitude of the shift is $B$.
+    \item $dh$ refers to measured local variations of elevation, and $\tilde{dh}$ is the global elevation shift between \acrshort{dsm}s.
+\end{itemize}
+The relation linking all those parameters is the following \cite{nuth_co-registration_2011}:
+\begin{align}
+    dh = B\cos(\psi-\beta)\tan(\sigma)+\tilde{dh}
+\end{align}
+
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=\linewidth]{Images/Chap_5/Coregistration.png}
+    \caption{Planimetric shift of magnitude $B$ and altimetric shift $\tilde{dh}$ between two \acrshort{dsm}s. We can see that local variations $\tilde{dh}$ vary depending on the slope $\sigma$. This diagram is in 2D, the angle of the planimetric shift and the azimut of the slope are therefore not represented.}
+    \label{fig:coregistration}
+\end{figure}
+
+The three unknowns are $B$, $\beta$ and $\tilde{dh}$, as the slope parameters can be computed by any \acrshort{gis} software from the \acrshort{dsm}s. For instance, the slope of $\DSM_{true}$ is computed as:
+\begin{align}\label{eq:slope}
+    \sigma(x,y) = \dfrac{1}{8}\sqrt{\left(\dfrac{\DSM_{true}\ast k_x(x,y)}{r_x}\right)^2 + \left(\dfrac{\DSM_{true}\ast k_y(x,y)}{r_y}\right)^2}
+\end{align}
+where $\ast$ denotes a convolution with two kernels $k_x=\begin{bmatrix}
+-1 & 0 & 1\\
+-2 & 0 & 2 \\
+-1 & 0 & 1
+\end{bmatrix}$, $k_y=\begin{bmatrix}
+-1 & -2 & -1\\
+0 & 0 & 0 \\
+1 & 2 & 1
+\end{bmatrix}$, and $r_x$, $r_y$ are the resolution in $x$ and $y$. We will use the slope in the evaluation of the different metrics.
+
+The unknowns $B$, $\beta$ and $\tilde{dh}$ are determined by a least square optimization problem. Because the \acrshort{dsm} is not expressed analytically, the optimisation is not guaranteed to be exact. Multiple iterations of the planimetric and altimetric shift estimation lead to a better final result. An illustration of the co-registration process is presented in \Cref{fig:coregistration_image}.
+
+The problem we encounter is that the \acrshort{dsm} obtained from photogrammetry already possess some errors. In the least squared minimization problem, the residuals computed from the difference between the ground truth \acrshort{dsm} and the photogrammetry \acrshort{dsm} therefore also contain those errors. This deteriorates the quality of the co-registration. However, it remains the best solution for co-registering \acrshort{dsm}s. We apply this co-registration to our data, before computing any metric. The different metrics we consider will be presented in the following section. 
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{0.48\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_5/coregisration_planimetric_shift_gt_toulouse.png}
+        \caption{Ground Truth \acrshort{dsm}}
+        \label{fig:coregistration_planimetric_gt}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.48\linewidth}
+        \flushright
+        \includegraphics[width=\linewidth]{Images/Chap_5/coregisration_planimetric_shift_cars_toulouse.png}
+        \caption{CARS \acrshort{dsm}}
+        \label{fig:coregistration_planimetric_cars}
+    \end{subfigure}\\
+    \begin{subfigure}[t]{\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_5/coregisration_altimetric_shift_toulouse.png}
+        \caption{Elevation along a row of the \acrshort{dsm}}
+        \label{fig:coregistration_altimetric}
+    \end{subfigure}
+    \caption{Planimetric shift and altimetric shift from the co-registration step over the city of Toulouse. In \Cref{fig:coregistration_planimetric_gt,fig:coregistration_planimetric_cars}, reference points in orange are located at the same row and columns in the two \acrshort{dsm}s. The planimetric shift is indicated with blue arrows. \Cref{fig:coregistration_altimetric} presents the altimetric shift between the two \acrshort{dsm}s.}
+    \label{fig:coregistration_image}
+\end{figure}
+
+\subsection{Metrics for Evaluating Elevation Intervals}\label{sec:metrics_elevation}
+\todoroman{Je vais lire les commentaires de la section sur les métriques des intervalles de disparité et les appliquer ici aussi.}\commanue{A voir si tu peux pas mettre un schéma comme Gabriela dans sa présentation pour illustrer}
+We introduce here the metrics used to evaluate the performances of elevation intervals. The metrics are not exactly the same as in \Cref{sec:metrics_disparity}, as we now reason with elevations instead of disparities. In order to stay consistent, we consider the metrics introduced for disparity intervals and adapt them to elevation intervals\commanue{les deux phrases précédentes sont un peu redondantes entre elles, je garderais que la deuxième}. 
+
+We will refer to the true elevation as $\DSM_{true}$, the predicted elevation as $\DSM$ and the elevation intervals as $\underline{\DSM},~\overline{\DSM}$\commanue{vu que c'est un interval tu mets pas entre crochets ?}.
+
+Similarly\commanue{Donc même remarque que pour les disparités, je mettrais des sous-sous-sections pour que l'on voit bien apparaître les différentes métrqiues} to \Cref{sec:metrics_disparity}, the first metric is the proportion of correct intervals, \ie the proportion of intervals containing the ground truth. We call this metric the accuracy $Z_{acc}$:
+\begin{align}\label{eq:relative_accuracy_elevation}
+    Z_{acc} = \dfrac{\#\{\DSM_{true} ~|~ \st ~\DSM_{true}\in [\underline{\DSM},~\overline{\DSM}]\}}{\#\{\DSM_{true}\}}
+\end{align}
+We want to maximize the accuracy. We also keep the objective of $90\%$ accuracy for our method, which was verified for the disparity intervals.
+
+We are also interested in the evaluating the magnitude of the error. We thus define the residual elevation error $Z_{\varepsilon}$ for all intervals that do not contain the ground truth as:
+\begin{align}
+    Z_\varepsilon=\dfrac{1}{r_{alt}} \cdot\median \left( \min(|\DSM_{true}-\overline{DSM}, ~ |\DSM_{true}-\underline{DSM}|)\right)\label{eq:residual_error_elevation}
+\end{align}
+where $r_{alt}$ is the disparity to altitude ratio (or altimetric ratio), \ie the elevation difference resulting from a shift of one disparity. We want $Z_\varepsilon$ error to be as close to 0 as possible. $r_{alt}$ has been computed alongside the epipolar grids (\Cref{sec:epipolar_geometry}). Dividing by the ratio $r_{alt}$ effectively converts $\min(|\DSM_{true}-\overline{DSM}, |\DSM_{true}-\underline{DSM}|)$ from meters to pixels. If we do not make this conversion, an error of one disparity pixel in the dense matching step might result in an elevation error of 1m in a scene, and 2m in another. With this conversion, we can compare $Z_\varepsilon$ for stereo pairs with different convergence angles. For our data\commanue{As regards the data we consider?}, \Cref{tab:angle_coupling_pleiades} indicates that the convergence angles vary between $5\degree$ and $30\degree$. 
+
+Those two previous metrics allow to measure the accuracy and errors of elevation intervals. To evaluate the size of intervals, we use the relative elevation size $Z_{size}$ defined as :
+\begin{align}\label{eq:relative_size_elevation}
+    Z_{size} = \dfrac{1}{r_{alt}}\median(\overline{DSM}-\underline{DSM})
+\end{align}
+We divide by the altimetric ratio for the same reasons as in $Z_\varepsilon$, \ie to compare stereo pairs with different convergence angles. We want the relative elevation size to be as close to zero as possible. $Z_{size}$ is similar to $s_{rel}$ defined in \cref{eq:relative_size_disparity} from \Cref{sec:metrics_disparity}.
+
+\begin{comment}
+    The final metric to evaluate the size of the intervals is the relative elevation overestimation $Z_{o}$, defined as:
+    \begin{align}\label{eq:relative_overestimation_elevation}
+        Z_{o} = 1-\median(\dfrac{\max(|\DSM_{true}-\DSM|,~\cdot r_{alt})}{\overline{DSM}-\underline{DSM}})
+    \end{align}
+    \todoroman{La definir en deux fois. Une fois comme orel avec un schéma, et ensuite on ajoute le ralt}
+    This metric is similar to the relative overestimation $o_{rel}$ from \cref{eq:relative_overestimation_disparity}, as it aims to measure the proportion of the size of intervals that is superfluous. We use this metric because we accept to have very large intervals if the error $|\DSM_{true}-\DSM|$ is also very large, \ie if $Z_{o}$ is low. The main difference with $o_{rel}$ is that we do not simply consider the \acrshort{dsm} error $|\DSM_{true}-\DSM|$, as it can get very low, or can even be null. When $|\DSM_{true}-\DSM|$ reaches values close to 0, $ Z_{o}$ could reach high values near 1 (\ie, $100\%$ of the interval is superfluous) even if the interval size is not that large. For instance, if $|\DSM_{true}-\DSM|$ is about 1cm, and the interval is just 1m large, then $99\%$ of the size of the interval would be considered superfluous, although 1m is usually considered to be a small interval. To avoid those extreme values, we consider the maximum $\max(|\DSM_{true}-\DSM|, \cdot r_{alt})$ in the expression of $Z_{o}$, so that if $|\DSM_{true}-\DSM|$ gets too low, then we replace it by $\cdot r_{alt}$. Otherwise we keep $|\DSM_{true}-\DSM|$.
+\end{comment}
+
+
+\begin{remark}
+    \begin{comment}
+        We did not have the problem of $|d_{true}- \tilde{d}|$ being too small in $o_{rel}$ as we instead used the maximal error over a low confidence area (\ie the area considered for the regularization). 
+    \end{comment}
+    In the rasterization process, 3D points from low confidence area are mixed with points from high confidence areas. We therefore cannot define regularization areas\commanue{en lisant ça fait bizarre le terme de regularisation. Pour éviter s'embrouiller avec SGM ou d'autres filtrage, je mettrais bien interval regularization, histoire d'éviter toute ambiguïté ;)} in the final \acrshort{dsm}. The relative over-estimation $o_{rel}$ has therefore no equivalent for elevation intervals.  
+\end{remark}
+
+\subsection{Elevation Confidence Intervals}\commanue{un petit results dans le titre en plus ?}
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{|c||c|c|c|c|c|c|}
+        \hline
+        Scene & $Z_{acc}$ & $Z_\varepsilon$ (pix) & $Z_{size}$ (pix) & $r_{alt}$ (m/pix) & invalid
+        \\\hline\hline
+        Bordeaux & 88.7$\%$ & 0.56 & 4.18 & 1.24  & 21.5$\%$\\\hline
+        Graasubreen & 99.7$\%$ & 0.12 & 1.96 & 1.32  & 27.5$\%$\\\hline
+        Hellmem & 98.8$\%$ & 2.76 & 2.02 & 1.32  & 34.7$\%$\\\hline
+        Grenoble & 93.1$\%$ & 0.87 & 3.99 & 1.06  & 6.4$\%$\\\hline
+        Langfjordjøkelen & 99.4$\%$ & 0.30 & 2.16 & 1.35  & 13.9$\%$\\\hline
+        Monaco & 90.3$\%$ & 0.57 & 3.76 & 0.99  & 41.9$\%$\\\hline
+        Montpellier & 89.1$\%$ & 0.28 & 2.05 & 3.64  & 1.9$\%$\\\hline
+        Paris & 84.6$\%$ & 0.46 & 2.01 & 5.78  & 3.0$\%$\\\hline
+        Peyto & 98.9$\%$ & 0.18 & 2.08 & 1.66  & 18.3$\%$\\\hline
+        Pic du midi & 98.1$\%$ & 0.20 & 2.41 & 1.01  & 7.5$\%$\\\hline
+        Toulouse & 92.0$\%$ & 0.38 & 2.04 & 2.43  & 6.9$\%$\\\hline
+    \end{tabular}
+    \caption{Elevation metrics for the different stereo pairs. The last column indicates the proportion of invalid pixels in the considered \acrshort{dsm}s.}
+    \label{tab:elevation_metrics_global}
+\end{table}
+
+The different metrics have been evaluated between the photogrammetry \acrshort{dsm} and the ground truth \acrshort{dsm}\commanue{the associated ground truth ?}. Results are presented in \Cref{tab:elevation_metrics_global}. Let us comment those results:
+
+\subsubsection{Elevation accuracy $Z_{acc}$}
+The elevation accuracy $Z_{acc}$, defined in \cref{eq:relative_accuracy_elevation}, measures the proportions of intervals which contains the ground truth elevation, which we want to be as high as possible. The first observation is that the $90\%$ accuracy objective is validated on $8$ of the $11$ scenes we considered. In particular, the different glaciers as well as the Pic du Midi elevation intervals present a great accuracy between $98.1\%$ and $99.7\%$. The scenes that do not verify the objective are the urban stereo pairs over Bordeaux, Montpellier and Paris. In general, it seems that urban \acrshort{dsm}s have a lower accuracy than rural ones, which was to be expected as there are more steep variations of elevation in cities due to the presence of buildings. The Montpellier \acrshort{dsm} and Bordeaux \acrshort{dsm} are close to the $90\%$ objective, but intervals over Paris are accurate only $84.6\%$ of the time\commanue{alors là je trouve que la formulation fait très française "du temps" mais je ne sais pas si les anglais nous ont piqué la réplique}. We will see later in this section that some other sources of errors can explain why $Z_{acc}<90\%$ on those scenes, such as vibration of the satellite during images acquisition or ground truth non-synchronicity issues. Provided that those errors are not present, we can claim that elevation intervals are accurate enough. They correctly estimate the error committed during the dense-matching step, and the propagation of disparity intervals to elevation intervals is properly carried out.
+
+\subsubsection{Residual elevation error $Z_\varepsilon$}
+The residual elevation error $Z_\varepsilon$, defined in \cref{eq:residual_error_elevation}, estimates the gap between the intervals and the ground truth, when intervals do not contain the ground truth. We want it to be as small as possible. $Z_\varepsilon$ is less than, or almost equal to, half a pixel for the majority of scenes. This is really low. It also means that the required extension of elevation intervals to have a $95\%$ accuracy is very low\commanue{pourquoi 95 ?}. Indeed, because half of wrong intervals are $Z_\varepsilon$ away from the true elevation, extending the elevation intervals from $Z_\varepsilon\cdot r_{alt}$ in both directions would recover at least half of true elevations that we previously missed. For instance on the Monaco scene, $Z_\varepsilon=0.57$pix, $r_{alt}=0.99$m/pix and $Z_{acc}=90.3\%$. Defining the extended intervals as:
+\begin{align*}
+    [\underline{\DSM}-Z_\varepsilon\cdot r_{alt}, \overline{\DSM}+Z_\varepsilon\cdot r_{alt}] \approx [\underline{\DSM}-0.56, \overline{\DSM}+0.56]
+\end{align*}
+would lead to a new accuracy of $90.3+\dfrac{9.7}{2}=95.15\%$. 
+
+There is one $Z_\varepsilon$ value that stands out, for the Hellmem scene where it equals $2.76$. We have to keep in mind that the accuracy for this scene is $98.8\%$, so that $Z_\varepsilon$ is only computed on $1.2\%$ of valid intervals, so that $Z_\varepsilon=2.76$ is therefore not necessarily a concerning observation as it concerns very few pixels. It is more surprising that it equals $0.12$ for the Graasubreen \acrshort{dsm} which already has the best accuracy $99.7\%$ out of all scenes. This translates the great performances of the elevation intervals estimation on this area.
+
+\subsubsection{Relative elevation size $Z_{size}$}
+The relative elevation size $Z_{size}$, defined in \cref{eq:relative_size_elevation}, estimates the size of intervals, both correct and incorrect. $Z_{size}$ is usually around 2 pixels wide. The Bordeaux, Grenoble and Monaco datasets are the only exceptions, were $Z_{size}$ is closer to 4 pixels in size. It does not seem to be correlated neither to the accuracy, nor to the altimetric ratio or acquisition angles of the satellites. In any case, 4 pixels is not ideal, but it is not excessively large either. We can deduce from those values of $Z_{size}$ that the predicted \acrshort{dsm} is close to the true elevation. 
+
+\Cref{fig:histogram_elevation_toulouse} presents the distributions of relative errors and relative sizes over the scene in Toulouse. It provides a more complete overview of the distribution of errors and sizes than simply the indicators $Z_\varepsilon$ and $Z_{size}$ which are defined as the median of those distributions. The distributions on other scenes have a similar shape. 
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{0.5\linewidth}
+        \flushright
+        \includegraphics[width=\linewidth]{Images/Chap_5/histogram_elevation_eps_Toulouse.png}
+        \caption{Relative errors histogram}
+        \label{fig:error_hist}
+    \end{subfigure}\centering
+    \begin{subfigure}[t]{0.5\linewidth}
+        \flushright
+        \includegraphics[width=\linewidth]{Images/Chap_5/histogram_elevation_s_rel_Toulouse.png}
+        \caption{Relative size histogram}
+        \label{fig:size_hist}
+    \end{subfigure}
+    \caption{Histograms of the relative error and relative over the Toulouse scene. $Z_{\varepsilon}$ and $Z_{size}$ are defined as the median of those distributions.}
+    \label{fig:histogram_elevation_toulouse}
+\end{figure}
+
+
+\begin{comment}
+    subsubsection{Relative elevation over-estimation $Z_o$}
+    The relative elevation over-estimation $Z_o$, defined in, estimates the proportion of intervals that is superfluous. It seems to be always near $50\%$, which is an acceptable proportion
+\end{comment}
+
+\subsubsection{Altimetric ratio and invalid pixels.}
+Looking at \Cref{tab:elevation_metrics_global}, it seems that high values of the altimetric ratio $r_{alt}$ are correlated to low values of accuracy. This is because the convergence angle of satellite is reduced for the acquisition of urban scenes, in order to reduce the proportion of occluded pixels. A low convergence angle results in a high altimetric ratio, as seen in \Cref{fig:incidence_angle}. But it is also harder to correctly reconstruct urban scenes using photogrammetry. The accuracy of intervals is therefore lower in those areas. In short, high values of the altimetric ratio and low accuracy are both linked to urban \acrshort{dsm}, but one does not imply the other and conversely.
+
+The proportion of invalid pixels that are not considered in the metrics can sometimes be quite high, as it is the case for Monaco (41$\%$) or Hellmem (34.7$\%$). This is due to the presence of water in large part of the image (\Cref{fig:miniature_Monaco_rgb}) or simply the absence of data form the provided ground truth (\Cref{fig:miniature_Hellmem_gt}).
+
+\youshallnotpass
+
+\subsubsection{Comparison with ``naive'' intervals}
+The fact that most intervals have a relative size $Z_{size}$ of around 2 pixels may raise the following question: would ``naive'' intervals be accurate ? We define naive intervals $[\underline{\DSM}_{naive}, ~\overline{\DSM}_{naive}]$, as intervals centered on the predicted \acrshort{dsm} with a size of 2 times the altimetric ratio $r_{alt}$:
+\begin{align}
+    [\underline{\DSM}_{naive}, ~\overline{\DSM}_{naive}] = [\DSM-r_{alt}, \DSM+r_{alt}]
+\end{align}
+\Cref{tab:naive_accuracy} presents allows to compare the accuracy of the naive intervals with that of our interval method. The table also contains the mean and median error of the \acrshort{dsm} defined as:
+\begin{align}
+    \varepsilon_{\mean} = \mean|\DSM - \DSM_{true}|\qquad \varepsilon_{\median} = \median|\DSM - \DSM_{true}|
+\end{align}
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{|c||c|c|c|c|}
+        \hline
+        Scene & $Z_{acc}$ (pix) & ``Naive'' $Z_{acc}$ (pix) & $\varepsilon_{\median}$ (m) & $\varepsilon_{\mean}$ (m)
+        \\\hline\hline
+        Bordeaux & 88.7$\%$ & 62.9$\%$ & 0.86 & 1.93\\\hline
+        Graasubreen & 99.7$\%$ & 98.8$\%$ & 0.19 & 0.28\\\hline
+        Hellmem & 98.8$\%$ & 96.4$\%$ & 0.22 & 0.75\\\hline
+        Grenoble & 93.1$\%$ & 65.7$\%$ & 0.61 & 2.08\\\hline
+        Langfjordjøkelen & 99.4$\%$ & 88.1$\%$ & 0.26 & 1.31\\\hline
+        Monaco & 90.3$\%$ & 61.2$\%$ & 0.69 & 1.75\\\hline
+        Montpellier & 89.1$\%$ & 79.4$\%$ & 1.81 & 2.52\\\hline
+        Paris & 84.6$\%$ & 82.4$\%$ & 2.35 & 3.59\\\hline
+        Peyto & 98.9$\%$ & 95.6$\%$ & 0.32 & 0.56\\\hline
+        Pic du midi & 98.1$\%$ & 86.1$\%$ & 0.31 & 1.08\\\hline
+        Toulouse & 92.0$\%$ & 83.2$\%$ & 0.92 & 1.79\\\hline
+    \end{tabular}
+    \caption{Comparison of ``naive'' intervals accuracy with our method for elevation intervals. The median and mean error of the predicted $\DSM$ are also indicated for reference.}
+    \label{tab:naive_accuracy}
+\end{table}
+\Cref{tab:naive_accuracy} indicates that all ``naive'' intervals have a lower accuracy than intervals defined using our method. The difference is sometimes quite substantial, as for the Bordeaux, Grenoble or Monaco scenes where the accuracy drops from around $30\%$ between the two methods. It also corresponds to scenes with a relative elevation size $Z_{size}$ which is higher than on the others scenes. This confirms that our method correctly adapts the size of elevation intervals to each scene individually. It also proves that our method can provide good performances even when the predicted $\DSM$ is far from the ground truth (indicated by high values of $\varepsilon_{\median}$ and $\varepsilon_{\mean}$). 
+
+\subsubsection{Slope classification}
+Using \cref{eq:slope}, it is possible to compute the slope of the scene from the ground truth \acrshort{dsm}. It would be interesting to take a deeper look at the behaviour of elevation metrics depending on the slope. To do so, we compute the slope $\sigma$ for each pixel and divided the ranges of slopes in different sections. Those sections are delimited by the following values, from \cite{hugonnet_uncertainty_2022}:
+$$
+[0\degree, 2.5\degree, 5\degree, 10\degree, 15\degree, 20\degree, 30\degree, 40\degree, 50\degree, 70\degree, 90\degree]
+$$
+We then evaluated metrics on each slope section separately. 
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{0.5\linewidth}
+        \flushleft
+        \includegraphics[width=\linewidth]{Images/Chap_5/slope_acc.png}
+        \caption{Accuracy $Z_{acc}$}
+        \label{fig:slope_acc}
+    \end{subfigure}\centering
+    \begin{subfigure}[t]{0.5\linewidth}
+        \flushright
+        \includegraphics[width=\linewidth]{Images/Chap_5/slope_s_rel.png}
+        \caption{Relative size $Z_{size}$}
+        \label{fig:slope_size}
+    \end{subfigure}
+    \caption{Accuracy $Z_{acc}$ and relative size $Z_{size}$ values depending on the slope (in degree). Each curve corresponds to a different scene.}
+    \label{fig:slope_acc_size}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{0.5\linewidth}
+        \flushleft
+        \includegraphics[width=\linewidth]{Images/Chap_5/slope_eps.png}
+        \caption{Relative error $Z_\varepsilon$}
+        \label{fig:slope_eps_all}
+    \end{subfigure}\centering
+    \begin{subfigure}[t]{0.5\linewidth}
+        \flushright
+        \includegraphics[width=\linewidth]{Images/Chap_5/slope_eps_no_Hellmem.png}
+        \caption{Relative error $Z_\varepsilon$ without Hellmem}
+        \label{fig:slope_eps_no_hellmem}
+    \end{subfigure}
+    \caption{Relative error $Z_{\varepsilon}$ values depending on the slope (in degree). Each curve corresponds to a different scene. In \Cref{fig:slope_eps_no_hellmem}, we removed the Hellmem curve from \Cref{fig:slope_eps_all} for more visibility.}
+    \label{fig:slope_eps}
+\end{figure}
+
+
+\todoroman{Montrer le GT - DSM pour voir s'il ya des vibrations ou alors si ça dépend de la slope. Montpellier et Paris vibration, Bordeaux à voir}
+\todoroman{NDVI pour les arbres à Paris}
+\todoroman{Carrière Monaco}
+\todoroman{Justifier le fait qu'on a fait la Même avec MCCNN, les intervalles sont correct mais grand}
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{\linewidth}
+        \flushright
+        \includegraphics[width=0.95\linewidth]{Images/Chap_5/paris_error_tree_clr.png}
+        \caption{RGB image}
+        \label{fig:paris_error_tree_clr}
+    \end{subfigure}\\
+    \begin{subfigure}[t]{\linewidth}
+        \flushright
+        \includegraphics[width=0.95\linewidth]{Images/Chap_5/paris_error_tree_gt.png}
+        \caption{Ground truth \acrshort{dsm}}
+        \label{fig:paris_error_tree_gt}
+    \end{subfigure}\\
+    \begin{subfigure}[t]{\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_5/paris_error_tree.png}
+        \caption{Elevation intervals, CARS and ground truth \acrshort{dsm}}
+        \label{fig:paris_error_tree_line}
+    \end{subfigure}
+    \caption{Behaviour of \acrshort{DSM} near vegetation. \Cref{fig:paris_error_tree} details the different elevation values along the orange line from \Cref{fig:paris_error_tree_clr,fig:paris_error_tree_gt}. Building and roads are relatively well estimated, but an elevation bias can be observed near trees.}
+    \label{fig:paris_error_tree}
+\end{figure}
+
+\subsection{Ablation Studies}
+\todoroman{Montrer differentes zones d'aggrégation avec différents paramètres.}
+\todoroman{A mettre en annexe ?}
+
+\subsection{Unexplored leads}
+Patatoides sur les lignes de visées. Un pixel est représenté par des coordonées précises mais est en fait l'aggrégation d'information radiométriques issues d'une surface au sol. On pourrait donc imaginer que les lignes de visées ne sont pas une ligne mais plus un cône/cylindre (approx), et donc qu'on pourrait donc représenter la position d'un point 3D comme l'intersection de deux volumes (cône + intervalles de disparité).   
+
+Filtrer les points si la distance planimétrique en x et en y est trop grande. 
+Filtrage non gaussien 
+
 
 \todoroman{Rasterizer le min max du lidar HD pour avoir une idée des intervalles.}
 \pagebreak
