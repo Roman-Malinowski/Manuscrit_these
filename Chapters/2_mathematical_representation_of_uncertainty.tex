@@ -19,7 +19,7 @@ Assessing the reliability of an engineering system requires to quantify the unce
 \begin{itemize}
     \item fuzzy sets \cite{zadeh_fuzzy_1999} when trying to estimate the degree of truth of a statement such as ``This person is tall''
     \item intervals \cite{jaulin_applied_2001}, where no preferences are given inside a specific range of possible values
-    \item imprecise probabilities which tries to extend the concept of probabilities in order to model epistemic uncertainty
+    \item imprecise probabilities which tries to extend the concept of probabilities in order to model epistemic uncertainty \commanu{ref ?}
 \end{itemize}
 This list is not exhaustive. Additionally, those different models can sometimes be equivalent. Choosing to use one or another depends on the nature of the problem and of the available data. In this chapter, we will mainly consider probability distributions (\Cref{sec:probabilities}) and imprecise probabilities (\Cref{sec:imprecise_probabilities}). Two specific cases of imprecise probabilities will be detailed, namely possibility distributions in \Cref{sec:possibilities} and p-boxes in \Cref{sec:pboxes}.
 
@@ -27,7 +27,7 @@ This list is not exhaustive. Additionally, those different models can sometimes 
     Distinguishing between stochastic and epistemic uncertainty is a model accepted by many to distinguish between different situations of uncertainty. One could argue that stochastic uncertainty is, to a certain degree, the same thing as epistemic uncertainty. Indeed, if we had enough knowledge on initial conditions of a dice throw for instance (force and torque applied on the dice, its exact shape and mass distribution \etc), as well as the exact physics model, one could predict with certainty on which side it would land. There would therefore be no aleatoric process at stake here. The question of whether or not we should make the distinction between aleatoric and epistemic uncertainty is of interest regarding theoretical aspects of the nature of uncertainty. For real-life applications however, differentiating between the two seems reasonable as we cannot know every parameter and exact model at stake for every quantity of interest. 
 \end{remark}
 
-At the end of the day\comloic{et au début du suivant ? sachant que la nuit porte conseil ;-) désolé j'aime bien cette expression d'américain elle me fait toujours sourire}, choosing one model over another is not always straightforward. It requires to be aware of the type of uncertainty faced, of the strengths and limitations of each model, of the tools available to manipulate the models \etc When it comes to less common models cited above, it fundamentally requires to be aware of the existence of such models, which is not always the case for non-specialists\comloic{merci}. During this thesis, we tried to promote less common models\comloic{oui je l'ai senti comme ça aussi :-)}, especially possibility distributions. We did so by presenting real life cases where they could be used while improving uncertainty modeling in the field of stereo-photogrammetry (see chapters \ref{chap:propagating} and \ref{chap:epistemic_uncertainty}). \comroman{Je pense que cette remarque devrait plutôt se retrouver dans l'intro de la thèse, car elle s'éloigne de ce qui suit. Peut être même que les deux paragraphes pourraient être déplacés dans l'intro}\commanue{Oui tu peux mettre cela dans l'intro, ce sera mieux. Après la remarque est très bien}
+At the end of the day\comloic{et au début du suivant ? sachant que la nuit porte conseil ;-) désolé j'aime bien cette expression d'américain elle me fait toujours sourire}, choosing one model over another is not always straightforward. It requires to be aware of the type of uncertainty faced, of the strengths and limitations of each model, of the tools available to manipulate the models \etc When it comes to less common models cited above, it fundamentally requires to be aware of the existence of such models, which is not always the case for non-specialists\comloic{merci}. During this thesis, we tried to promote less common models\comloic{oui je l'ai senti comme ça aussi :-)}, especially possibility distributions \commanu{, knowing that research is made also by finding new possibilities by confronting research fields ... est ce que tu dis quelque part que c'est un des premiers travail qui mélange proba imprécise et 3D/téledection? c'est quand meme à noter ! }. We did so by presenting real life cases where they could be used while improving uncertainty modeling in the field of stereo-photogrammetry (see chapters \ref{chap:propagating} and \ref{chap:epistemic_uncertainty}). \comroman{Je pense que cette remarque devrait plutôt se retrouver dans l'intro de la thèse, car elle s'éloigne de ce qui suit. Peut être même que les deux paragraphes pourraient être déplacés dans l'intro}\commanue{Oui tu peux mettre cela dans l'intro, ce sera mieux. Après la remarque est très bien}
 
 \subsection{Probabilities}\label{sec:probabilities}
 Probability measures are a classical framework to represent uncertainty. There are multiple ways of interpreting them, mainly with a \textit{frequentist} approach, or a \textit{Bayesian} approach. From a frequentist point of view, probabilities are well fitted to represent stochastic uncertainty, \ie uncertainty regarding events that can get a different result each time we run an experiment or acquire a measure (typically, noise on a sensor). From a \textit{Bayesian} point of view, probabilities represent a state of knowledge or degree of belief, and can be updated with additional information. This leads to the notion of prior and posterior probability that will not be considered in this thesis.
@@ -57,7 +57,7 @@ We remind here basic definitions regarding probability distributions.
 
 Using a random variable allows to consider the probability measure on different spaces. We then call $P$ the probability distribution of the considered random variable $X$.
 
-Other useful concepts regarding probability distributions are cumulative distribution functions and density functions:
+Other useful concepts regarding probability distributions are cumulative distribution functions and density functions \commanu{on dit souvent CDF et PDF probability density function, utile comme acronyme après ?}:
 \begin{definition}[Cumulative Distribution Function]\label{def:cdf}
     A Cumulative Distribution Function $F_X$ of a random variable $X$ with real values is the probability that $X$ will be less or equal to a number $x$. Formally, we define $F_X:\X\rightarrow[0,1]$:
     \begin{equation*}
@@ -103,7 +103,7 @@ As stated previously, probability measures are fitted to represent stochastic un
     \begin{equation*}
         P(Y=0)=P(X=1)+P(X=3)=\frac{2}{3},\qquad P(Y=1)=P(X=2) = \frac{1}{3}
     \end{equation*}
-    Which is clearly not the density of an uniform distribution. By supposing we have no preferences on the values of a variable, we actually deduced preferences on the values of another variable. One should use an uniform distribution only when they are certain that all values are equiprobable. This is because uniform distributions are well suited for representing statements like ``all values have the same likelyhood'' but not for statements like ``I have no information over the values, and thus no preference''. Indeed, a probability distribution actually contains a lot of information about a random variable, which is not suited to represent epistemic uncertainty.\commanue{J'aime bien l'exemple il faudrait peut-être juste ajouter des mots de liaison pour bien distinguer les différents raisonnements entre eux.}
+    Which is clearly not the density of an uniform distribution. By supposing we have no preferences on the values of a variable, we actually deduced preferences on the values of another variable. One should use an uniform distribution only when they are certain that all values are equiprobable. This is because uniform distributions are well suited for representing statements like ``all values have the same likelyhood''\commanu{likelihood plutot} but not for statements like ``I have no information over the values, and thus no preference''. Indeed, a probability distribution actually contains a lot of information about a random variable, which is not suited to represent epistemic uncertainty.\commanue{J'aime bien l'exemple il faudrait peut-être juste ajouter des mots de liaison pour bien distinguer les différents raisonnements entre eux.}
     
     \begin{remark}
         From a Bayesian point of view, a probability can also represent a degree of belief, allowing them to represent epistemic uncertainty and not only stochastic uncertainty, in theory. However, it does not solve the expressiveness problem raised by this example. Bayesians are still reasoning with probabilities, which make no difference between ``I have no preference between these events'' and ``these events are equiprobable''. Even though they can update their prior with additional information, this would not fix the problem presented here. In the absence of additional information, basing a decision on the prior would lead to debatable conclusions.
@@ -114,7 +114,7 @@ As stated previously, probability measures are fitted to represent stochastic un
 As highlighted in example \ref{ex:proba_limitations}, uncertainty cannot always be correctly modeled by probabilities, especially in a context where data is sparse. To overcome this problem, a generalization of probabilities have been introduced, called \textit{imprecise probabilities}. Imprecise probabilities (sometimes abbreviated IP) provide a general framework for working with both aleatoric and epistemic uncertainty with the concept of lower and upper probabilities. Lower and upper probabilities are quite  generic and flexible, and can be derived in more specific models. Here is a brief scope of the relevant tools it compasses: the special case of \textit{belief functions}, themselves containing specific sub-categories such as possibility distributions \ref{sec:possibilities} and probability boxes \ref{sec:pboxes} \etc\commanue{Je mettrais pas le etc} It also contains probabilities presented in \Cref{sec:probabilities}, which we will call \textit{precise} probabilities by opposition to \textit{imprecise} probabilities. \Cref{fig:diagram_IP} sums up the relationship and specificity of each imprecise model.
 
 \begin{remark}
-    At its more generic, IP can be described by sets of acceptable gambles, and by lower and upper expectations \cite{walley_statistical_1991,augustin_introduction_2014}. Although very interesting, we did not use them in our applications and thus do not consider them in this thesis.
+    At its more generic\commanu{bizarre l'anglais, On a more generic level par exemple ?}, IP can be described by sets of acceptable gambles, and by lower and upper expectations \cite{walley_statistical_1991,augustin_introduction_2014}. Although very interesting, we did not use them in our applications and thus do not consider them in this thesis.
 \end{remark}
 \begin{figure}[ht]
     {\centering
@@ -186,7 +186,7 @@ When constructing credal sets, it is common to possess a non convex set of proba
 \end{definition}
 
 \begin{remark}
-    The convex hull is computationally heavy to compute. Determining the infimum and supremum of a set of probability is not trivial as it might require to iterate through every element of $S$. It is however very useful, especially in the case where we do not know the set bounds on every event. In that case, computing the convex hull also allows us to determine the bounds on those events.
+    The convex hull is computationally heavy to compute \commanu{redondant, juste is not computer-efficent, en tout cas pas 2 fois compute ;)}. Determining the infimum and supremum of a set of probability is not trivial as it might require to iterate through every element of $S$. It is however very useful, especially in the case where we do not know the set bounds on every event. In that case, computing the convex hull also allows us to determine the bounds on those events.
 \end{remark}
 
 \begin{example}
@@ -205,14 +205,14 @@ When constructing credal sets, it is common to possess a non convex set of proba
 A special case of imprecise probabilities are belief functions, which we will detail in this section. First, we will introduce a key concept that goes along belief functions: mass distribution functions. We will then derive belief functions from it.
 
 \begin{definition}[Mass distribution function]\label{def:mass_distribution_function}
-    Let $\X$ be a frame of discernment\commanue{alrs X à la base c'est set of possible outcomes et là tu donnes un autre nom c'est pour la même chose ou il y a une subtilité. J'aime pas les variables qui changent surtout quand je suis pas à l'aise dans le domaine}\comloic{ah ouais +1 là t'es dur avec nous} and $2^\X$ its power set. A mass distribution function (or basic probability assignment \cite{shafer_mathematical_1976}) is a function $m:2^\X\rightarrow[0,1]$ \st:
+    Let $\X$ be a frame of discernment\commanue{alrs X à la base c'est set of possible outcomes et là tu donnes un autre nom c'est pour la même chose ou il y a une subtilité. J'aime pas les variables qui changent surtout quand je suis pas à l'aise dans le domaine}\comloic{ah ouais +1 là t'es dur avec nous}\commanu{en effet ;)} and $2^\X$ its power set. A mass distribution function (or basic probability assignment \cite{shafer_mathematical_1976}) is a function $m:2^\X\rightarrow[0,1]$ \st:
     \begin{align}
         m(\emptyset) =& 0\label{eq:mass_emptyset}\\
         \sum_{a\subseteq\X}m(a) =& 1\label{eq:mass_whole_set}
     \end{align}
 \end{definition}
 
-There are multiple ways of interpreting $m(a)$, presented bellow so as to be more familiar with $m$:
+There are multiple ways of interpreting $m(a)$, presented bellow\commanu{below, mais la tournure de la phrase me parait lourde:}, so as to be more familiar with $m$\commanu{pas évident de comprendre ce que tu expliques: la fonction de distribution de masse ou un sous ensemble ? est ce que cette phrase peut etre tournée sans m(a) et m et avec leur description en anglais?}:
 \begin{itemize}
     \item If we consider a random set $X$, then $m(a)$ encodes the probability mass that $X$ takes $a$ as its set value.
     \item If $X$ is a random variable, then $m(a)$ encodes the available evidence that the numerical value of $X$ is \textit{exactly} in $a$, without any preferences for the values within $a$. This mean there could also be another evidence that $X$ is in $a'\subset a$, encoded with $m(a')$, and which could be either lower or higher than $m(a)$ depending on the amount of evidence available. Example \ref{ex:bicycle_pressure} illustrates this with a toy scenario. 
@@ -334,7 +334,7 @@ Another notion closely related to possibility distributions is that of \(\alpha\
         \item Other values are impossible, and thus have a possibility of $0$.
     \end{itemize}
     The possibility distribution $\pi$ is represented in \Cref{fig:possibility_distribution}
-    Based on this, we are no\comloic{now aussi j'imagine} able to express the degree of necessity and of possibility for all events. For instance:
+    Based on this, we are no\comloic{now aussi j'imagine} able to express the degree of necessity and of\commanu{j'enleverais le 2ieme of} possibility for all events. For instance:
     \begin{itemize}
         \item The degree of necessity that the pressure lies between $4$ and $5$ bar is $\Nec([4, 5])=1-\sup_{\rho\not\in[4,5]}\pi(\rho)=0.7$
         \item The degree of necessity that the pressure lies between $3.5$ and $5.5$ bar is $\Nec([3.5,~ 5.5]) = 1-\sup_{\rho\not\in[3.5,5.5]}\pi(\rho) = 1$\comroman{Retour à la ligne avant l'équation?}, meaning that the pressure is necessarily in this range.
@@ -375,7 +375,7 @@ Another notion closely related to possibility distributions is that of \(\alpha\
 \end{figure}
 
 \begin{remark}
-    If you are familiar with fuzzy sets you may have noticed than\comloic{that?} possibility distributions strongly resemble to the membership function of a fuzzy set. Links between fuzzy sets and possibility measures have been explored in \cite{zadeh_fuzzy_1999}.
+    If you are familiar with fuzzy sets you may have noticed than\comloic{that?} possibility distributions strongly resemble\commanu{is very similar ?} to the membership function of a fuzzy set. Links between fuzzy sets and possibility measures have been explored in \cite{zadeh_fuzzy_1999}.
 \end{remark}
 
 Focal sets of necessity functions can be determined directly from the possibility distribution by looking at their \( \alpha \)-cuts. It has been proven that the core $\mathcal{C}$ (the set containing all focal sets) of a necessity function is (\cite{destercke_unifying_2008}):
@@ -489,7 +489,7 @@ Given the shape of focal sets, there can be at most $2n-1$ in a frame of discern
 
 
 \section{Dependency Models: Copulas}\label{sec:copulas}
-During previous sections, we presented different models of uncertainty that will be considered throughout this thesis. When we will aggregate and propagate multiple sources of uncertainty in chapters \ref{chap:joining_credal_sets}, \ref{chap:propagating} and \ref{chap:epistemic_uncertainty}, we will need to take into account the dependency between our uncertain sources. In this section, we will present dependency models called copulas, which are mathematical tools used to represent the dependency between multiple random variables. Copulas can represent many types of dependency, ranging from complete monotonicity to complete counter-monotonicity, including independence between variables. \Cref{sec:copula_def} will present the mathematical definition of a copula as well as practical families of copulas and how they can model different dependencies. \Cref{sec:dconvexity} will present a specific property shared by some copulas and a theoretical contribution that will used later in sections \ref{subsec:pboxes} and \ref{subsec:multiple_models}. Finally, we present how to generate multivariate samples from a copula, which will be used in \Cref{sec:montecarlo}.
+During previous sections, we presented different models of uncertainty that will be considered throughout this thesis. When we will aggregate and propagate multiple sources of uncertainty in chapters \ref{chap:joining_credal_sets}, \ref{chap:propagating} and \ref{chap:epistemic_uncertainty}, we will need to take into account the dependency between our uncertain sources. In this section, we will present dependency models called copulas, which are mathematical tools used to represent the dependency between multiple random variables. Copulas can represent many types of dependency, ranging from complete monotonicity to complete counter-monotonicity, including independence between variables. \Cref{sec:copula_def} will present the mathematical definition of a copula as well as practical families of copulas and how they can model different dependencies. \Cref{sec:dconvexity} will present a specific property shared by some copulas and a theoretical contribution that will \commanu{be ?}used later in sections \ref{subsec:pboxes} and \ref{subsec:multiple_models}. Finally, we present how to generate multivariate samples from a copula, which will be used in \Cref{sec:montecarlo}.
 
 \subsection{Core Definitions and Examples}\label{sec:copula_def}
 In the following, let $n\in\mathbb{N}^*$ be the number of sources of uncertainty considered (either represented by random variables or random sets). We first introduce copulas, which are mapping from $[0,1]^n\rightarrow [0,1]$ verifying a number of properties, and that can model dependencies when considering \hyperref[theorem:sklar]{Sklar's Theorem}, which will be presented in this section.
@@ -505,7 +505,7 @@ In the following, let $n\in\mathbb{N}^*$ be the number of sources of uncertainty
 where $\Pi_{i=1}^n$ is the Cartesian product of $n$ elements, meaning that $(w_1\enum w_n)\in\Pi_{i=1}^n\{u_i, v_i\}$ is a tuple of $n$ elements, where each element is either $u_i$ or $v_i$. Additionally, $|\{i~|~w_i=u_i\}|$ refers to the cardinal of the set $\{i~|~w_i=u_i\}$. 
 \end{definition}
 
-The first term in \cref{eq:cop_hvolume} is also called H-volume or hyper-volume. It is used to compute joint probability mass assignments in the precise case (and also in the imprecise case, see \Cref{sec:joint_mass}). In the rest of this thesis, we will use the following notation to refer to the $H$-volume:
+The first term in \cref{eq:cop_hvolume} is also called H-volume or hyper-volume. It is used to compute joint probability mass assignments in the precise case (and also in the imprecise case, see \Cref{sec:joint_mass}). In the rest of this thesis\commanu{j'aime pas trop in the rest, très french, We will now use... seulement?}, we will use the following notation to refer to the $H$-volume:
 \begin{eqnarray}\label{eq:hvolume}
     &&\forall i\in\opi 1,n\cli ,~\forall~0\leqslant u_i \leqslant v_i \leqslant 1,\nonumber\\
     &&H^{v_1,\dots v_n}_{u_1\enum u_n}=\sum_{(w_1\enum w_n)\in\Pi_{i=1}^n\{u_i, v_i\}}(-1)^{|\{i~|~w_i=u_i\}|}C(w_1\enum w_n)
@@ -517,7 +517,7 @@ The first term in \cref{eq:cop_hvolume} is also called H-volume or hyper-volume.
         P(U_1\leqslant u_1, U_2\leqslant u_2) = C(u_1, u_2)
     \end{equation*}
     Let $(u_1,u_2)\in[0,1]^2$ and $(v_1,v_2)\in[0,1]^2$ \st $u_1\leqslant v_1$ and $u_2\leqslant v_2$. 
-    Computing the H-volume of $C$ between $(v_1,v_2)$ and $(u_1,u_2)$, using different colors to help comprehension, yields:
+    Computing the H-volume of $C$ between $(v_1,v_2)$ and $(u_1,u_2)$, using different colors to help comprehension \commanu{understanding?}, yields:
     \begin{align}
         H^{v_1,v_2}_{u_1,u_2} =& ~C(v_1, v_2) - C(v_1, u_2) - C(u_1, v_2) + C(u_1, u_2)\nonumber\\
         =&~ \textcolor{blue}{P(U_1\leqslant v_1, ~U_2\leqslant v_2) - P(U_1\leqslant v_1, ~U_2\leqslant u_2)}\nonumber\\
@@ -551,7 +551,7 @@ A central theorem regarding copulas is \hyperref[theorem:sklar]{Sklar's Theorem}
 Copulas are very useful to represent the dependency \comloic{je doute entre dependency et dependencies dans ce contexte} between multiple sources of uncertainty. As such, they can play a key role in uncertainty propagation problems, explored in \Cref{chap:propagating}.
 
 \begin{example}[Usefulness of the H-Volume]\label{ex:hvolume}
-    This example will illustrate how the H-volume of a copula can be used to compute the probability mass function of a multivariate probability. Let us imagine a game where a dealer throws two coins, and we are are interested in the joint result of the throws. We consider the two random variables $X_1$ and $X_2$ indicating the results of each throw:
+    This example will illustrate how the H-volume of a copula can be used to compute the probability mass function of a multivariate probability. Let us imagine a game where a dealer throws two coins, and we are are interested in the joint result of the throws.\commanu{pas évident pour un néophyte de comprendre l'utilité du H-Volume dans ton exemple. Peut etre une phrase pour expliquer à quoi ca sert dans ton exemple du dealer, après tu pars vraiment dans l'explication technique math et on ne voit pas à quoi sert le H-Volume de façon imagée, à mon avis} We consider the two random variables $X_1$ and $X_2$ indicating the results of each throw:
     \begin{align*}
         &X_1=0\text{ if the first coin is heads, otherwise }X_1=1\\
         &X_2=0\text{ if the second coin is heads, otherwise }X_2=1
@@ -651,7 +651,7 @@ which will be used later in subsection \ref{subsection:product_copula}. Graphica
         \end{align*}
         The values taken by the joint probability is now completely different than in the other cases. We see that values $(1,1)$ and $(0,0)$ are indeed impossible to obtain, while $(0,1)$ and $(1,0)$ are equiprobable.
 	\end{itemize}
-	Those three cases indicate how copulas can represent very different dependency structures from the same marginals. It also intuitiates the fact that the \L ukasiewicz copula only allows values that are ``opposite'', whereas the Minimum copula only allows values that are similar. In those examples, the dependency is so important that knowing the result of one coin throw determines the result of the second, which is therefore modeled by extreme copulas, \ie the upper and lower Fréchet-Hoeffding bounds.  We will see in the following that there are other families of copula that allow less ``extreme'' dependencies.
+	Those three cases indicate how copulas can represent very different dependency structures from the same marginals. It also intuitiates\commanu{c'est anglais ? implies?} the fact that the \L ukasiewicz copula only allows values that are ``opposite'', whereas the Minimum copula only allows values that are similar. In those examples, the dependency is so important that knowing the result of one coin throw determines the result of the second, which is therefore modeled by extreme copulas, \ie the upper and lower Fréchet-Hoeffding bounds.  We will see in the following that there are other families of copula that allow less ``extreme'' dependencies.
 \end{example}
 
 To complete this overview of copulas, let us present other copulas that can be generated using a single parameter $\theta$ in the case $n=2$. Such famous families of copulas are presented in \Cref{tab:familiy_of_copula}. Those families are quite common in the literature, but this list is not exhaustive.\commanue{Peut-être ajouter une colonne où tu expliques leur intérêt}
@@ -781,7 +781,7 @@ Where $|R|$ is the determinant of $R$. This family of copulas will be used in \C
 \end{remark}
 
 \subsection{Directional convexity/concavity for copulas}\label{sec:dconvexity}
-This section will investigate a property shared by some copulas called directional convexity/concavity. This is more of a theoretical contribution, as we do not exploit them in the applications to stereo-photogrammetry in chapters \ref{chap:propagating} and \ref{chap:epistemic_uncertainty}. However, we will see that those properties are shared by many common families of copulas. We also use them to prove a specific relationship between multivariate uncertainty models in sections \ref{subsec:pboxes} and \ref{subsec:multiple_models}. For readers that do not want to dive into details regarding directional convexity/concavity, we advise to consider only definition \ref{def:convex} and the main result of this section which is presented in \cref{eq:convex_diff_hvol}.
+This section will investigate a property shared by some copulas called directional convexity/concavity. This is more of a theoretical contribution\commanu{this is a theoritical, pas besoin du more of. peut etre dire clairement que tu l'as faite? et que cela t'a servi à mieux appréhender ce champ math de l'incertitude?}, as we do not exploit them in the applications to stereo-photogrammetry in chapters \ref{chap:propagating} and \ref{chap:epistemic_uncertainty}. However, we will see that those properties are shared by many common families of copulas. We also use them to prove a specific relationship between multivariate uncertainty models in sections \ref{subsec:pboxes} and \ref{subsec:multiple_models}. For readers that do not want to dive into details regarding directional convexity/concavity, we advise to consider only definition \ref{def:convex} and the main result of this section which is presented in \cref{eq:convex_diff_hvol}.
 
 \begin{definition}[D-convexity, D-concavity]\label{def:convex}
     A copula $C$ is called directionally convex (D-convex) \cite{alvoni_dierent_2007} if for every $(u_1 \enum u_n)\in[0,1]^n$, $(v_1\enum v_n)\in[0,1]^n$, $i\in\opi1,n\cli$ and $t\in[0,1]$ it verifies:
@@ -928,7 +928,7 @@ The rest of this section will present different results regarding D-convex and D
 \end{proof}
 
 \subsection{Sampling from a Copula}\label{sec:sampling_copula}
-As a copula represent the CDF of a multivariate random variable, it is possible to sample from it. This section details a method for sampling from copulas in general, and a special method for sampling from Gaussian copulas. For simplicity, let us first present a method for sampling in the case $n=2$. Given a copula $C$, and two CDF $F_X$ and $F_Y$, a method to generate a pair of observations $(x, y)$ from a joint CDF $C(F_X, F_Y)$ is the following:
+As a copula represent the CDF of a multivariate random variable, it is possible to sample from it. This section details a method for sampling from copulas in general, and a special method for sampling from Gaussian copulas. \commanu{question béotien: est ce que ca te sert après ou idem c'est pour la théorie. Tu l'as fait de mettre une phrase de contexte par rapport à ta thèse, peut etre bien ici aussi pour "sampling from copula"} For simplicity, let us first present a method for sampling in the case $n=2$. Given a copula $C$, and two CDF $F_X$ and $F_Y$, a method to generate a pair of observations $(x, y)$ from a joint CDF $C(F_X, F_Y)$ is the following:
 
 \begin{itemize}
     \item Sample two independent samples $u_1, u_2$ from a uniform distribution on [0,1]
