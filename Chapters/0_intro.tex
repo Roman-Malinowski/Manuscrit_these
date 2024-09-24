@@ -69,7 +69,8 @@ During this thesis, we\commanue{Je viens de remarquer le pronom we. Je ne sais p
     \item \Cref{chap:representation_of_uncertainty} will introduce the different uncertainty models considered in this thesis, mainly possibility distributions and copulas. The end of \Cref{chap:representation_of_uncertainty} and the following chapters constitute the main contributions of this thesis\commanue{moi je mettrais pas cette phrase}.
     \item In \Cref{chap:joining_credal_sets}, we propose different methods for creating specific multivariate uncertainty models based on the models introduced in \Cref{chap:representation_of_uncertainty}. We also study the relationships between the methods we introduced.
     \item \Cref{chap:propagating} uses the concepts of \Cref{chap:representation_of_uncertainty} and the results of \Cref{chap:joining_credal_sets} to propagate uncertainties modeled by possibility distributions in a part of the dense-matching step of the stereo pipeline.
-    \item \Cref{chap:epistemic_uncertainty} also uses possibility distributions, but this time to characterize the uncertainty of the dense-matching step itself. Using this method, we are able to obtain confidence intervals at the end of the dense-matching step. Those intervals are then propagated to the end of the pipeline, to generate confidence intervals on the final DSM.
+    \item \Cref{chap:epistemic_uncertainty} also uses possibility distributions, but this time to characterize the uncertainty of the dense-matching step itself. Using this method, we are able to obtain confidence intervals at the end of the dense-matching step. 
+    \item \Cref{chap:elevation_intervals} propagates the disparity intervals to the end of the pipeline, in the form of elevation intervals on the final DSM. 
 \end{itemize}
 
 \commanu{intéressant de guider le lecteur sur les 2 champs de compétences mais tu peux faire plus direct comme transition. Genre, tu remplaces ce petit paragraphe avec par exemple: To help readers in following chapters depending on their field of expertise, here is a classification of each chapter}
@@ -77,9 +78,9 @@ During this thesis, we\commanue{Je viens de remarquer le pronom we. Je ne sais p
 Allow us to make a small disclaimer\commanu{effet de style qui accouche un peu d'une souris à mon avis, juste un feeling à la lecture, je mettrais pas.}: because our contributions concern two distinct fields of research, readers with a level of expertise in one field might be less interested in the second field. We tried, as much as possible, to write each chapter so it can be read and followed by everyone, although some details might need additional knowledge in a field of expertise. To help readers to navigate through chapters according to their center of interests, here is an attempt to classify each chapter into its field of research.
 \begin{itemize}
     \item \Cref{chap:stereophotogrammetry} focuses on stereo photogrammetry.
-    \item Chapters \ref{chap:representation_of_uncertainty} and \ref{chap:joining_credal_sets} focuses on the modelling of uncertainty.
+    \item \Cref{chap:representation_of_uncertainty,chap:joining_credal_sets} focuses on the modelling of uncertainty.
     \item \Cref{chap:propagating} joins both fields, but leans a bit more towards uncertainty propagation than towards photogrammetry. 
-    \item \Cref{chap:epistemic_uncertainty} also attempts to join both fields of research, but focuses almost completely on photogrammetry.
+    \item \Cref{chap:epistemic_uncertainty,chap:elevation_intervals} also attempt to join both fields of research, but focuses almost completely on photogrammetry.
 \end{itemize}
 
 \commanu{je mettrais pas cette section technique hyperref dans l'intro, en annexe si tu veux vraiment garder avec un lien, en tout cas c'est pas le but de l'intro, ca  met le lecteur ailleurs...}
