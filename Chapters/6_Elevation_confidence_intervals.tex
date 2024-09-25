@@ -71,7 +71,7 @@ This section will present the different images and ground truth \acrshort{dsm}s 
     \item Two different \acrshort{dsm}s in the mountainous region of Jotunheinem, Norway. We will refer to each \acrshort{dsm} as Hellmem (\Cref{fig:miniature_Hellmem}) and Graasubreen (\Cref{fig:miniature_Graasubreen}).
     \item Langfjordjøkelen glacier, Norway (\Cref{fig:miniature_Langfjordjokelen}).
 \end{itemize}
-The ground truth were acquired by LiDAR data, rasterized at 50cm resolution. We did not applied the rasterization ourselves and only had access to the rasterized \acrshort{dsm}. The second source of ground truth data comes from the LiDAR HD program (\cite{monnet_lidarhd_2023} \url{https://geoservices.ign.fr/lidarhd}) which intends to cover the whole french territory (except French Guiana) by the end of 2026. It is a very rich source of information, with around $10$ measured points per m$^2$ and a planimetric precision of 50cm. As of the time we write this thesis, not all regions of France are publicly available. From the data available at the time, we selected different regions of interest in order to have a variety of landscapes (rural, urban, seaside \etc). Those landscapes all presented strong elevation variations in order to present a challenge for the stereo pipeline. We also want to determine if our method behaves differently depending on the nature of the scene. Here is the list of the considered regions:
+The ground truth were acquired by \acrshort{lidar} data, rasterized at 50cm resolution. We did not applied the rasterization ourselves and only had access to the rasterized \acrshort{dsm}. The second source of ground truth data comes from the \acrshort{lidar} HD program (\cite{monnet_lidarhd_2023} \url{https://geoservices.ign.fr/lidarhd}) which intends to cover the whole french territory (except French Guiana) by the end of 2026. It is a very rich source of information, with around $10$ measured points per m$^2$ and a planimetric precision of 50cm. As of the time we write this thesis, not all regions of France are publicly available. From the data available at the time, we selected different regions of interest in order to have a variety of landscapes (rural, urban, seaside \etc). Those landscapes all presented strong elevation variations in order to present a challenge for the stereo pipeline. We also want to determine if our method behaves differently depending on the nature of the scene. Here is the list of the considered regions:
 \begin{itemize}
     \item The city of Bordeaux (\Cref{fig:miniature_Bordeaux})
     \item The city of Paris (\Cref{fig:miniature_Paris})
@@ -81,9 +81,9 @@ The ground truth were acquired by LiDAR data, rasterized at 50cm resolution. We 
     \item Valleys and mountains near Grenoble, in the french Alps (\Cref{fig:miniature_Grenoble})
     \item Valleys and mountains at Pic du Midi, french Pyrenees (\Cref{fig:miniature_pic_du_midi})
 \end{itemize}
-The LiDAR point clouds were then rasterized at 50cm resolution with the same Gaussian rasterization method as in the stereo pipeline. \Cref{tab:dates_pleiades_lidar_hd} presents the different acquisition dates and shape of the ground truth \acrshort{dsm}.
+The \acrshort{lidar} point clouds were then rasterized at 50cm resolution with the same Gaussian rasterization method as in the stereo pipeline. \Cref{tab:dates_pleiades_lidar_hd} presents the different acquisition dates and shape of the ground truth \acrshort{dsm}.
 
-We used Pléiades images for producing both \acrshort{dsm}s and intervals that will be compared to the ground truth. We did not directly ordered the Pléiades acquisitions, as it is costly and hard to synchronise with the acquisition date of the ground truth. From the available catalogue, we selected stereo pairs that were acquired as close as possible from the acquisition date of the ground truth, or if multiple months separated the two acquisitions, we rather selected a similar period of previous/next year to minimize seasonal changes. \Cref{tab:dates_pleiades_lidar_hd} allows to compare dates of acquisition of the LiDAR and Pléiades images.
+We used Pléiades images for producing both \acrshort{dsm}s and intervals that will be compared to the ground truth. We did not directly ordered the Pléiades acquisitions, as it is costly and hard to synchronise with the acquisition date of the ground truth. From the available catalogue, we selected stereo pairs that were acquired as close as possible from the acquisition date of the ground truth, or if multiple months separated the two acquisitions, we rather selected a similar period of previous/next year to minimize seasonal changes. \Cref{tab:dates_pleiades_lidar_hd} allows to compare dates of acquisition of the \acrshort{lidar} and Pléiades images.
 
 We saw in \Cref{sec:elevation_intervals} that the planimetric and altimetric resolution (and errors) were defined by the incidence and convergence angles of the lines of sights of the satellites\commanue{the planimetric and altimetric accuracy depend on the incidence and convergence angles of the lines of sights of the satellites?}. \Cref{tab:angle_coupling_pleiades} presents those angles for the different Pléiades images.
 
@@ -105,7 +105,7 @@ We saw in \Cref{sec:elevation_intervals} that the planimetric and altimetric res
         Pic du Midi & 2021-10-02 & 2021-10-16 & $10001 \times 12001$ \\\hline
         Toulouse & 2022-05-29 & 2022-06-28 & $12001\times 8001$\\\hline
     \end{tabular}
-    \caption{Acquisition date of Pléiade stereo or tri-stereo images, and the LiDAR ground truth}
+    \caption{Acquisition date of Pléiade stereo or tri-stereo images, and the \acrshort{lidar} ground truth}
     \label{tab:dates_pleiades_lidar_hd}
 \end{table}
 
@@ -136,16 +136,16 @@ We saw in \Cref{sec:elevation_intervals} that the planimetric and altimetric res
     \begin{subfigure}[t]{0.48\linewidth}
         \flushleft
         \includegraphics[width=\linewidth]{Images/Chap_6/miniature_Bordeaux.png}
-        \caption{RGB image of Bordeaux (Pléiades © CNES 2022, Distribution AIRBUS DS)}
+        \caption{\acrshort{rgb} image of Bordeaux (Pléiades © CNES 2022, Distribution AIRBUS DS)}
         \label{fig:miniature_Bordeaux_rgb}
     \end{subfigure}\hfill
     \begin{subfigure}[t]{0.48\linewidth}
         \flushright
         \includegraphics[width=\linewidth]{Images/Chap_6/miniature_Bordeaux_gt.png}
-        \caption{LiDAR HD \acrshort{dsm}}
+        \caption{\acrshort{lidar} HD \acrshort{dsm}}
         \label{fig:miniature_Bordeaux_gt}
     \end{subfigure}
-    \caption{RGB image of Bordeaux and its associated ground truth \acrshort{dsm}.}
+    \caption{\acrshort{rgb} image of Bordeaux and its associated ground truth \acrshort{dsm}.}
     \label{fig:miniature_Bordeaux}
 \end{figure}
 
@@ -154,16 +154,16 @@ We saw in \Cref{sec:elevation_intervals} that the planimetric and altimetric res
     \begin{subfigure}[t]{0.48\linewidth}
         \flushleft
         \includegraphics[width=\linewidth]{Images/Chap_6/miniature_Grenoble.png}
-        \caption{RGB image of a region near Grenoble (Pléiades © CNES 2020, Distribution AIRBUS DS)}
+        \caption{\acrshort{rgb} image of a region near Grenoble (Pléiades © CNES 2020, Distribution AIRBUS DS)}
         \label{fig:miniature_Grenoble_rgb}
     \end{subfigure}\hfill
     \begin{subfigure}[t]{0.48\linewidth}
         \flushright
         \includegraphics[width=\linewidth]{Images/Chap_6/miniature_Grenoble_gt.png}
-        \caption{LiDAR HD \acrshort{dsm}}
+        \caption{\acrshort{lidar} HD \acrshort{dsm}}
         \label{fig:miniature_Grenoble_gt}
     \end{subfigure}
-    \caption{RGB image of Grenoble and its associated ground truth \acrshort{dsm}.}
+    \caption{\acrshort{rgb} image of Grenoble and its associated ground truth \acrshort{dsm}.}
     \label{fig:miniature_Grenoble}
 \end{figure}
 
@@ -172,16 +172,16 @@ We saw in \Cref{sec:elevation_intervals} that the planimetric and altimetric res
     \begin{subfigure}[t]{0.48\linewidth}
         \flushleft
         \includegraphics[width=\linewidth]{Images/Chap_6/miniature_Graasubreen.png}
-        \caption{RGB image of Graasubreen (Pléiades © CNES 2019, Distribution AIRBUS DS)}
+        \caption{\acrshort{rgb} image of Graasubreen (Pléiades © CNES 2019, Distribution AIRBUS DS)}
         \label{fig:miniature_Graasubreen_rgb}
     \end{subfigure}\hfill
     \begin{subfigure}[t]{0.48\linewidth}
         \flushright
         \includegraphics[width=\linewidth]{Images/Chap_6/miniature_Graasubreen_gt.png}
-        \caption{LiDAR \acrshort{dsm}}
+        \caption{\acrshort{lidar} \acrshort{dsm}}
         \label{fig:miniature_Graasubreen_gt}
     \end{subfigure}
-    \caption{RGB image of Graasubreen and its associated ground truth \acrshort{dsm}.}
+    \caption{\acrshort{rgb} image of Graasubreen and its associated ground truth \acrshort{dsm}.}
     \label{fig:miniature_Graasubreen}
 \end{figure}
 
@@ -190,16 +190,16 @@ We saw in \Cref{sec:elevation_intervals} that the planimetric and altimetric res
     \begin{subfigure}[t]{0.48\linewidth}
         \flushleft
         \includegraphics[width=\linewidth]{Images/Chap_6/miniature_Hellmem.png}
-        \caption{RGB image of Hellmem (Pléiades © CNES 2019, Distribution AIRBUS DS)}
+        \caption{\acrshort{rgb} image of Hellmem (Pléiades © CNES 2019, Distribution AIRBUS DS)}
         \label{fig:miniature_Hellmem_rgb}
     \end{subfigure}\hfill
     \begin{subfigure}[t]{0.48\linewidth}
         \flushright
         \includegraphics[width=\linewidth]{Images/Chap_6/miniature_Hellmem_gt.png}
-        \caption{LiDAR \acrshort{dsm}}
+        \caption{\acrshort{lidar} \acrshort{dsm}}
         \label{fig:miniature_Hellmem_gt}
     \end{subfigure}
-    \caption{RGB image of Hellmem and its associated ground truth \acrshort{dsm}.}
+    \caption{\acrshort{rgb} image of Hellmem and its associated ground truth \acrshort{dsm}.}
     \label{fig:miniature_Hellmem}
 \end{figure}
 
@@ -208,16 +208,16 @@ We saw in \Cref{sec:elevation_intervals} that the planimetric and altimetric res
     \begin{subfigure}[t]{0.48\linewidth}
         \flushleft
         \includegraphics[width=\linewidth]{Images/Chap_6/miniature_Langfjordjokelen.png}
-        \caption{RGB image of Langfjordjøkelen (Pléiades © CNES 2018, Distribution AIRBUS DS)}
+        \caption{\acrshort{rgb} image of Langfjordjøkelen (Pléiades © CNES 2018, Distribution AIRBUS DS)}
         \label{fig:miniature_Langfjordjokelen_rgb}
     \end{subfigure}\hfill
     \begin{subfigure}[t]{0.48\linewidth}
         \flushright
         \includegraphics[width=\linewidth]{Images/Chap_6/miniature_Langfjordjokelen_gt.png}
-        \caption{LiDAR \acrshort{dsm}}
+        \caption{\acrshort{lidar} \acrshort{dsm}}
         \label{fig:miniature_Langfjordjokelen_gt}
     \end{subfigure}
-    \caption{RGB image of Langfjordjøkelen and its associated ground truth \acrshort{dsm}.}
+    \caption{\acrshort{rgb} image of Langfjordjøkelen and its associated ground truth \acrshort{dsm}.}
     \label{fig:miniature_Langfjordjokelen}
 \end{figure}
 
@@ -226,16 +226,16 @@ We saw in \Cref{sec:elevation_intervals} that the planimetric and altimetric res
     \begin{subfigure}[t]{0.48\linewidth}
         \flushleft
         \includegraphics[width=\linewidth]{Images/Chap_6/miniature_Monaco.png}
-        \caption{RGB image of Monaco (Pléiades © CNES 2020, Distribution AIRBUS DS)}
+        \caption{\acrshort{rgb} image of Monaco (Pléiades © CNES 2020, Distribution AIRBUS DS)}
         \label{fig:miniature_Monaco_rgb}
     \end{subfigure}\hfill
     \begin{subfigure}[t]{0.48\linewidth}
         \flushright
         \includegraphics[width=\linewidth]{Images/Chap_6/miniature_Monaco_gt.png}
-        \caption{LiDAR HD \acrshort{dsm}}
+        \caption{\acrshort{lidar} HD \acrshort{dsm}}
         \label{fig:miniature_Monaco_gt}
     \end{subfigure}
-    \caption{RGB image of Monaco and its associated ground truth \acrshort{dsm}.}
+    \caption{\acrshort{rgb} image of Monaco and its associated ground truth \acrshort{dsm}.}
     \label{fig:miniature_Monaco}
 \end{figure}
 
@@ -244,16 +244,16 @@ We saw in \Cref{sec:elevation_intervals} that the planimetric and altimetric res
     \begin{subfigure}[t]{0.48\linewidth}
         \flushleft
         \includegraphics[width=\linewidth]{Images/Chap_6/miniature_Montpellier.png}
-        \caption{RGB image of Montpellier (Pléiades © CNES 2020, Distribution AIRBUS DS)}
+        \caption{\acrshort{rgb} image of Montpellier (Pléiades © CNES 2020, Distribution AIRBUS DS)}
         \label{fig:miniature_Montpellier_rgb}
     \end{subfigure}\hfill
     \begin{subfigure}[t]{0.48\linewidth}
         \flushright
         \includegraphics[width=\linewidth]{Images/Chap_6/miniature_Montpellier_gt.png}
-        \caption{LiDAR HD \acrshort{dsm}}
+        \caption{\acrshort{lidar} HD \acrshort{dsm}}
         \label{fig:miniature_Montpellier_gt}
     \end{subfigure}
-    \caption{RGB image of Montpellier and its associated ground truth \acrshort{dsm}.}
+    \caption{\acrshort{rgb} image of Montpellier and its associated ground truth \acrshort{dsm}.}
     \label{fig:miniature_Montpellier}
 \end{figure}
 
@@ -262,16 +262,16 @@ We saw in \Cref{sec:elevation_intervals} that the planimetric and altimetric res
     \begin{subfigure}[t]{0.48\linewidth}
         \flushleft
         \includegraphics[width=\linewidth]{Images/Chap_6/miniature_Paris.png}
-        \caption{RGB image of Paris (Pléiades © CNES 2023, Distribution AIRBUS DS)}
+        \caption{\acrshort{rgb} image of Paris (Pléiades © CNES 2023, Distribution AIRBUS DS)}
         \label{fig:miniature_Paris_rgb}
     \end{subfigure}\hfill
     \begin{subfigure}[t]{0.48\linewidth}
         \flushright
         \includegraphics[width=\linewidth]{Images/Chap_6/miniature_Paris_gt.png}
-        \caption{LiDAR HD \acrshort{dsm}}
+        \caption{\acrshort{lidar} HD \acrshort{dsm}}
         \label{fig:miniature_Paris_gt}
     \end{subfigure}
-    \caption{RGB image of  and its associated ground truth \acrshort{dsm}.}
+    \caption{\acrshort{rgb} image of  and its associated ground truth \acrshort{dsm}.}
     \label{fig:miniature_Paris}
 \end{figure}
 
@@ -280,16 +280,16 @@ We saw in \Cref{sec:elevation_intervals} that the planimetric and altimetric res
     \begin{subfigure}[t]{0.48\linewidth}
         \flushleft
         \includegraphics[width=\linewidth]{Images/Chap_6/miniature_Peyto.png}
-        \caption{RGB image of Peyto (Pléiades © CNES 2016, Distribution AIRBUS DS)}
+        \caption{\acrshort{rgb} image of Peyto (Pléiades © CNES 2016, Distribution AIRBUS DS)}
         \label{fig:miniature_Peyto_rgb}
     \end{subfigure}\hfill
     \begin{subfigure}[t]{0.48\linewidth}
         \flushright
         \includegraphics[width=\linewidth]{Images/Chap_6/miniature_Peyto_gt.png}
-        \caption{LiDAR HD \acrshort{dsm}}
+        \caption{\acrshort{lidar} HD \acrshort{dsm}}
         \label{fig:miniature_Peyto_gt}
     \end{subfigure}
-    \caption{RGB image of Peyto and its associated ground truth \acrshort{dsm}.}
+    \caption{\acrshort{rgb} image of Peyto and its associated ground truth \acrshort{dsm}.}
     \label{fig:miniature_Peyto}
 \end{figure}
 
@@ -298,16 +298,16 @@ We saw in \Cref{sec:elevation_intervals} that the planimetric and altimetric res
     \begin{subfigure}[t]{0.48\linewidth}
         \flushleft
         \includegraphics[width=\linewidth]{Images/Chap_6/miniature_Pic_du_midi.png}
-        \caption{RGB image of Pic du Midi (Pléiades © CNES 2021, Distribution AIRBUS DS)}
+        \caption{\acrshort{rgb} image of Pic du Midi (Pléiades © CNES 2021, Distribution AIRBUS DS)}
         \label{fig:miniature_pic_du_midi_rgb}
     \end{subfigure}\hfill
     \begin{subfigure}[t]{0.48\linewidth}
         \flushright
         \includegraphics[width=\linewidth]{Images/Chap_6/miniature_Pic_du_midi_gt.png}
-        \caption{LiDAR HD \acrshort{dsm}}
+        \caption{\acrshort{lidar} HD \acrshort{dsm}}
         \label{fig:miniature_pic_du_midi_gt}
     \end{subfigure}
-    \caption{RGB image of Pic du Midi and its associated ground truth \acrshort{dsm}.}
+    \caption{\acrshort{rgb} image of Pic du Midi and its associated ground truth \acrshort{dsm}.}
     \label{fig:miniature_pic_du_midi}
 \end{figure}
 
@@ -316,28 +316,28 @@ We saw in \Cref{sec:elevation_intervals} that the planimetric and altimetric res
     \begin{subfigure}[t]{0.48\linewidth}
         \flushleft
         \includegraphics[width=\linewidth]{Images/Chap_6/miniature_Toulouse.png}
-        \caption{RGB image of Toulouse (Pléiades © CNES 2022, Distribution AIRBUS DS)}
+        \caption{\acrshort{rgb} image of Toulouse (Pléiades © CNES 2022, Distribution AIRBUS DS)}
         \label{fig:miniature_Toulouse_rgb}
     \end{subfigure}\hfill
     \begin{subfigure}[t]{0.48\linewidth}
         \flushright
         \includegraphics[width=\linewidth]{Images/Chap_6/miniature_Toulouse_gt.png}
-        \caption{LiDAR HD \acrshort{dsm}}
+        \caption{\acrshort{lidar} HD \acrshort{dsm}}
         \label{fig:miniature_Toulouse_gt}
     \end{subfigure}
-    \caption{RGB image of Toulouse and its associated ground truth \acrshort{dsm}.}
+    \caption{\acrshort{rgb} image of Toulouse and its associated ground truth \acrshort{dsm}.}
     \label{fig:miniature_Toulouse}
 \end{figure}
 
 \subsection{Water Masks}
-Both LiDAR data and stereo correlation present poor results on water surfaces. For the LiDAR data, wavelengths are often absorbed by still water and do not provide the sensor with any feedback (although turbid water can usually send back some signal). For moving waters, the provided signal is often noisy and needs post processing to remove artifacts. Stereo photogrammetry has usual even poorer results, because open waters are texture-less or uniform surfaces on which the correlation does not perform well. Furthermore, for Pléiades acquisitions, the water has moved\commanue{may have moved?} between images which prevents water pixels to be correctly triangulated. For those reasons, we chose to add a water mask on images of cities crossed by a river (Bordeaux, Monaco, Montpellier, Paris and Toulouse) or near the seaside (Monaco). The water mask was obtained using an algorithm developed by CNES, which uses a random forest trained on existing high resolution mapping of surface waters \cite{pekel_high-resolution_2016} and the Normalized Difference Water Index \cite{gao_ndwinormalized_1996}. \Cref{fig:paris_watermask_2} presents a water mask produced on the image of Paris.
+Both \acrshort{lidar} data and stereo correlation present poor results on water surfaces. For the \acrshort{lidar} data, wavelengths are often absorbed by still water and do not provide the sensor with any feedback (although turbid water can usually send back some signal). For moving waters, the provided signal is often noisy and needs post processing to remove artifacts. Stereophotogrammetry has usual even poorer results, because open waters are texture-less or uniform surfaces on which the correlation does not perform well. Furthermore, for Pléiades acquisitions, the water has moved\commanue{may have moved?} between images which prevents water pixels to be correctly triangulated. For those reasons, we chose to add a water mask on images of cities crossed by a river (Bordeaux, Monaco, Montpellier, Paris and Toulouse) or near the seaside (Monaco). The water mask was obtained using an algorithm developed by CNES, which uses a random forest trained on existing high resolution mapping of surface waters \cite{pekel_high-resolution_2016} and the Normalized Difference Water Index \cite{gao_ndwinormalized_1996}. \Cref{fig:paris_watermask_2} presents a water mask produced on the image of Paris.
 
 \begin{figure}
     \centering
     \begin{subfigure}[t]{0.48\linewidth}
         \flushleft
         \includegraphics[width=\linewidth]{Images/Chap_6/miniature_Paris.png}
-        \caption{RGB image of Paris (Pléiades © CNES 2023, Distribution AIRBUS DS)}
+        \caption{\acrshort{rgb} image of Paris (Pléiades © CNES 2023, Distribution AIRBUS DS)}
         \label{fig:paris_watermask_1}
     \end{subfigure}\hfill
     \begin{subfigure}[t]{0.48\linewidth}
@@ -346,12 +346,12 @@ Both LiDAR data and stereo correlation present poor results on water surfaces. F
         \caption{Water mask}
         \label{fig:paris_watermask_2}
     \end{subfigure}
-    \caption{RGB image of Paris and its associated water mask. Water is indicated by blue pixels}
+    \caption{\acrshort{rgb} image of Paris and its associated water mask. Water is indicated by blue pixels}
     \label{fig:paris_watermask}
 \end{figure}
 
 \subsection{Co-registration}
-The \acrshort{dsm}s obtained from LiDAR data and from stereo photogrammetry are not necessarily in the same projection reference system, and do not use the same altitude reference. Moreover, due to the limited precision of the \acrshort{rpc} models and GPS measures of the the LiDAR, some planimetric and elevation bias may exist between the two \acrshort{dsm}s which do not allow their comparison as such. We therefore reproject the ground truth data in the same reference system as their corresponding \acrshort{dsm} produced by the CARS pipeline. We then rectify the planimetric and altimetric biases by employing the method presented in \cite{nuth_co-registration_2011}. This process is called co-registration. We quickly present the method for estimating the altimetric and planimetric biases, and refer to the original publication for additional details.
+The \acrshort{dsm}s obtained from \acrshort{lidar} data and from stereophotogrammetry are not necessarily in the same projection reference system, and do not use the same altitude reference. Moreover, due to the limited precision of the \acrshort{rpc} models and GPS measures of the the \acrshort{lidar}, some planimetric and elevation bias may exist between the two \acrshort{dsm}s which do not allow their comparison as such. We therefore reproject the ground truth data in the same reference system as their corresponding \acrshort{dsm} produced by the CARS pipeline. We then rectify the planimetric and altimetric biases by employing the method presented in \cite{nuth_co-registration_2011}. This process is called co-registration. We quickly present the method for estimating the altimetric and planimetric biases, and refer to the original publication for additional details.
 
 It is possible to observe that the measured differences between two shifted \acrshort{dsm}s vary with the slope angle and the orientation of the slope. The different parameters influencing the measured variations of elevation, presented in \Cref{fig:coregistration}, are the following:
 \begin{itemize}
@@ -627,7 +627,7 @@ Looking at \Cref{tab:elevation_metrics_global}, it seems that high values of the
 The proportion of invalid pixels that are not considered in the metrics can sometimes be quite high, as it is the case for Monaco (41$\%$) or Hellmem (34.7$\%$). This is due to the presence of water in large part of the image (\Cref{fig:miniature_Monaco_rgb}) or simply the absence of data form the provided ground truth (\Cref{fig:miniature_Hellmem_gt})\commanue{Est-ce qu'il faudrait pas remonter ça comme remarque avant que tu partes une analyse des métriques. La paragraphe d'avant a pour objectif de montrer qu'il y a un lien entre alti ratio et invalid pixels. Mais là c'est encore autre chose.}.
 
 \marquepage
-\youshallnotpass
+
 
 \todoroman{Mettre des images d'erreur et des coupes qui fonctionnent bien}
 
@@ -722,12 +722,12 @@ Finally the relative error also increases with slope. This can also be understoo
 We saw in \Cref{sec:results_elevation} that elevation confidence intervals present good results, both in accuracy and size. There were however three scenes that did not meet the accuracy objective of $90\%$: Bordeaux, Montpellier and Paris. We will see in this section that there are different factors which can explain why the accuracy objective was not verified on those scenes. Those reasons are: 
 \begin{itemize}
     \item Asynchronicity of the ground truth and satellite acquistions
-    \item Rasterization of LiDAR data over vegetation
+    \item Rasterization of \acrshort{lidar} data over vegetation
     \item Vibrations of the satellite during the images acquistion
 \end{itemize}
 
 \subsection{Asynchronicity of sources}
-The dates of acquisition of LiDAR data and Pléiades images were presented in \Cref{tab:dates_pleiades_lidar_hd}. In some scenes, large periods of time separate the LiDAR data from the satellite image, partly because we also tried to minimize the seasonality changes. Specifically, the time between acquisitions for Bordeaux, Grenoble, Monaco and Montpellier ranges between 5 and 13 months. This can lead to major changes of elevation in those scenes. A remarkable example of this can be found on the Monaco scene. If we take a look at the errors on this scene in \Cref{fig:Monaco_errors_global}, we can see that there is a strong concentration of those errors on the top left corner of the image. 
+The dates of acquisition of \acrshort{lidar} data and Pléiades images were presented in \Cref{tab:dates_pleiades_lidar_hd}. In some scenes, large periods of time separate the \acrshort{lidar} data from the satellite image, partly because we also tried to minimize the seasonality changes. Specifically, the time between acquisitions for Bordeaux, Grenoble, Monaco and Montpellier ranges between 5 and 13 months. This can lead to major changes of elevation in those scenes. A remarkable example of this can be found on the Monaco scene. If we take a look at the errors on this scene in \Cref{fig:Monaco_errors_global}, we can see that there is a strong concentration of those errors on the top left corner of the image. 
 
 \begin{figure}
     \begin{subfigure}[t]{0.495\linewidth}
@@ -746,7 +746,7 @@ The dates of acquisition of LiDAR data and Pléiades images were presented in \C
     \label{fig:Monaco_errors_global}
 \end{figure}
 
-\Cref{fig:Carriere} is a zoom on this area. By looking at the differences between the RGB image in \Cref{fig:Carriere_RGB} and the ground truth \acrshort{dsm} in \Cref{fig:Carriere_gt}, we can see that there are some differences between the ground truth and the satellite image (most notably, the bottom left of quarry levels are closer on the ground truth that on the RGB image). We can confidently state that the quarry was excavated some more between the images acquisition and the LiDAR acquisition that occurred a year later. This explains why so many intervals are wrong in the area, in comparison with the rest of the scene. This can also be observed on a cross section of the \acrshort{dsm}s presented in \Cref{fig:Carriere_row}. Those intervals are thus false negatives, and lower the global accuracy of the scene as they approximately represent around $1.5\%$ of the valid data on this scene.
+\Cref{fig:Carriere} is a zoom on this area. By looking at the differences between the \acrshort{rgb} image in \Cref{fig:Carriere_RGB} and the ground truth \acrshort{dsm} in \Cref{fig:Carriere_gt}, we can see that there are some differences between the ground truth and the satellite image (most notably, the bottom left of quarry levels are closer on the ground truth that on the \acrshort{rgb} image). We can confidently state that the quarry was excavated some more between the images acquisition and the \acrshort{lidar} acquisition that occurred a year later. This explains why so many intervals are wrong in the area, in comparison with the rest of the scene. This can also be observed on a cross section of the \acrshort{dsm}s presented in \Cref{fig:Carriere_row}. Those intervals are thus false negatives, and lower the global accuracy of the scene as they approximately represent around $1.5\%$ of the valid data on this scene.
 
 \begin{figure}
     \begin{subfigure}[t]{0.33\linewidth}
@@ -758,7 +758,7 @@ The dates of acquisition of LiDAR data and Pléiades images were presented in \C
     \begin{subfigure}[t]{0.33\linewidth}
         \centering
         \includegraphics[width=\linewidth]{Images/Chap_6/Carriere_RGB_Monaco.png}
-        \caption{RGB image}
+        \caption{\acrshort{rgb} image}
         \label{fig:Carriere_RGB}
     \end{subfigure}\hfill
     \begin{subfigure}[t]{0.33\linewidth}
@@ -780,7 +780,7 @@ The dates of acquisition of LiDAR data and Pléiades images were presented in \C
 This type of false negative can be found on a  smaller scale in most urban scenes with an asynchronicity of acquisitions. We did not manually detect and correct every building that was destroyed or built in-between acquisitions, as it was too time-consuming. The accuracy results could therefore be further improved on some scenes. It is possible, although very unlikely, that asynchronicity causes false positive during the accuracy computation.
 
 \subsection{LiDAR data over vegetation}\label{eq:lidar_vegetation}
-Intervals computed over the Paris scene have an accuracy of $84.6\%$, which is the lowest of all scenes. When trying to understand why the intervals did not seem to perform correctly, we noticed that many pixels in error occurred over trees. This can be observed in \Cref{fig:paris_error_tree}, where many intervals are wrong near trees. By looking at the intervals in \Cref{fig:paris_error_tree_line,fig:Bordeaux_zoom}, we can see that the photogrammetry \acrshort{dsm} over estimates the height of the canopy: columns 4150 to 4170 and 4345 to 4450 of the Paris scene, and columns 3400 to 3800 of the Bordeaux scene. Other buildings and the grounds do not present such error. One probable hypothesis is that because the LiDAR HD over Paris was acquired in early March, and the images in the last day of may, trees foliage had major differences. Firstly, the trees seem bigger on the RGB image than on the LiDAR DSM, which is probably due to a the increase of foliage in-between acquisitions. Also, the LiDAR probably acquired points both on the top of trees and on the ground, through the sparse foliage. When rasterizing the LiDAR point cloud using a Gaussian mean, we averaged both points on top of the trees and on the ground, resulting in a mix between the two elevations. Due to its resolution, the photogrammetry \acrshort{dsm} does not create multiple points both on the top and at the base of the same tree. It thus only predicts the elevation of the tree top, resulting in the observed error when comparing with LiDAR \acrshort{dsm}. We could try to mask the vegetation pixels, using a mask computed from the Normalized Difference Vegetation Index \cite{gao_ndwinormalized_1996}, but the quality of the masks were not good and tend to mask many other pixels that were not vegetation. We therefore chose not to use them. Also, this effect was particularly present on the Paris scene, which is probably because the LiDAR was acquired from June to September for the other scenes, were the vegetation is denser. Furthermore, we will see in the next section that there is a greater source of error occurring on that scene, which probably makes up for most observed errors. 
+Intervals computed over the Paris scene have an accuracy of $84.6\%$, which is the lowest of all scenes. When trying to understand why the intervals did not seem to perform correctly, we noticed that many pixels in error occurred over trees. This can be observed in \Cref{fig:paris_error_tree}, where many intervals are wrong near trees. By looking at the intervals in \Cref{fig:paris_error_tree_line,fig:Bordeaux_zoom}, we can see that the photogrammetry \acrshort{dsm} over estimates the height of the canopy: columns 4150 to 4170 and 4345 to 4450 of the Paris scene, and columns 3400 to 3800 of the Bordeaux scene. Other buildings and the grounds do not present such error. One probable hypothesis is that because the \acrshort{lidar} HD over Paris was acquired in early March, and the images in the last day of may, trees foliage had major differences. Firstly, the trees seem bigger on the \acrshort{rgb} image than on the \acrshort{lidar} DSM, which is probably due to a the increase of foliage in-between acquisitions. Also, the \acrshort{lidar} probably acquired points both on the top of trees and on the ground, through the sparse foliage. When rasterizing the \acrshort{lidar} point cloud using a Gaussian mean, we averaged both points on top of the trees and on the ground, resulting in a mix between the two elevations. Due to its resolution, the photogrammetry \acrshort{dsm} does not create multiple points both on the top and at the base of the same tree. It thus only predicts the elevation of the tree top, resulting in the observed error when comparing with \acrshort{lidar} \acrshort{dsm}. We could try to mask the vegetation pixels, using a mask computed from the Normalized Difference Vegetation Index \cite{gao_ndwinormalized_1996}, but the quality of the masks were not good and tend to mask many other pixels that were not vegetation. We therefore chose not to use them. Also, this effect was particularly present on the Paris scene, which is probably because the \acrshort{lidar} was acquired from June to September for the other scenes, were the vegetation is denser. Furthermore, we will see in the next section that there is a greater source of error occurring on that scene, which probably makes up for most observed errors. 
 
 \begin{figure}
     \centering
@@ -793,7 +793,7 @@ Intervals computed over the Paris scene have an accuracy of $84.6\%$, which is t
     \begin{subfigure}[t]{\linewidth}
         \flushright
         \includegraphics[width=0.95\linewidth]{Images/Chap_6/paris_error_tree_clr.png}
-        \caption{RGB image}
+        \caption{\acrshort{rgb} image}
         \label{fig:paris_error_tree_clr}
     \end{subfigure}\\
     \begin{subfigure}[t]{\linewidth}
@@ -822,7 +822,7 @@ Intervals computed over the Paris scene have an accuracy of $84.6\%$, which is t
     \begin{subfigure}[t]{0.33\linewidth}
         \centering
         \includegraphics[width=\linewidth]{Images/Chap_6/Bordeaux_clr_zoom.png}
-        \caption{RGB image}
+        \caption{\acrshort{rgb} image}
         \label{fig:Bordeaux_RGB}
     \end{subfigure}\hfill
     \begin{subfigure}[t]{0.33\linewidth}
@@ -944,9 +944,20 @@ Having estimated the bias, we can subtract it from the \acrshort{dsm} and its co
 \end{itemize}
 The fact that the relative error is slightly larger is probably due to the fact that as the accuracy increases, the set on which $Z_\varepsilon$ is computed gets smaller, and only larger error remains. 
 
+\begin{remark}
+    In this section, we used the ground truth to correct the bias from the vibrations of the satellite. We used the ground truth because our objective was to verify if the biases were indeed the source of the missing accuracy of elevation intervals, so that we could safely assume our methods was efficient, granted that no vibrations occurred during the acquisition. 
+    
+    Our aim was not to propose a general method for modeling or correcting the errors due to vibrations, in which case we could not have used the ground truth as it not available everywhere. However, if such were our intents, using a low resolution \acrshort{dsm} such as the Copernicus \acrshort{dsm} at 30m resolution could suffice to detect the presence of vibrations. This \acrshort{dsm} was already used in the \acrshort{cars} pipeline as our initial elevation. By plotting the differences between the low resolution \acrshort{dsm} and the predicted photogrammetry \acrshort{dsm}, we can indeed observe the presence of vibrations as seen in the following figure:
+    
+    {\centering\includegraphics[width=7cm]{Images/Chap_6/copernicus_bias_Montpellier.png}
+    \captionof{figure}{Difference $\DSM-\DSM_{low}$ between the photogrammetry model $\DSM$ and the low resolution model $\DSM_{low}$ over the Montpellier scene.}}
+\end{remark}
+
+
 The Paris scene still does not reach the $90\%$ accuracy objective, while being very close to it. Looking at \Cref{fig:vibrations_Paris_without_bias}, there still seem to be a bias, horizontally this time, as residuals are positive in the left of the image and negative in the right of the image. We can also distinguish that streets seem to have more positive residuals, which is once again probably due to the vegetation issue discussed in \Cref{eq:lidar_vegetation}. As the accuracy is very close to the $90\%$ objective, and we have good reasons to think there are false negative in our test, we consider that this scene confirms the good performances of our method for creating elevation confidence intervals. 
 
 \section{Unexplored leads}\label{sec:unexplored_leads}
+\todoroman{A mettre dans la conclusion plutôt ? Parler du marriage problème à ce moment aussi ?}
 In the previous sections, we evaluated the performance of the elevation intervals associated to their respective \acrshort{dsm}s. Those intervals were obtained by triangulation of disparity intervals, to obtain an interval along a line of sight, which was then rasterized. As they stand, intervals are a reflection of the potential error committed during the dense matching step. During our investigations, we came up with other interesting ideas that we did not have time to get to the bottom of. In order to conclude this chapter, we will quickly go over them.
 
 We saw \Cref{fig:toulouse_zoom_row,fig:Carriere_row,fig:Bordeaux_row} that elevation intervals could sometimes reach very high values, like $80$m in the case of Toulouse for instance. Having those intervals means that the bounds of those intervals have a high possibility degree, and that the difference between choosing one bound or the other is not obvious. It could be wise to filter out the 3D points leading to such large intervals. After all, a large elevation interval suggests that we are not certain about the position of the point, so removing it seems natural. Additionally, we ignored the planimetric error $\Delta XY$ during the rasterization as presented in \Cref{fig:planimetric_shift}, but the hypothesis that $\Delta XY$ is small is probably not valid for large intervals. For acquisitions with incidence angles, around 11$\degree$, an elevation interval of 50m would mean that the planimetric uncertainty is around $50\tan(11\degree)\approx20$m. For the Peyto scene, were the incidence is $21.3\degree$, this uncertainty reaches $46$m. Not only are we unsure about the elevation of the point, but there is much uncertainty regarding which cell it falls into during the rasterization process. We can either filter those points directly after the dense matching step, based on the size of the intervals, or after they have been triangulated, based on the resulting planimetric/altimetric shift. The latter allows to also consider the acquisition conditions of images, which may be more adapted to photogrammetry.

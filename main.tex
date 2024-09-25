@@ -38,7 +38,7 @@
 
 \usepackage[tikz]{mdframed}  % For putting boxes around theorem, examples, definitions etc
 
-\usepackage[acronym, toc]{glossaries}
+\usepackage[acronym,toc]{glossaries}
 \usepackage{breakcites} % Citations over multiple lines
 %\setlength{\parindent}{0pt}  % Paragraph indentation 
 
@@ -234,13 +234,14 @@
 
 %========================= Glossary ====================================
 
-\input{Misc/acronyms_glossary}
-
 \pdfstringdefDisableCommands{%
   \def\glspl#1{<#1>}} % To silence hyperref Warning Token not allowed in a PDF string (Unicode)
 %=======================================================================
 %=======================================================================
 
+\makeglossaries
+\input{Misc/acronyms_glossary}
+\newacronym{dsm}{DSM}{Digital Surface Model}
 \begin{document}
 
     \definecolor{color}{HTML}{F5F5F5}
@@ -249,16 +250,18 @@
     \thispagestyle{empty}
     \setkeys{Gin}{draft=true}
     \include{Misc/title_page}
+    \blankpage
     
     %==================== Glossaire, TOC etc ===============================
     \tableofcontents
     \thispagestyle{empty}
     \pagebreak
+
     \glsaddall
     \pagenumbering{Alph}  % Switch Numerotation of pages to uppercase letters
     \setcounter{page}{0}  % Resetting the page number
     \printglossary[type=\acronymtype,nonumberlist]
-    \printglossary[nonumberlist]
+    \printacronyms
     \pagebreak
     
     %========================== Les choses sérieuses commencent ===========
@@ -267,6 +270,9 @@
     %\doublespacing
     \onehalfspace
     
+    \setkeys{Gin}{draft=true}
+    \input{Chapters/0_Abstract_Thanks}
+
     \setkeys{Gin}{draft=true}
     \input{Chapters/0_intro}
     
@@ -282,7 +288,7 @@
     \setkeys{Gin}{draft=true}
     \input{Chapters/4_propragating_the_uncertainty_to_stereo_images}
     
-    \setkeys{Gin}{draft=true}
+    \setkeys{Gin}{draft=false}
     \input{Chapters/5_epistemic_uncertainty_in_stereo_matching}
     
     \setkeys{Gin}{draft=false}
@@ -291,10 +297,12 @@
     \setkeys{Gin}{draft=true}
     \input{Chapters/Conclusion}
     
+    \setcounter{page}{0}  % Resetting the page number
     \pagenumbering{roman}
     \setkeys{Gin}{draft=true}
     \input{Chapters/X_annnex}
     
+    \setcounter{page}{1}  % Resetting the page number
     \singlespace
     \bibliography{thesis}
 
