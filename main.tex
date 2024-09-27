@@ -37,6 +37,7 @@
 \usepackage{xr}  % For crossreferencing between chapters
 
 \usepackage[tikz]{mdframed}  % For putting boxes around theorem, examples, definitions etc
+\usepackage{epigraph} % Used for epigraph at the begining of the thesis 
 
 \usepackage[acronym,toc]{glossaries}
 \usepackage{breakcites} % Citations over multiple lines
@@ -241,7 +242,6 @@
 
 \makeglossaries
 \input{Misc/acronyms_glossary}
-\newacronym{dsm}{DSM}{Digital Surface Model}
 \begin{document}
 
     \definecolor{color}{HTML}{F5F5F5}
@@ -251,17 +251,15 @@
     \setkeys{Gin}{draft=true}
     \include{Misc/title_page}
     \blankpage
-    
+    \input{Chapters/Remerciements}
     %==================== Glossaire, TOC etc ===============================
     \tableofcontents
     \thispagestyle{empty}
     \pagebreak
 
-    \glsaddall
     \pagenumbering{Alph}  % Switch Numerotation of pages to uppercase letters
     \setcounter{page}{0}  % Resetting the page number
     \printglossary[type=\acronymtype,nonumberlist]
-    \printacronyms
     \pagebreak
     
     %========================== Les choses sérieuses commencent ===========
@@ -271,12 +269,12 @@
     \onehalfspace
     
     \setkeys{Gin}{draft=true}
-    \input{Chapters/0_Abstract_Thanks}
+    \input{Chapters/0_Abstract}
 
     \setkeys{Gin}{draft=true}
     \input{Chapters/0_intro}
     
-    \setkeys{Gin}{draft=true}
+    \setkeys{Gin}{draft=false}
     \input{Chapters/1_intro_to_stereo}
     
     \setkeys{Gin}{draft=true}
@@ -288,10 +286,10 @@
     \setkeys{Gin}{draft=true}
     \input{Chapters/4_propragating_the_uncertainty_to_stereo_images}
     
-    \setkeys{Gin}{draft=false}
+    \setkeys{Gin}{draft=true}
     \input{Chapters/5_epistemic_uncertainty_in_stereo_matching}
     
-    \setkeys{Gin}{draft=false}
+    \setkeys{Gin}{draft=true}
     \input{Chapters/6_Elevation_confidence_intervals}
     
     \setkeys{Gin}{draft=true}

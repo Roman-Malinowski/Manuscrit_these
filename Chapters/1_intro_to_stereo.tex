@@ -1,16 +1,53 @@
 \chapter{Introduction to Stereophotogrammetry}\label{chap:stereophotogrammetry}
-\section{Digital Surface Models}\commanue{Là c'est en reprendre car tu as copié collé ce paragraphe dans l'intro donc à voir comment tu équilibres entre l'intro et ici. Ici il faudra plus détailler. Dans l'intro tu te limites à expliquer brivèevemnt un DSM, la différence avec un DTM (juste le sol), les différentes méthodes possibles avec leur niveau de résolution et le niveu de détail. Ici tu peux pousser la comparaison, tu peux montrer les différentes produits. Peut-être ici donner des exemples montrer une ville, genre toulouse,  avec différents DSM pour voir les différents niveaux de détails, parler des formats etc. Tu peux aussi parler de l'étendue spatiale des produits, de leur mise à jour. Pour l'instant pas mal d'interventions manuelles.}
-\todoroman{Utiliser les slides de formation CARS pour montrer les différentes méthodes pour faire de la 3D, mettre des exmples de LiDAR ou faire un schéma ?}
+\section{Digital Surface Models}\commanue{les différentes méthodes possibles avec leur niveau de résolution et le niveu de détail. Ici tu peux pousser la comparaison, tu peux montrer les différentes produits. Peut-être ici donner des exemples montrer une ville, genre toulouse,  avec différents DSM pour voir les différents niveaux de détails, parler des formats etc. Tu peux aussi parler de l'étendue spatiale des produits, de leur mise à jour. Pour l'instant pas mal d'interventions manuelles.}
 
-\commanue{Il faudrait aussi montrer des résultats, en gros c'est quoi en fait un modèle 3D. Après parmi tous les exemples d'utilisation de la 3D que tu donnes tu peux en détailler un un peu plus. Celui que tu préfères.}
-Knowing the Earth's topography is crucial for modern geosciences. As such, \acrfull{dsm}, which are a representation of a surface's elevation on a regular grid, appear as a natural solution in many \acrfull{gis}. Indeed, they can easily be handled and provide georeferenced information regarding the topography of an area. \acrshort{dsm} find usage in various contexts for a wide range of applications. In \acrfull{eo} for instance, \acrshort{dsm} are used to monitor changes in vegetation \cite{sadeghi_canopy_2016}, melting rates of glaciers \cite{berthier_glacier_2014, rieg_pleiades_2018}, volcanos \cite{ganci_data_2022}, snow or water resources \cite{marti_mapping_2016, gascoin_theia_2019, yamazaki_merit_2019} \etc Similarly, \acrshort{dsm} are employed for catastrophe management, to predict the potential damage caused by earthquakes or floods \cite{jenkins_physics-based_2023} \dots \acrshort{dsm} are also crucial for ortho-rectifying image, \ie geometrically correcting the effects of distortions between the sensor and the terrain. This process creates a planimetric image with a consistent scale in all parts of the image. It allows images to be easily used in \acrshort{gis} or as background for maps. In urban settings, high resolution \acrshort{dsm} can help drone navigation for Defense applications, or more broadly for urban planning \cite{velazco_3d_2012}.
+Topographical information are crucial for many applications in \acrfull{eo}, or more generally when manipulating georeferenced data. A popular and simple model containing such topographical data named \acrlong{dem}, and represents elevation data using a regular grid as in \Cref{fig:VDG_dsm}. In the literature, a distinction is usually made between two types of \acrshort{dem}: \acrlong{dsm} and \acrlong{dtm}. \acrshort{dtm}s only represent the ground surface, without man made structures (buildings, houses) or rapidly evolving volumes such as vegetation or seasonal snow. Those those finer details are instead included in \acrshort{dsm}s. \Cref{fig:DTM_DSM} illustrates the difference between the two.
 
-Nowadays, \acrshort{dsm} are mostly generated from laser scanning with LiDAR sensors, radar interferometry or stereophotogrammetry \cite{youssefi_cars_2020}. Air-borne laser scanning results in \acrfull{vhr} models, but the swath width and cost of acquisition campaigns do not allow to periodically cover the globe\commanue{Pour le LIDAR tu peux citer le Liadr HD de l'IGN: durée de la campagne et données déjà disponible pour montrer que rien que pour avoir la France cela prend beaucoup de temps.}. Space-borne \acrshort{lidar} is mostly used for atmospheric measurements, or discrete measurements \cite{fouladinejad_history_2019}. For instance, NASA's ICESat-2 \cite{jasinski_atlasicesat-2_2020} measures elevation of seas and glaciers using 6 lasers taking measurements along track, which is not adapted for reconstructing high-accuracy DSM. Space-borne radar interferometry remains widely used, and has allowed to create a worldwide digital model of emerged surfaces of the Earth at $30$m and $90$m resolution with the SRTM mission \cite{farr_shuttle_2007}\commanue{Tu peux aussi citer le DEM Copernicus https://spacedata.copernicus.eu/collections/copernicus-digital-elevation-model il faudrait détailler comment il est réalisé. Le SRTM c'est la classe car c'est via la navette Endeavour. Pour revenir au DEM copernicus, il est réalisé à partir de Tandem-X qui est un SAR qui permet de réaliser des DEM jusqu'à 10 à 12m. En fonction du temps tu peux détailler un peu le principe d'acquisitions}. To obtain coarser resolutions\commanue{Donne des ordres de grandeurs qu'on vise par rapport aux autres technos}, it is possible to leverage the technological advancement of optical sensors in orbit to create sub-meter \acrshort{dsm} using stereophotogrammetry with relatively low cost\commanue{Peut-être détailler pourquoi c'est plus low cost}. However, this process is more complex than laser measurements as it deduces height from the principle of parallax. Stereophotogrammetry pipelines usually consists in multiple processing steps with intermediary products (see \ref{sec:classical_stero_pipeline}), with different methods, parameterization and post-processes available for each step (\eg matching, filtering \etc). This broad range of solutions allow to adapt our processes to the type of images and terrain observed, but it sometimes makes it difficult to determine the configuration producing the best quality DSM, or to single out a general good-working configuration. 
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\linewidth]{Images/Chap_1/DTM_DSM.png}
+    \caption{Difference between \acrlong{dtm} and \acrlong{dsm}}
+    \label{fig:DTM_DSM}
+\end{figure}
 
-This thesis focuses on \acrshort{dsm} obtained from stereophotogrammetry, however we will use \acrshort{dsm} obtained from air-borne LiDAR acquisitions as references to validate our results, considering their high resolutions\commanue{Dans cette section tu mentionnes rapidement le lidar. Je pense que tu dois détailler un peu plus car c'est comme même ta vérité terrain. Il faadrait parler de l'acquisition, du format (points), de la rasterisation (on se retrouve avec plusieurs bandes). Il faudrait aussi citer le lidarHD de l'IGN car c'est vraiment cela que tu utilises comme VT. Tu peux mettre en perspective le temps nécessaire pour faire les acquisitions et mettre à dispo les produits. Notamment cela te sera utile quand tu aborderas la mission CO3D}.
-\commanu{ pas plus que manue sur cette section, complètement d'accord}
-\todoroman{Schema de \acrshort{dsm} par avion LiDAR, satellite interfero et stereo}
-\section{CO3D mission and Pléiades Satellites}\label{sec:co3d}\commanue{Moi je mettrais un titre plus générique sur les satellites optiques haute résolution. Tu démarres par DSM dans la section précédente et tu mentionnes ce type de satellites pour créer des DSM. Donc section suivantes tu parles de ces satellites que l'on peut utiliser pour faire de la 3D (ah transition !) car ils possèdent des atouts : haute résolution, agilité. Tu peux mentionner ensuite les satellites existants Worldview Pleiades CSO (acquisition push-broom que tu peux introduire si tu veux) et ensuite tu introduis la nouvelle constellation de satellites CO3D matrice de bayer, ils volent en formation donc acquistion synchrone (pour une paire),etc. Te connaissant je ferais des sous-sections par exemple : intro globale sur les sat optiques HR, mission actuelles, mission CO3D, données que tu utilises}\commanu{+1}
+\acrshort{dtm}s are used for hydrology applications, such as for estimating water reservoirs \cite{yamazaki_merit_2019}, river flow \cite{miguez-macho_incorporating_2007}, global snow resources \cite{gascoin_theia_2019} or modeling potential flood \cite{yamazaki_regional_2014}. On the other hand, the high level of details of \acrshort{dsm}s are used to monitor changes in vegetation \cite{sadeghi_canopy_2016}, melting rates of glaciers \cite{berthier_glacier_2014, rieg_pleiades_2018}, changes in volcanoes \cite{ganci_data_2022} or to precisely map snow depth on mountainous terrain \cite{marti_mapping_2016}. In urban environment, \acrshort{dsm} allow to predict the potential damage caused by floods \cite{jenkins_physics-based_2023} or to do urban planning \cite{velazco_3d_2012}. For instance, possessing \acrshort{dsm}s on the same city but for different acquisition dates allow to measure the growth rate of the city \cite{warth_dsm-based_2019}, or damages caused by an earthquake \cite{erdogan_detection_2019} in-between acquisitions. \acrshort{dsm} are also crucial for ortho-rectifying image, \ie geometrically correcting the effects of distortions between the sensor and the terrain \cite{toutin_ortho-rectification_2012}. When capturing an optical image, the satellite is not necessarily right above its target, as illustrated in \Cref{fig:ortho_nadir}. However, if the image must be used as a background for a map, it is usually required that the image must be captured vertically, referred to as nadir, in order to be free of any perspective effect. \acrshort{dsm}s allow to reproject images as if they were taken at nadir. This rectification is used for many satellite products \cite{hagolle_maja_2017}.  
+\begin{figure}
+    \centering
+    \includegraphics[width=0.7\linewidth]{Images/Chap_1/Ortho_Nadir.png}
+    \caption{Incidence angle of a satellite, and nadir direction}
+    \label{fig:ortho_nadir}
+\end{figure}
+
+Many applications depends on the resolution of \acrshort{dsm}s: evaluating water reservoirs in a mountainous regions does not necessarily require the same accuracy as 3D urban modelling for instance. The precision of a \acrshort{dsm} is defined by its planimetric resolution, \ie the size of a cell, and its altimetric resolution, \ie the smallest elevation variation it can detect. The altimetric resolution is itself characterized two notions: the absolute and relative accuracy. Absolute accuracy is the precision of a \acrshort{dsm} at a pixel level, \ie how close the predicted elevation is to the true elevation at the geographic coordinates of a given cell. Relative accuracy characterizes the quality of the 3D reconstruction of a scene. For instance, a \acrshort{dsm} precisely reproducing the shape of a house and its chimney will have a high relative accuracy. However, if the house is not properly georeferenced then the \acrshort{dsm} will have a poor absolute accuracy. Relative accuracy is therefore always greater than the absolute accuracy. In this thesis, we will mainly consider relative accuracy when evaluating the quality of \acrshort{dsm}s, as our sources possess different georeferencing systems which naturally induces small planimetric errors.  
+
+There are multiple ways of creating a \acrshort{dsm} from airborne sensors such as planes, drones or satellites. The first way is to use \acrshort{radar} interferometry, as done by Sentinel-1 satellites \cite{geudtner_sentinel-1_2014} for instance. This method presents the advantage of being able to acquire data by day and night, even in the presence of clouds. Radar sensors, such as those present in the Shuttle Radar Topography Mission (SRTM) \cite{farr_shuttle_2007} or TanDEM-X (\cite{krieger_tandem-x_2007}), possess a large swath of around $30$km, which was used to produce \acrshort{dsm}s covering the majority (or totality for TanDEM-X) of emerged land. The planimetric accuracy are in the range of a dozen meters (10m for TanDEM-X or 30m for the SRTM), and relative altimetric resolution is typically of a few meters (2m for TanDEM-X and 8m for the SRTM). This is not sufficient to distinguish objects such as buildings or trees, but rather global terrain topography. \Cref{fig:etoile_radar} presents a TanDEM-X \acrshort{dsm}. Another method for constructing \acrshort{dsm}s is to use stereophotogrammetry \cite{tao_comprehensive_2001}. Photogrammetry is the science of recovering 3D information from optical images. For this method, images of a scene are acquired from different points of view, and depth information is recovered from the parallax effect between images, already presented in \Cref{fig:parallax}. Photogrammetry is not restricted to the production of \acrshort{dsm}s, as it has many usages in robotics, for instance on Martian rovers \cite{goldberg_stereo_2002} or autonomous driving \cite{geiger_vision_2013}. Current optical satellites have a sub-meter resolution and a large swath (20km for Pléiades for instance \cite{coeurdevey_pleiades_2012}), allowing to massively produce high-resolution \acrshort{dsm} covering the globe for a relatively low cost using photogrammetry. The altimetric resolution is typically around one meter, although it depends of the different acquisition angles of the satellites. With this resolution, buildings, trees, and even cars can be detected on the \acrshort{dsm}. A final method for producing \acrshort{dsm} is to use LiDAR (laser sensors) \cite{khosravipour_generating_2016}. Space-borne LiDARs are mostly used for atmospheric or discrete measurements \cite{fouladinejad_history_2019}. For instance, NASA’s ICESat-2 \cite{jasinski_atlasicesat-2_2020} measures elevation of seas and glaciers using 6 lasers taking measurements along track, which is not adapted for reconstructing high-accuracy DSM. On the other hand, planes or drones equipped with LiDAR sensors usually have very good accuracy, allowing to model tower cranes, lamp post or small details on buildings. In particular, the french institute IGN (\textit{Institut national de l'information Géographique et forestière}) uses LiDAR to create point clouds with a planimetric accuracy of 25 centimeters and an altimetric resolution of 5 centimeters, and then produce \acrshort{dsm}s out of it  \cite{monnet_lidarhd_2023, ign_lidar_2024}. This is part of a 5 years campaign named LiDAR HD and started in 2021, where planes equipped with LiDAR sensors will cover the whole French territory (except French Guiana). Those types of campaign are long and costly, and can hardly be reproduced at a global scale. Therefore, photogrammetry \acrshort{dsm}s are currently the best solution to produce \acrshort{dsm}s covering the globe, with a sub-meter resolution for relatively low costs. \Cref{fig:etoile} presents examples of \acrshort{dsm}s produced by \acrshort{radar}, photogrammetry and \acrshort{lidar}. In this thesis, we will mainly considered \acrshort{dsm}s produced using stereophotogrammetry, and use LiDAR \acrshort{dsm} as our reference \acrshort{dsm}. 
+
+\begin{figure}
+    \begin{subfigure}[t]{0.31\linewidth}
+        \flushleft
+        \includegraphics[width=\linewidth]{Images/Chap_1/etoile_low_res_dsm.png}
+        \caption{\acrshort{radar} \acrshort{dsm}}
+        \label{fig:etoile_radar}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.31\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/Chap_1/etoile_high_res_dsm.png}
+        \caption{LiDAR \acrshort{dsm}}
+        \label{fig:etoile_lidar}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.365\linewidth}
+        \flushright
+        \includegraphics[width=\linewidth]{Images/Chap_1/etoile_cars_dsm.png}
+        \caption{Photogrammetry \acrshort{dsm}}
+        \label{fig:etoile_photogrammetry}
+    \end{subfigure}
+    \caption{\acrshort{dsm}s over Arc de Triomphe, Paris, obtained with different sensors.}
+    \label{fig:etoile}
+\end{figure}
+
+Photogrammetry pipelines usually consists in multiple processing steps with intermediary products (see \ref{sec:classical_stero_pipeline}), with different methods, parameterization and post-processes available for each step (\eg matching, filtering \etc). This broad range of solutions allow to adapt our processes to the type of images and terrain observed, but it sometimes makes it difficult to determine the configuration producing the best quality DSM, or to single out a general good-working configuration. 
+
+\section{High Resolution Optical Satellite for Photogrammetry}\label{sec:co3d}\commanue{ Donc section suivantes tu parles de ces satellites que l'on peut utiliser pour faire de la 3D (ah transition !) car ils possèdent des atouts : haute résolution, agilité. Tu peux mentionner ensuite les satellites existants Worldview Pleiades CSO (acquisition push-broom que tu peux introduire si tu veux) et ensuite tu introduis la nouvelle constellation de satellites CO3D matrice de bayer, ils volent en formation donc acquistion synchrone (pour une paire),etc. Te connaissant je ferais des sous-sections par exemple : intro globale sur les sat optiques HR, mission actuelles, mission CO3D, données que tu utilises}
 
 The following paragraphs detail satellites characteristics relevant to stereophotogrammetry. It is important to notice that although the sensor used greatly determines the resolution of the final \acrshort{dsm}, it is not the only factor at stake here. The altitude and positions of the satellites are also crucial for the resolution\todoroman{parler de \cite{qin_critical_2019} avec un bon ratio et surtout la diff d'angles solaires}, and can be characterized by the \acrfull{b/h} ratio, as in \Cref{fig:RPC}. This ratio is computed by dividing the distance separating the stereo acquisitions by the altitude of the satellite. It indicates the angle formed between the line of sights originating from the satellites towards an object of the scene. A high \acrshort{b/h} allows for high elevation accuracy, but possesses more occluded regions (for instance a narrow street between two high buildings), and conversely for a low B/H \cite{delon_small_2007}.
 
@@ -19,17 +56,17 @@ The main source of images used in this thesis comes from Pléiades images\comman
     \centering
     \begin{subfigure}[t]{0.5\linewidth}
         \centering
-        \includegraphics[height=6cm]{Images/Chap_1/Paris_003.jpeg}
-        \caption{$14/10/2017$ $11:03:003$}
+        \includegraphics[height=6cm]{Images/Chap_1/Paris_Left_stereo.png}
+        \caption{Left image}
         \label{fig:Pleiade_over_Paris_a}
     \end{subfigure}\hfill
     \begin{subfigure}[t]{0.5\linewidth}
         \centering
-        \includegraphics[height=6cm]{Images/Chap_1/Paris_403.jpeg}
-        \caption{$14/10/2017$ $11:03:403$}
+        \includegraphics[height=6cm]{Images/Chap_1/Paris_Right_stereo.png}
+        \caption{Right image}
         \label{fig:Pleiade_over_Paris_b}
     \end{subfigure}
-    \caption{Pansharpened Pléiades stereo images over Paris at $0.5$m of resolution. Pléiades \copyright CNES 2017, Distribution AIRBUS DS}
+    \caption{Pansharpened Pléiades stereo images over Paris at $0.5$m of resolution. The change of point of view can be easily observed by looking at the Eiffel Tower. Pléiades \copyright CNES 2023, Distribution AIRBUS DS}
     \label{fig:Pleiade_over_Paris}
 \end{figure}
 
@@ -296,9 +333,6 @@ The main problem of SGM regularization is its reluctancy to detect discontinuiti
         \includegraphics[height=6cm]{Images/Chap_1/DSM_Capitole_LiDAR.png}
         \caption{DSM from LiDAR HD data,\\Place du Capitole}
         \label{fig:DSM_capitole_lidar}
-        %\begin{minipage}{.12cm}  % Multiline captions misalign figures
-        %    \vfill              % This blank minipage is used to align
-        %\end{minipage}          % images
     \end{subfigure}\hfill
     \begin{subfigure}[t]{0.5\linewidth}
         \centering
@@ -318,7 +352,7 @@ The main problem of SGM regularization is its reluctancy to detect discontinuiti
         \caption{CARS DSM from Pléiades images,\\Ernest Wallon stadium}
         \label{fig:DSM_ernest_wallon_cars}
     \end{subfigure}
-    \caption{Different DSM over Toulouse, France. DSM were obtained by rasterizing LiDAR HD data or by processing Pléiade stereo images with the CARS pipeline. The CARS pipeline uses a $5\times5$ CENSUS cost function and SGM regularization for stereo reconstruction. \copyright CNES 2017, Distribution AIRBUS DS}
+    \caption{Different DSM over Toulouse, France. DSM were obtained by rasterizing LiDAR HD data or by processing Pléiades stereo images with the CARS pipeline. The CARS pipeline uses a $5\times5$ CENSUS cost function and SGM regularization for stereo reconstruction. \copyright CNES 2017, Distribution AIRBUS DS}
     \label{fig:DSM_toulouse}
 \end{figure}
 
@@ -400,7 +434,7 @@ where $Id$ is the identity matrix, and $V^T$ is the transposed vector $V$.
 Triangulating every point using the disparity map leads to a 3D point cloud. Because we know from which pixel each 3D point originates from, we can associate to every 3D point additional information such as\comloic{en tout état de cause, oui on sait de quel point on vient en géo senseur, mais il s'agit d'un point en coordonnées pixel non entières (c'est en géo épipol qu'on est en géo entière). Je ne sais plus (si et) comment c'est traiter.}:
 \begin{itemize}
     \item The color of the reference pixel (if provided). The point cloud is thus a colored point cloud.
-    \item Confidence measures computed during the dense-matching step\commanue{Oui c'est vrai mais tu n'as jamais mentionné les mesures de confiance}. 
+    \item Confidence measures computed during the dense matching step\commanue{Oui c'est vrai mais tu n'as jamais mentionné les mesures de confiance}. 
 \end{itemize}
 
 The 3D points can be filtered to remove obvious errors. Two different filtering\commanu{c'est quand meme bizarre de garder triangulation et filtrage dans la meme section. Si tu parles de filtrage (est ce utile ?), fais une sous section, je pense} steps are carried out: one for removing statistical outliers, and one for removing so-called ``small-components''\commanue{Alors ça c'est les filtrages de CARS}. 
