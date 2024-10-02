@@ -1,0 +1,85 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:130.0) Gecko/20100101 Firefox/130.0" version="24.7.16">
+  <diagram name="Page-1" id="oz5TSB25_tHGpyrxFUn2">
+    <mxGraphModel dx="1434" dy="779" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="1" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="Le_IBBFrX8YXHRjTscc6-3" value="" style="shape=mxgraph.signs.tech.camera_1;html=1;pointerEvents=1;fillColor=#000000;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;rotation=0;" parent="1" vertex="1">
+          <mxGeometry x="360" y="270" width="98" height="84" as="geometry" />
+        </mxCell>
+        <mxCell id="Le_IBBFrX8YXHRjTscc6-4" value="" style="shape=mxgraph.signs.tech.camera_1;html=1;pointerEvents=1;fillColor=#000000;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;rotation=0;" parent="1" vertex="1">
+          <mxGeometry x="363" y="503" width="98" height="84" as="geometry" />
+        </mxCell>
+        <mxCell id="Le_IBBFrX8YXHRjTscc6-5" value="" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;rotation=-91;size=77.00999999999999;flipV=1;" parent="1" vertex="1">
+          <mxGeometry x="440" y="310" width="142.99" height="49.92" as="geometry" />
+        </mxCell>
+        <mxCell id="Le_IBBFrX8YXHRjTscc6-6" value="" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;rotation=-91;size=70;" parent="1" vertex="1">
+          <mxGeometry x="444" y="509" width="142.99" height="49.92" as="geometry" />
+        </mxCell>
+        <mxCell id="Le_IBBFrX8YXHRjTscc6-10" value="" style="verticalLabelPosition=bottom;verticalAlign=top;html=1;shape=mxgraph.basic.cone2;dx=0.5;dy=0.71;fillColor=#CCCCCC;" parent="1" vertex="1">
+          <mxGeometry x="850" y="420" width="90" height="92.96" as="geometry" />
+        </mxCell>
+        <mxCell id="Le_IBBFrX8YXHRjTscc6-11" value="" style="endArrow=none;html=1;rounded=0;entryX=0;entryY=0;entryDx=45;entryDy=0;entryPerimeter=0;" parent="1" target="Le_IBBFrX8YXHRjTscc6-10" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="533" y="522" as="sourcePoint" />
+            <mxPoint x="755" y="360" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Le_IBBFrX8YXHRjTscc6-12" value="" style="endArrow=none;html=1;rounded=0;" parent="1" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="460" y="547" as="sourcePoint" />
+            <mxPoint x="514" y="529" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Le_IBBFrX8YXHRjTscc6-14" value="" style="endArrow=none;html=1;rounded=0;exitX=0;exitY=0;exitDx=45;exitDy=0;exitPerimeter=0;" parent="1" source="Le_IBBFrX8YXHRjTscc6-10" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="530" y="430" as="sourcePoint" />
+            <mxPoint x="516" y="330" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Le_IBBFrX8YXHRjTscc6-16" value="" style="endArrow=none;html=1;rounded=0;" parent="1" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="497" y="325" as="sourcePoint" />
+            <mxPoint x="453" y="315" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Le_IBBFrX8YXHRjTscc6-17" value="&lt;font style=&quot;font-size: 25px;&quot;&gt;\(\mathrm{Left~Image}\)&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="560" y="270" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Le_IBBFrX8YXHRjTscc6-18" value="&lt;font style=&quot;font-size: 25px;&quot;&gt;\(\mathrm{Right~Image}\)&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="560" y="547" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Le_IBBFrX8YXHRjTscc6-25" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="1340" y="100" width="330" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="Le_IBBFrX8YXHRjTscc6-26" value="" style="verticalLabelPosition=bottom;verticalAlign=top;html=1;shape=mxgraph.basic.cone2;dx=0.5;dy=0.88;fillColor=#CCCCCC;strokeWidth=1;fillOpacity=100;" parent="1" vertex="1">
+          <mxGeometry x="1420" y="171.26" width="50" height="77.47" as="geometry" />
+        </mxCell>
+        <mxCell id="Le_IBBFrX8YXHRjTscc6-27" value="" style="verticalLabelPosition=bottom;verticalAlign=top;html=1;shape=mxgraph.basic.cone2;dx=0.5;dy=0.88;fillColor=#CCCCCC;dashed=1;dashPattern=1 4;opacity=40;" parent="1" vertex="1">
+          <mxGeometry x="1550" y="171.26" width="50" height="77.47" as="geometry" />
+        </mxCell>
+        <mxCell id="Le_IBBFrX8YXHRjTscc6-28" value="&lt;font style=&quot;font-size: 25px;&quot;&gt;\(\mathrm{Left~Image}\)&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="1020" y="60" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Le_IBBFrX8YXHRjTscc6-31" value="&lt;font style=&quot;font-size: 25px;&quot;&gt;\(\mathrm{Right~Image}\)&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="1415" y="60" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Le_IBBFrX8YXHRjTscc6-32" value="" style="shape=flexArrow;endArrow=classic;startArrow=classic;html=1;rounded=0;entryX=0;entryY=0;entryDx=25;entryDy=0;entryPerimeter=0;exitX=0;exitY=0;exitDx=25;exitDy=0;exitPerimeter=0;fillColor=#000099;width=4.516129032258064;startSize=5.829032258064516;endSize=5.829032258064516;startWidth=10.801248699271593;endWidth=10.801248699271593;fontColor=#000099;strokeColor=none;" parent="1" source="Le_IBBFrX8YXHRjTscc6-26" target="Le_IBBFrX8YXHRjTscc6-27" edge="1">
+          <mxGeometry width="100" height="100" relative="1" as="geometry">
+            <mxPoint x="1310" y="290" as="sourcePoint" />
+            <mxPoint x="1410" y="190" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Le_IBBFrX8YXHRjTscc6-33" value="&lt;font style=&quot;font-size: 17px;&quot;&gt;\(\mathrm{Disparity}~d\)&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#000099;" parent="1" vertex="1">
+          <mxGeometry x="1460" y="130" width="105" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="RSy3egINgkhn0zGhACr_-1" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="940" y="100" width="330" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="RSy3egINgkhn0zGhACr_-3" value="" style="verticalLabelPosition=bottom;verticalAlign=top;html=1;shape=mxgraph.basic.cone2;dx=0.5;dy=0.88;fillColor=#CCCCCC;" parent="1" vertex="1">
+          <mxGeometry x="1150" y="171.26" width="50" height="77.47" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

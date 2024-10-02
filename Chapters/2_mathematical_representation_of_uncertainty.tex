@@ -1,7 +1,7 @@
 \chapter{Mathematical Representations of Uncertainty}\label{chap:representation_of_uncertainty}
 
 \section{Introduction}
-This chapter takes some distance from the stereo vision problem presented previously, and instead describe more formally different representations of uncertainty and the tools that can be used to manipulate them. In this thesis, we consider classical probabilities (\Cref{sec:probabilities}), possibility distributions (\Cref{sec:possibilities}) and p-boxes (secction \ref{sec:pboxes}) to model uncertainty. We also consider the case where we consider multiple sources of uncertainty simultaneously. In this setting, the dependency between the different sources must be taken into account. We thus present a dependency model called copulas in \Cref{sec:copulas}, and some of its properties. The thorough presentation of those concepts will then be put into relations in \Cref{chap:joining_credal_sets}. 
+This chapter takes some distance from the stereo vision problem presented previously, and instead describe more formally different representations of uncertainty and the tools that can be used to manipulate them. In this thesis, we consider classical probabilities (\Cref{sec:probabilities}), possibility distributions (\Cref{sec:possibilities}) and p-boxes (\Cref{sec:pboxes}) to model uncertainty. We also consider multiple sources of uncertainty simultaneously. In this setting, the dependency between the different sources must be taken into account. We thus present a dependency model called copulas in \Cref{sec:copulas}, and some of its properties. The thorough presentation of those concepts will then be put into relations in \Cref{chap:joining_credal_sets}. 
 
 \section{Notations}
 We introduce here a few notations that will be used in the rest of this chapter. \todoroman{A ajouter au fur et à mesure, peut être déplacer au début de la thèse, à côté du glossaire.} \commanu{en effet, pas mal à coté du glossaire, mais garder une phrase avec un lien pour aller les chercher si besoin pour le lecteur. sinon pas sur de l'anglais pour 'the rest of this chapter', ca sonne très francais, j'enleverais. Plus simple: I (ou we mais idem pareil) introduce here... will be used in this chapter. }
@@ -15,7 +15,7 @@ We introduce here a few notations that will be used in the rest of this chapter.
 \end{itemize}
 
 \section{Different Models to Represent Uncertainty}\label{sec:different_models_of_uncertainty}
-Assessing the reliability of an engineering system requires to quantify the uncertainty of the input parameters or of the system itself, using models of uncertainty. Modelling the uncertainty can be done in various ways, depending on the type of uncertainty considered and the available measures or \textit{a priori} regarding the uncertain sources. Most common models are probability distributions, which have been studied extensively. When using those models, we know -or suppose- that the information we try to estimate is of stochastic (or random) nature, and that we are able to precisely describe its structure using a probability distribution. However, there are many cases where such assumptions cannot be made: for instance when data is insufficient to determine the correct probability distribution, or when the uncertainty is not random but epistemic. In those cases, we can use other models such as\commanue{Ce serait top de prendre le même exemple et de montrer comment l'incertitude est modélisé différemment, si c'est possible}\comloic{ouais dans un encas "exemple" ;-)}:
+Assessing the reliability of an engineering system requires to quantify the uncertainty of the input parameters or of the system itself, using models of uncertainty. Modelling the uncertainty can be done in various ways, depending on the type of uncertainty considered and the available measures or \textit{a priori} regarding the uncertain sources. Most common models are probability distributions, which have been studied extensively. When using those models, we know -or assume- that the information we try to estimate is of stochastic (or random) nature, and that we are able to precisely describe its structure using a probability distribution. However, there are many cases where such assumptions cannot be made: for instance when data is insufficient to determine the correct probability distribution, or when the uncertainty is not random but epistemic. In those cases, we can use other models such as\commanue{Ce serait top de prendre le même exemple et de montrer comment l'incertitude est modélisé différemment, si c'est possible}\comloic{ouais dans un encas "exemple" ;-)}:
 \begin{itemize}
     \item fuzzy sets \cite{zadeh_fuzzy_1999} when trying to estimate the degree of truth of a statement such as ``This person is tall''
     \item intervals \cite{jaulin_applied_2001}, where no preferences are given inside a specific range of possible values
@@ -135,7 +135,7 @@ As stated previously, a core concept of imprecise probabilities are lower and up
     Those properties are less constraining than their equivalent for precise probabilities in definition \ref{def:probability_space}, so lower and upper probabilities are generally \textit{not} precise probabilities. The only case where they are precise probabilities is when $\low=\overline{P}$, because $\low$ is then additive as it is both super and sub-additive. In this case, imprecise probabilities are actually a single precise probability. This illustrates the fact that precise probabilities are special cases of imprecise probabilities. 
 \end{remark}
 
-Precise probabilities define a measure of uncertainty towards a random variable $X$ taking numerical values. Imprecise probabilities however, can model the uncertainty towards a random variable taking set values instead of numerical one. We then say that $X$ is a \textit{random set} instead of a random variable. That being said, IP can also represent the uncertainty of random variables for which we suppose a precise probability exists, but we are not able to determine it precisely. Indeed, lower and upper probabilities form the bounds of a family of precise probabilities called \textit{credal set}.
+Precise probabilities define a measure of uncertainty towards a random variable $X$ taking numerical values. Imprecise probabilities however, can model the uncertainty towards a random variable taking set values instead of numerical one. We then say that $X$ is a \textit{random set} instead of a random variable. That being said, IP can also represent the uncertainty of random variables for which we assume a precise probability exists, but we are not able to determine it precisely. Indeed, lower and upper probabilities form the bounds of a family of precise probabilities called \textit{credal set}.
 \begin{definition}[Credal set]\label{def:credal_set}
     Given a lower probability $\low$ and an upper probability $\overline{P}$, a credal set $\M$ is the set of all probabilities $P$ that are greater that $\low$ and lower that $\overline{P}$:
     \begin{equation}
@@ -216,7 +216,7 @@ There are multiple ways of interpreting $m(a)$, presented bellow\commanu{below, 
 \begin{itemize}
     \item If we consider a random set $X$, then $m(a)$ encodes the probability mass that $X$ takes $a$ as its set value.
     \item If $X$ is a random variable, then $m(a)$ encodes the available evidence that the numerical value of $X$ is \textit{exactly} in $a$, without any preferences for the values within $a$. This mean there could also be another evidence that $X$ is in $a'\subset a$, encoded with $m(a')$, and which could be either lower or higher than $m(a)$ depending on the amount of evidence available. Example \ref{ex:bicycle_pressure} illustrates this with a toy scenario. 
-    \item Another interpretation of $m(a)$ is to link it to probability masses (definition \ref{def:density})\commanue{C'est bizarre de dire anaother car le premier parle déjà du lien entre m(a) et probability mass. Peut-être dire precise probability mass pour que ce soit plus clair}. If we suppose there exists an unknown underlying probability measure $P$ for $X$, $m(a)$ measures the probability mass that is assigned to $a$, but that can move freely to every point of $a$ without any preference. In other words, with more information, we could distribute $m(a)$ to every elements of $a$, and doing this for all $a$ would lead to a precise probability mass distribution.
+    \item Another interpretation of $m(a)$ is to link it to probability masses (definition \ref{def:density})\commanue{C'est bizarre de dire anaother car le premier parle déjà du lien entre m(a) et probability mass. Peut-être dire precise probability mass pour que ce soit plus clair}. If we assume there exists an unknown underlying probability measure $P$ for $X$, $m(a)$ measures the probability mass that is assigned to $a$, but that can move freely to every point of $a$ without any preference. In other words, with more information, we could distribute $m(a)$ to every elements of $a$, and doing this for all $a$ would lead to a precise probability mass distribution.
 \end{itemize}
 
 \begin{remark}
@@ -281,7 +281,7 @@ Belief functions possess interesting properties making the credal set they induc
              m([4.5,5.5]) ~=~ 0.4
         \end{align*}
     \end{minipage}\par
-    Based on this, we are no\comloic{je suppose que c'est now mais le chapitre 2 me consomme pas mal de matière grise et ce matin j'ai pas un gros stock disponible} able to express our degree of belief and of plausibility for all events. For instance:
+    Based on this, we are now able to express our degree of belief and of plausibility for all events. For instance:
     \begin{itemize}
         \item Our degree of belief that the pressure lies in $[4, 5]$ is $\Bel([4, 5])=0.3$, that it lies in $[4, 5.5]$ is $\Bel([4, 5.5])=0.7$ and that it lies in $[4, 6]$ is $\Bel([4, 6])=1$
         \item The degree of plausibility that the pressure equals $5$ is $\Pl (5)=1$ (totally plausible), that it equals $5.5$ is $\Pl (5.5)=0.7$ and that it equals $4$ is $\Pl (4)=0.3$.
@@ -383,7 +383,7 @@ Focal sets of necessity functions can be determined directly from the possibilit
     \mathcal{C} =& \{\alpha_\pi~|~\alpha\in[0,1]\}\\
     =& \{ ~\{x\in\X~|~\pi(x)\geqslant\alpha\}~|~\alpha\in[0,1]~\}
 \end{align*}
-With the way focal sets are defined, they form a nested family of sets with regards to inclusion. Indeed, if an element of \(\X\) belongs to an \(\alpha\)-cut, then its possibility is greater than \(\alpha\) and therefore belongs to any other \(\alpha'\)-cut with a lower \(\alpha'\). For simplicity, we will suppose that the focal sets \(a_1\enum a_n\) are already numbered using the inclusion order, \ie \( a_1\subset\dots\subset a_n\). In this case, we will refer to the inclusion order as the ``natural'' order.
+With the way focal sets are defined, they form a nested family of sets with regards to inclusion. Indeed, if an element of \(\X\) belongs to an \(\alpha\)-cut, then its possibility is greater than \(\alpha\) and therefore belongs to any other \(\alpha'\)-cut with a lower \(\alpha'\). For simplicity, we will assume that the focal sets \(a_1\enum a_n\) are already numbered using the inclusion order, \ie \( a_1\subset\dots\subset a_n\). In this case, we will refer to the inclusion order as the ``natural'' order.
 
 \begin{remark}
     The fact that focal sets form a nested family of sets in the case of possibility distributions also implies than if $\X$ is finite and contains $n$ elements, then there can be \textit{at most} $n$ focal sets. For comparison, belief functions can have a maximum of $2^n-1$ focal sets (as the empty set cannot be a focal set). This means that necessity functions have less degrees of freedom than (some) belief functions and thus can express less uncertainty structures. This drawback comes with the advantage of being easier to construct, as we only need to specify the mass of $n$ focal sets (or the possibility of the $n$ elements of $\X$) instead of $2^n-1$. Indeed, when we think of a random variable like the outcome of a dice, it can seem more natural for someone to specify degrees of possibility for each side separately than it is to specify degrees of plausibility for different sets of outcomes. 
@@ -556,7 +556,7 @@ Copulas are very useful to represent the dependency \comloic{je doute entre depe
         &X_1=0\text{ if the first coin is heads, otherwise }X_1=1\\
         &X_2=0\text{ if the second coin is heads, otherwise }X_2=1
     \end{align*}
-    Let $P_1$ and $P_2$ be the probability distributions of $X_1$ and $X_2$ respectively, and suppose that both heads and tails are possible outcomes for both coins. We now consider the joint probability distribution $P$ associated with the random variable $(X_1,~X_2)$, and we want to compute the probability mass distribution of $P$. We denote $F_1$, $F_2$ and $F$ the respective CDFs of $P_1$, $P_2$ and $P$. With this definition, $F_1$ and $F_2$ are the marginals of $F$, and Sklar's theorem states that there exists a copula $C$ such that $F=C(F_1,~F_2)$. 
+    Let $P_1$ and $P_2$ be the probability distributions of $X_1$ and $X_2$ respectively, and assume that both heads and tails are possible outcomes for both coins. We now consider the joint probability distribution $P$ associated with the random variable $(X_1,~X_2)$, and we want to compute the probability mass distribution of $P$. We denote $F_1$, $F_2$ and $F$ the respective CDFs of $P_1$, $P_2$ and $P$. With this definition, $F_1$ and $F_2$ are the marginals of $F$, and Sklar's theorem states that there exists a copula $C$ such that $F=C(F_1,~F_2)$. 
     
     The probability mass distribution of $P$ can be computed by using the H-volume. Let us for instance start by computing $P(1,1)$. By noticing the fact that:
     \begin{equation*}
@@ -602,7 +602,7 @@ which will be used later in subsection \ref{subsection:product_copula}. Graphica
 
 \begin{example}[Different copulas for different dependencies]\label{ex:copulas}
     Let us try to illustrate how different copulas can represent different dependencies. 
-    Consider the same setting as example \ref{ex:hvolume} with two coins being thrown. For the purpose of the example, suppose that the dealer throws the coins in a separate room, and comes back to tell the result. We thus never sees if he is cheating or not. He only provides us this piece of information: coins seems fair when looked at separately. We therefore have the following marginals:
+    Consider the same setting as example \ref{ex:hvolume} with two coins being thrown. For the purpose of the example, assume that the dealer throws the coins in a separate room, and comes back to tell the result. We thus never sees if he is cheating or not. He only provides us this piece of information: coins seems fair when looked at separately. We therefore have the following marginals:
     \begin{eqnarray*}
     \begin{cases}
         P_1(\text{heads}) = P_1(0) = 0.5\\
@@ -616,7 +616,7 @@ which will be used later in subsection \ref{subsection:product_copula}. Graphica
     \end{eqnarray*}
     
     \begin{itemize}
-        \item Suppose that the dealer is not cheating and that the two coin throws are independent. In that case, the product copula $C_\Pi(u,v)=u\cdot v$ \commanue{perso je trouve le symbole $\times$ plus lisible} must be used to represent the independence between variables.
+        \item Assume that the dealer is not cheating and that the two coin throws are independent. In that case, the product copula $C_\Pi(u,v)=u\cdot v$ \commanue{perso je trouve le symbole $\times$ plus lisible} must be used to represent the independence between variables.
         Using results from the previous example, it holds that:
         \begin{align*}
             P(1,1) =& H_{F_1(1), F_2(1)}^{F_1(0), F_2(0)} = 1\cdot1 - 0.5\cdot1 - 1\cdot0.5 + 0.5\cdot0.5\\

@@ -84,10 +84,10 @@ We refer to this joint credal set as $\M_{robust}(C,\M_i)$ as it contains every 
 \subsection{Copula Applied to Cumulative Mass Functions}\label{sec:joint_mass}
 In this section, we will present another way of creating a joint credal set from multiple marginal ones. Consider the same copula $C$ as before and the same marginal credal sets $\M_i$. Each credal set $\M_i$ is fully determined by a mass distribution function $m_i$, which is strictly positive over its $N_i$ focal sets $a^i_1 \enum a^i_{N_i}$. As described in \cite{ferson_dependence_2004}, it is possible to use the cumulative mass distribution functions as marginals of the copula to create a joint mass distribution function, granted that there is a complete order defined on the focal sets. Links between copulas and belief functions have been investigated in the continuous case in \cite{schmelzer_joint_2015, schmelzer_multivariate_2019}, the special case of necessity functions in \cite{schmelzer_sklars_2015} and of p-boxes in \cite{schmelzer_random_2023}.
 
-Let suppose, without loss of generality, that the marginal focal sets are numbered according to the order $\preceq_i$: $a^i_1\preceq_ia^i_2\preceq_i\dots\preceq_i a^i_{N_i}$. The idea behind this method is to replace the precise marginal CDFs by cumulative masses, to conserve the philosophy behind Sklar's theorem. We thus first define the joint mass $m_\times$ on the product space of focal sets as follows:
+Let us assume, without loss of generality, that the marginal focal sets are numbered according to the order $\preceq_i$: $a^i_1\preceq_ia^i_2\preceq_i\dots\preceq_i a^i_{N_i}$. The idea behind this method is to replace the precise marginal CDFs by cumulative masses, to conserve the philosophy behind Sklar's theorem. We thus first define the joint mass $m_\times$ on the product space of focal sets as follows:
 
 \begin{definition}[Joint Mass]\label{def:joint_mass}
-    Let $m_1 \enum m_n$ be mass distribution functions over their respective power sets of $\X_1 \enum \X_n$. Suppose that focal sets in each $\X_i$ are ordered and that $a_{k_i}^i$ is the $k_i$-th focal set of $m_i$ according to the chosen order. We define $m_\times$ as the H-volume of copula $C$ computed over the cumulative marginal masses:
+    Let $m_1 \enum m_n$ be mass distribution functions over their respective power sets of $\X_1 \enum \X_n$. Assume that focal sets in each $\X_i$ are ordered and that $a_{k_i}^i$ is the $k_i$-th focal set of $m_i$ according to the chosen order. We define $m_\times$ as the H-volume of copula $C$ computed over the cumulative marginal masses:
     \begin{eqnarray}\label{eq:joint_mass}
         m_\times(a^1_{k_1}\tdt a^n_{k_n}) = H_{\sum_{k=0}^{k_1-1}m_1(a^1_k) \enum \sum_{k=0}^{k_n-1}m_n(a^n_k)}^{\sum_{k=0}^{k_1}m_1(a^1_k) \enum \sum_{k=0}^{k_n}m_n(a^n_k)}
     \end{eqnarray}
@@ -242,7 +242,7 @@ We saw that $\M_{robust}$ and $\M_{mass}$ can be distinct credal sets\commanue{A
         0.5 \leqslant ~&P(\{1, ~2\},~ \{1, ~2\}) ~\leqslant 1
     \end{align*}
     
-    Let us now compute the bounds of $\M_{mass}$. Choosing an order between $\{1, ~3\}$ and $\{2\}$ is not intuitive. Suppose that there is a reason which encourages us to chose different orders for the focal sets of $m_1$ and for those of $m_2$, so that $\{1,~3\} \preceq_1 \{2\}$ and $\{2\} \preceq_2 \{1,~3\}$. In this case, it holds that\commanue{Alors je sais que c'est censé être l'exemple qui permet de comprendre mais le truc c'est que j'ai du mal à me rappeler des formules donc soit tu renvoies aux équations soit tu rajoutes une ligne pour rappeler la formule}:
+    Let us now compute the bounds of $\M_{mass}$. Choosing an order between $\{1, ~3\}$ and $\{2\}$ is not intuitive. Assume that there is a reason which encourages us to chose different orders for the focal sets of $m_1$ and for those of $m_2$, so that $\{1,~3\} \preceq_1 \{2\}$ and $\{2\} \preceq_2 \{1,~3\}$. In this case, it holds that\commanue{Alors je sais que c'est censé être l'exemple qui permet de comprendre mais le truc c'est que j'ai du mal à me rappeler des formules donc soit tu renvoies aux équations soit tu rajoutes une ligne pour rappeler la formule}:
     \begin{align*}
         m_\times(\{1, ~3\}, \{2\}) =& ~\min(0.5, ~0.5)\\
         =& ~0.5\\
@@ -368,7 +368,7 @@ which implies that $\M_{agg}(C_\Pi, \M_i)\subseteq \M_{agg}(C, \M_i)$.
     \begin{eqnarray*}
         \forall i,~\exists A_i\in\X_i,~\low_i(A_i)=u_i
     \end{eqnarray*}
-    Suppose that $\M_{agg}(C, \M_i)$ avoids sure loss, \ie there is a probability $P$ such that $P\geqslant\low_C$. Let $S$ be a collection of disjoint cylindrical sets of $\X$ (defined in \cref{eq:cylindrical_sets}) covering the complementary event $(A_1\tdt A_n)^c$ of $(A_1\tdt A_n)$. $S$ is defined so that $(A_1\tdt A_n)^c=\bigsqcup_{s\in S}s$\.
+    Assume that $\M_{agg}(C, \M_i)$ avoids sure loss, \ie there is a probability $P$ such that $P\geqslant\low_C$. Let $S$ be a collection of disjoint cylindrical sets of $\X$ (defined in \cref{eq:cylindrical_sets}) covering the complementary event $(A_1\tdt A_n)^c$ of $(A_1\tdt A_n)$. $S$ is defined so that $(A_1\tdt A_n)^c=\bigsqcup_{s\in S}s$\.
     Then\commanue{je ne suis pas sure de comprendre pourquoi tu as besoin de passer par S}\comloic{petit bug d'affichage},
     \begin{eqnarray*}
         P(\X) &=& P\left(\left(A_1\tdt A_n\right)\bigsqcup\left(A_1\tdt A_n\right)^c\right)\\
@@ -535,7 +535,7 @@ Proposition (\ref{prop:sklar_necessity}) considers two marginals. However, it st
         \Leftrightarrow 0 &=\sum_{a_p\subset a_1}m_1(a^1_p)
     \end{align*}
     which means that no focal set is a strict subset of $a_1$.
-    Suppose that there is $k\in\opi1,N_1\cli$ such that: $a_1\subset\dots\subset a_k$ and $\forall p>k,~a_p\not\subseteq a_k$. In particular, $a_{k+1}\not\subseteq a_k$. It holds that:
+    Assume that there is $k\in\opi1,N_1\cli$ such that: $a_1\subset\dots\subset a_k$ and $\forall p>k,~a_p\not\subseteq a_k$. In particular, $a_{k+1}\not\subseteq a_k$. It holds that:
     \begin{align*}
         \sum_{p=1}^{k+1}m_1(a^1_p) &= \sum_{a^1_p\subseteq a^1_{k+1}}m_1(a^1_p)\\
         \Leftrightarrow m_1(a^1_{k+1}) + \sum_{p=1}^{k} m_1(a^1_p) &= \sum_{a^1_p\subseteq a^1_{k+1}}m_1(a^1_p)\\
